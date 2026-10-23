@@ -3,7 +3,8 @@
 //  NeuroPulseAI
 //
 //  User-initiated CSV export utility for motor assessment session records.
-//  Implements RFC 4180 escaping and formula injection protection.
+//  Implements RFC 4180 escaping, formula injection protection, and exports
+//  fine-motor metrics including two-zone center deviation accuracy.
 //
 
 import Foundation
@@ -14,11 +15,15 @@ public struct SessionExportService {
         var lines: [String] = []
         
         // CSV Header
-        lines.append("Session ID,Date,ISO Timestamp,Test Type,Tested Hand,Duration Seconds,Primary Metric,Primary Value,Secondary Metric,Quality Status,Protocol Version,Is Sample Data")
+        lines.append("Session ID,Date,ISO Timestamp,Test Type,Tested Hand,Duration Seconds,Primary Metric,Primary Value,Secondary Metric,Quality Status,Mean Deviation Points,Normalized Deviation Percent,Alternation Accuracy Percent,Protocol Version,Is Sample Data")
         
         let isoFormatter = ISO8601DateFormatter()
         
         for record in records {
+            let meanDevStr = record.meanCenterDeviationPoints != nil ? String(format: "%.2f", record.meanCenterDeviationPoints!) : ""
+            let normDevStr = record.meanNormalizedCenterDeviationPercent != nil ? String(format: "%.2f", record.meanNormalizedCenterDeviationPercent!) : ""
+            let accStr = record.alternationAccuracyPercent != nil ? String(format: "%.2f", record.alternationAccuracyPercent!) : ""
+            
             let fields: [String] = [
                 sanitizeField(record.id.uuidString),
                 sanitizeField(record.date.formatted(date: .abbreviated, time: .shortened)),
@@ -30,6 +35,9 @@ public struct SessionExportService {
                 String(format: "%.4f", record.primaryScoreValue),
                 sanitizeField(record.secondaryScoreLabel),
                 sanitizeField(record.qualityStatus.rawValue),
+                meanDevStr,
+                normDevStr,
+                accStr,
                 sanitizeField(record.protocolVersion),
                 record.isSampleData ? "TRUE" : "FALSE"
             ]

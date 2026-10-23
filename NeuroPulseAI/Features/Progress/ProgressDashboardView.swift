@@ -201,7 +201,7 @@ public struct ProgressDashboardView: View {
                                     }
                                 }
                                 
-                                Text("\(record.secondaryScoreLabel) • \(record.qualityStatus.rawValue)")
+                                Text(recordSubtitle(for: record))
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
@@ -224,6 +224,14 @@ public struct ProgressDashboardView: View {
                 }
             }
         }
+    }
+    
+    private func recordSubtitle(for record: MotorSessionRecord) -> String {
+        var subText = "\(record.secondaryScoreLabel) • \(record.qualityStatus.rawValue)"
+        if let dev = record.meanCenterDeviationPoints {
+            subText += String(format: " • %.1f pt dev", dev)
+        }
+        return subText
     }
     
     // MARK: - Demo Data & Export Helpers

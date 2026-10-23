@@ -20,8 +20,11 @@ final class SessionExportServiceTests: XCTestCase {
                 primaryScoreValue: 5.8,
                 secondaryScoreLabel: "87 taps",
                 qualityStatus: .valid,
-                protocolVersion: "1.0",
-                isSampleData: false
+                protocolVersion: "2.0",
+                isSampleData: false,
+                meanCenterDeviationPoints: 4.5,
+                meanNormalizedCenterDeviationPercent: 14.06,
+                alternationAccuracyPercent: 98.0
             )
         ]
         
@@ -30,7 +33,8 @@ final class SessionExportServiceTests: XCTestCase {
         
         XCTAssertGreaterThanOrEqual(lines.count, 2)
         XCTAssertTrue(lines[0].contains("Session ID,Date,ISO Timestamp,Test Type"))
-        XCTAssertTrue(lines[1].contains("Finger Tapping,Right,15.00,5.8 Hz,5.8000,87 taps,Valid Session,1.0,FALSE"))
+        XCTAssertTrue(lines[0].contains("Mean Deviation Points,Normalized Deviation Percent,Alternation Accuracy Percent"))
+        XCTAssertTrue(lines[1].contains("Finger Tapping,Right,15.00,5.8 Hz,5.8000,87 taps,Valid Session,4.50,14.06,98.00,2.0,FALSE"))
     }
     
     func testFormulaInjectionMitigation() {

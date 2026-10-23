@@ -2,7 +2,8 @@
 //  TappingResultView.swift
 //  NeuroPulseAI
 //
-//  Detailed review of finger-tapping metrics, cadence consistency, and quality indicators.
+//  Detailed review of finger-tapping metrics, rhythm consistency,
+//  two-zone center deviation accuracy, and local persistence confirmation.
 //
 
 import SwiftUI
@@ -22,7 +23,13 @@ public struct TappingResultView: View {
                 // Header & Quality Badge
                 headerSection
                 
-                // Primary Metrics Grid
+                // Persistence Confirmation Banner
+                saveConfirmationBanner
+                
+                // Center-Deviation & Target Accuracy Card
+                centerDeviationSection
+                
+                // Primary Cadence Metrics Grid
                 metricsGridSection
                 
                 // Rhythm & Fatigue Analysis
@@ -61,7 +68,7 @@ public struct TappingResultView: View {
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.small) {
             HStack {
-                Text("FINGER TAPPING")
+                Text("TWO-ZONE FINGER TAPPING")
                     .font(.caption)
                     .fontWeight(.bold)
                     .tracking(1.2)
@@ -83,6 +90,144 @@ public struct TappingResultView: View {
         }
     }
     
+    private var saveConfirmationBanner: some View {
+        HStack(spacing: DesignTokens.Spacing.medium) {
+            ZStack {
+                Circle()
+                    .fill(Color.NeuroPulse.success.opacity(0.15))
+                    .frame(width: 36, height: 36)
+                Image(systemName: "checkmark.seal.fill")
+                    .font(.subheadline)
+                    .foregroundStyle(Color.NeuroPulse.success)
+            }
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Saved to On-Device History")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.primary)
+                Text("Record is securely stored on this device and available in Activity History.")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            
+            Spacer()
+        }
+        .padding(DesignTokens.Spacing.medium)
+        .background(Color.NeuroPulse.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+        .overlay(
+            RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
+                .stroke(Color.NeuroPulse.success.opacity(0.35), lineWidth: 1)
+        )
+    }
+    
+    private var centerDeviationSection: some View {
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
+            HStack {
+                Text("Target Accuracy & Center Deviation")
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                Spacer()
+                Image(systemName: "scope")
+                    .font(.subheadline)
+                    .foregroundStyle(Color.NeuroPulse.motorPrimary)
+            }
+            
+            VStack(spacing: DesignTokens.Spacing.medium) {
+                // Average Deviation Stat
+                HStack(alignment: .center) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Mean Center Deviation")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                        Text("Average Euclidean offset from expected target center")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    if let dev = metrics.meanCenterDeviationPoints {
+                        VStack(alignment: .trailing, spacing: 1) {
+                            Text(String(format: "%.1f pt", dev))
+                                .font(.title3)
+                                .fontWeight(.bold)
+                                .foregroundStyle(Color.NeuroPulse.motorPrimary)
+                            
+                            if let norm = metrics.meanNormalizedCenterDeviationPercent {
+                                Text(String(format: "%.1f%% radius", norm))
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    } else {
+                        Text("N/A")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                
+                Divider()
+                
+                // Alternation Accuracy
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Alternation Accuracy")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                        Text("Correct alternating taps / total attempts")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    if let acc = metrics.alternationAccuracyPercent {
+                        Text(String(format: "%.1f%%", acc))
+                            .font(.title3)
+                            .fontWeight(.bold)
+                            .foregroundStyle(acc >= 80.0 ? Color.NeuroPulse.success : Color.NeuroPulse.warning)
+                    } else {
+                        Text("N/A")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                
+                Divider()
+                
+                // Breakdown numbers
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Attempts Breakdown")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Text("\(metrics.correctAlternatingTaps) correct • \(metrics.incorrectTargetAttempts) wrong target • \(metrics.missedTargetAttempts) missed")
+                            .font(.footnote)
+                            .fontWeight(.medium)
+                    }
+                    Spacer()
+                }
+                
+                // Informational note
+                HStack(alignment: .top, spacing: 6) {
+                    Image(systemName: "info.circle")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    Text("Target accuracy is an exploratory geometric measurement in SwiftUI points. A lower deviation indicates touches landing closer to target centers.")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(.top, 2)
+            }
+            .padding(DesignTokens.Spacing.medium)
+            .background(Color.NeuroPulse.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+            .overlay(
+                RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
+                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+            )
+        }
+    }
+    
     private var metricsGridSection: some View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: DesignTokens.Spacing.medium) {
             metricCard(
@@ -93,7 +238,7 @@ public struct TappingResultView: View {
             )
             
             metricCard(
-                title: "Total Taps",
+                title: "Valid Alternations",
                 value: "\(metrics.tapCount)",
                 unit: "accepted taps",
                 icon: "hand.tap.fill"
@@ -258,6 +403,15 @@ public struct TappingResultView: View {
                 intervalStdDevMs: 24.2,
                 coefficientOfVariationPercent: 14.2,
                 fatigueRatio: 0.94,
+                meanCenterDeviationPoints: 5.4,
+                meanNormalizedCenterDeviationPercent: 16.8,
+                medianCenterDeviationPoints: 4.8,
+                maxCenterDeviationPoints: 12.1,
+                totalAttempts: 92,
+                correctAlternatingTaps: 88,
+                incorrectTargetAttempts: 3,
+                missedTargetAttempts: 1,
+                alternationAccuracyPercent: 95.7,
                 qualityStatus: .valid,
                 qualityExplanation: "Session meets quality criteria with stable pacing and full duration."
             )

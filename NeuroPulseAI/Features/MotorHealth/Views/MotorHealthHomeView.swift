@@ -81,20 +81,66 @@ public struct MotorHealthHomeView: View {
                         .foregroundStyle(.primary)
                     
                     NavigationLink {
-                        ProgressDashboardView()
+                        SavedRecordsView()
                     } label: {
                         HStack(spacing: DesignTokens.Spacing.medium) {
-                            Image(systemName: "chart.xyaxis.line")
-                                .font(.system(size: 28))
-                                .foregroundStyle(Color.NeuroPulse.motorPrimary)
+                            ZStack {
+                                Circle()
+                                    .fill(Color.NeuroPulse.motorPrimary.opacity(0.15))
+                                    .frame(width: 44, height: 44)
+                                Image(systemName: "clock.arrow.circlepath")
+                                    .font(.system(size: 20, weight: .semibold))
+                                    .foregroundStyle(Color.NeuroPulse.motorPrimary)
+                            }
                             
                             VStack(alignment: .leading, spacing: DesignTokens.Spacing.xSmall) {
-                                Text("View Trends & Progress")
+                                Text("Saved Assessment Records")
                                     .font(.subheadline)
                                     .fontWeight(.semibold)
                                     .foregroundStyle(.primary)
                                 
-                                Text("Review cadence history, RMSE deviation curves, and past attempts.")
+                                Text("Inspect previous alternating tapping deviations and spiral sessions.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(DesignTokens.Spacing.medium)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color.NeuroPulse.cardBackground)
+                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
+                                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                        )
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    
+                    NavigationLink {
+                        ProgressDashboardView()
+                    } label: {
+                        HStack(spacing: DesignTokens.Spacing.medium) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.NeuroPulse.brandTeal.opacity(0.15))
+                                    .frame(width: 44, height: 44)
+                                Image(systemName: "chart.xyaxis.line")
+                                    .font(.system(size: 20, weight: .semibold))
+                                    .foregroundStyle(Color.NeuroPulse.brandTeal)
+                            }
+                            
+                            VStack(alignment: .leading, spacing: DesignTokens.Spacing.xSmall) {
+                                Text("Measurement Trends & Progress")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.primary)
+                                
+                                Text("Review cadence trends, RMSE deviation curves, and charts.")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
