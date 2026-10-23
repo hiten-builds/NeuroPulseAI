@@ -954,5 +954,38 @@ During manual simulator testing, Terms & Conditions and Data-Sharing Consent app
   - Failed: **0**
 - **Total Tests Passing:** **76** (100% pass rate)
 
+---
 
+## Phase 7A Addendum — Authentication Window Routing Fix & Read Mind Waves UI Mode
 
+### 1. Issue A: Authentication Window Routing Fix
+- **Root Cause:** In `WelcomeLandingView.swift`, presentation was previously driven by a single Boolean state sheet (`$showingAuthSheet`) paired with `AuthenticationView(initialMode: initialAuthMode)`. SwiftUI reused the cached `@State private var isRegisterMode = false` instance when presenting, causing both **Sign In** and **Create Account** to render the Sign In view.
+- **Architectural Solution:**
+  - Created dedicated `SignInView.swift` (`"Welcome Back"`, email/password inputs, Sign In button, switch to registration link).
+  - Created dedicated `CreateAccountView.swift` (`"Create Your Account"`, email/password/confirm-password inputs, validation, Create Account button, switch to sign-in link).
+  - Introduced `AuthDestination: String, Identifiable` (`.signIn`, `.createAccount`) in `WelcomeLandingView.swift`.
+  - Replaced Boolean sheet with `.sheet(item: $activeAuthDestination)` to guarantee separate view identity instantiation with zero state reuse collision.
+  - Full regression preservation: both flows integrate with `AuthManager`'s versioned Terms & Conditions (`termsRequired`), privacy consent (`dataSharingConsentRequired`), account isolation, and sign-out logic.
+
+### 2. Feature B: Third Home Mode — Read Mind Waves
+- **Home Integration:**
+  - Added third `ModeCardView` to `HomeView.swift`:
+    - Title: **Read Mind Waves**
+    - Category Badge: **BRAIN WAVES**
+    - Subtitle: *"Connect an EEG headset to explore your brain wave activity."*
+    - Styling: Native NeuroPulse design system tokens (`Color.NeuroPulse.brandTeal`, `mindEaseSecondary`).
+  - Routes directly to dedicated `ReadMindWavesLandingView`.
+- **Landing Page Experience:**
+  - Created `ReadMindWavesLandingView.swift`:
+    - Hero visual with concentric ambient wave rings and brain profile symbol.
+    - Title: *"Explore Your Brain Activity"*.
+    - Primary CTA: **Connect EEG Headset**.
+    - Extensible `EEGConnectionState` model (`.notConnected`, `.headsetNotConnected`).
+    - Truthful UI status presentation: Initial state shows `"Not Connected"`. After tapping connect, displays `"Headset Not Connected"` with clear guidance: *"No compatible EEG headset was detected. Ensure your headset is powered on and in pairing mode."*
+    - Frequency overview: Alpha (8–12 Hz), Beta (13–30 Hz), Theta (4–8 Hz), Delta (0.5–4 Hz).
+    - Informational section explaining future non-invasive microvolt sensing.
+    - Explicit non-diagnostic disclaimer notice.
+  - **EEG Scope Guarantee:** Strictly UI-only. Zero CoreBluetooth framework imports, zero peripheral scanning, zero permissions requests, zero fake EEG streaming.
+- **Automated Test Coverage:**
+  - Added 10 tests in `AuthRoutingAndMindWavesTests.swift` covering destination routing, separate view types, backend auth preservation, terms & consent flow preservation, `EEGConnectionState` initial and post-attempt states, state transitions, and `HomeView` mode presence.
+  - Total automated tests passing: **72 iOS tests + 14 backend tests = 86 total tests (100% pass rate)**.

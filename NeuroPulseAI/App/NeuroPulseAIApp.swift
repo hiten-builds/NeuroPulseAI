@@ -14,25 +14,53 @@ import SwiftUI
 @main
 struct NeuroPulseAIApp: App {
     @StateObject private var authManager = AuthManager.shared
-    
+
+    private var screenOverride: String? {
+        ProcessInfo.processInfo.environment["UI_SCREEN"]
+    }
+
     var body: some Scene {
         WindowGroup {
             Group {
-                switch authManager.flowState {
-                case .welcome:
-                    WelcomeLandingView()
-                case .termsRequired:
-                    NavigationStack {
-                        TermsAndConditionsView()
+                if let screen = screenOverride {
+                    switch screen {
+                    case "signin":
+                        SignInView()
+                    case "create_account":
+                        CreateAccountView()
+                    case "read_mind_waves":
+                        NavigationStack {
+                            ReadMindWavesLandingView(initialState: .notConnected)
+                        }
+                    case "read_mind_waves_attempted":
+                        NavigationStack {
+                            ReadMindWavesLandingView(initialState: .headsetNotConnected)
+                        }
+                    default:
+                        rootFlowView
                     }
-                case .dataSharingConsentRequired:
-                    NavigationStack {
-                        PersonalizationConsentView()
-                    }
-                case .localOnly, .ready:
-                    HomeView()
+                } else {
+                    rootFlowView
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var rootFlowView: some View {
+        switch authManager.flowState {
+        case .welcome:
+            WelcomeLandingView()
+        case .termsRequired:
+            NavigationStack {
+                TermsAndConditionsView()
+            }
+        case .dataSharingConsentRequired:
+            NavigationStack {
+                PersonalizationConsentView()
+            }
+        case .localOnly, .ready:
+            HomeView()
         }
     }
 }

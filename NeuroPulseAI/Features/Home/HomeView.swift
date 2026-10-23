@@ -13,19 +13,19 @@ public struct HomeView: View {
     @ObservedObject private var authManager = AuthManager.shared
     @ObservedObject private var consentManager = ConsentManager.shared
     @State private var showingAccountSettings = false
-    
+
     public init() {}
-    
+
     public var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.large) {
                     // MARK: - App Brand Header & Account Settings Action
                     headerSection
-                    
+
                     // MARK: - Privacy & Architecture Status Pill
                     privacyStatusPill
-                    
+
                     // MARK: - Mode Selection Cards
                     VStack(spacing: DesignTokens.Spacing.medium) {
                         NavigationLink {
@@ -44,7 +44,7 @@ public struct HomeView: View {
                             )
                         }
                         .buttonStyle(PlainButtonStyle())
-                        
+
                         NavigationLink {
                             MindEaseHomeView()
                         } label: {
@@ -61,7 +61,25 @@ public struct HomeView: View {
                             )
                         }
                         .buttonStyle(PlainButtonStyle())
-                        
+
+                        // Mode 3: Read Mind Waves
+                        NavigationLink {
+                            ReadMindWavesLandingView()
+                        } label: {
+                            ModeCardView(
+                                title: "Read Mind Waves",
+                                category: "Brain Waves",
+                                subtitle: "Connect an EEG headset to explore your brain wave activity.",
+                                iconName: "waveform.path.ecg",
+                                gradientColors: [
+                                    Color.NeuroPulse.brandTeal,
+                                    Color.NeuroPulse.mindEaseSecondary
+                                ],
+                                features: ["Brain Waves", "Headset Pairing", "EEG Activity"]
+                            )
+                        }
+                        .buttonStyle(PlainButtonStyle())
+
                         // Recommendations Card
                         NavigationLink {
                             RecommendationsView()
@@ -81,7 +99,7 @@ public struct HomeView: View {
                                         .font(.system(size: 20, weight: .semibold))
                                         .foregroundStyle(.white)
                                 }
-                                
+
                                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.xSmall) {
                                     HStack {
                                         Text("Recommendations")
@@ -104,7 +122,7 @@ public struct HomeView: View {
                                         .foregroundStyle(.secondary)
                                         .fixedSize(horizontal: false, vertical: true)
                                 }
-                                
+
                                 Image(systemName: "chevron.right")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
@@ -119,7 +137,7 @@ public struct HomeView: View {
                             )
                         }
                         .buttonStyle(PlainButtonStyle())
-                        
+
                         // Saved Records Card
                         NavigationLink {
                             SavedRecordsView()
@@ -133,7 +151,7 @@ public struct HomeView: View {
                                         .font(.system(size: 20, weight: .semibold))
                                         .foregroundStyle(Color.NeuroPulse.brandTeal)
                                 }
-                                
+
                                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.xSmall) {
                                     HStack {
                                         Text("Activity History")
@@ -153,7 +171,7 @@ public struct HomeView: View {
                                         .foregroundStyle(.secondary)
                                         .fixedSize(horizontal: false, vertical: true)
                                 }
-                                
+
                                 Image(systemName: "chevron.right")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
@@ -169,7 +187,7 @@ public struct HomeView: View {
                         }
                         .buttonStyle(PlainButtonStyle())
                     }
-                    
+
                     // MARK: - Non-Diagnostic Safety Disclosure
                     DisclaimerBanner()
                 }
@@ -193,15 +211,15 @@ public struct HomeView: View {
             }
         }
     }
-    
+
     // MARK: - Computed Properties
-    
+
     private var isCloudPersonalized: Bool {
         return authManager.currentMode == .authenticated && consentManager.isPersonalizationConsented
     }
-    
+
     // MARK: - Subviews
-    
+
     private var headerSection: some View {
         HStack(alignment: .center, spacing: DesignTokens.Spacing.medium) {
             ZStack {
@@ -215,27 +233,27 @@ public struct HomeView: View {
                     )
                     .frame(width: 48, height: 48)
                     .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.35), radius: 8, x: 0, y: 4)
-                
+
                 Image(systemName: "waveform.path.ecg")
                     .font(.system(size: 22, weight: .bold))
                     .foregroundStyle(.white)
             }
             .accessibilityHidden(true)
-            
+
             VStack(alignment: .leading, spacing: 2) {
                 Text("NeuroPulse AI")
                     .font(.title)
                     .fontWeight(.bold)
                     .foregroundStyle(.primary)
-                
+
                 Text("Neurological Health & Mindful Wellness")
                     .font(.caption)
                     .fontWeight(.medium)
                     .foregroundStyle(.secondary)
             }
-            
+
             Spacer()
-            
+
             // Account & Privacy Button
             Button {
                 showingAccountSettings = true
@@ -256,20 +274,20 @@ public struct HomeView: View {
             .accessibilityLabel("Account and Privacy Settings")
         }
     }
-    
+
     private var privacyStatusPill: some View {
         HStack(spacing: DesignTokens.Spacing.small) {
             Image(systemName: isCloudPersonalized ? "cloud.shield.fill" : "lock.shield.fill")
                 .font(.caption)
                 .foregroundStyle(Color.NeuroPulse.success)
-            
+
             Text(statusTitle)
                 .font(.caption2)
                 .fontWeight(.semibold)
                 .foregroundStyle(.secondary)
-            
+
             Spacer()
-            
+
             Text(statusSubtitle)
                 .font(.caption2)
                 .fontWeight(.medium)
@@ -284,7 +302,7 @@ public struct HomeView: View {
                 .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
         )
     }
-    
+
     private var statusTitle: String {
         switch authManager.currentMode {
         case .localOnly:
@@ -295,7 +313,7 @@ public struct HomeView: View {
             return "Local-Only Operation"
         }
     }
-    
+
     private var statusSubtitle: String {
         switch authManager.currentMode {
         case .localOnly:

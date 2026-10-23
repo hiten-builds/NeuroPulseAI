@@ -17,7 +17,7 @@ public struct AuthenticationView: View {
     @State private var password: String = ""
     
     public init(initialMode: WelcomeLandingView.AuthSheetMode = .signIn) {
-        _isRegisterMode = State(initialValue: initialMode == .register)
+        _isRegisterMode = State(initialValue: initialMode == .createAccount)
     }
     
     public var body: some View {

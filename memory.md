@@ -20,7 +20,13 @@ This file is intentionally kept lightweight. Record durable decisions, verified 
 - Backend automated tests: 14 pytest integration tests in `backend/tests/` covering Argon2id auth, duplicate handling, token validation, user isolation, consent receipts/lifecycle, sync idempotency, and explainable recommendations (100% pass rate).
 - Phase 7B Defect Resolution complete: deterministic newest-first history sorting with tie-breaker, account-scoped session isolation (`accountID: String?`), versioned Terms & Conditions prompt & per-account acceptance (`TermsManager`, `TermsAndConditionsView`), and per-account data-sharing consent isolation (`ConsentManager`).
 - Phase 7C Blocking Onboarding State Machine complete: resolved transient Terms & Consent bug by promoting flow to top-level `AppFlowState` (`.welcome`, `.localOnly`, `.termsRequired`, `.dataSharingConsentRequired`, `.ready`) routed in `NeuroPulseAIApp`. Terms & Conditions and Data-Sharing Consent screens are strictly non-dismissible blocking checkpoints (`.interactiveDismissDisabled(true)`) with atomic persistence before advancement, double-submission protection, and app relaunch/backgrounding resilience. 62 iOS unit/integration tests and 14 backend pytest tests passing.
-- Active branch: `feature/phase-7a-account-consent-backend`.
+- Phase 7D Authentication Window Routing Fix & Read Mind Waves UI Mode complete:
+  - Fixed authentication window routing collision in `WelcomeLandingView.swift`: separated into dedicated `SignInView.swift` and `CreateAccountView.swift` presented via item-based `.sheet(item: $activeAuthDestination)`. Preserves Terms & Conditions and Data-Sharing Consent checkpoints.
+  - Implemented third Home mode: "Read Mind Waves" (`ModeCardView` with `Color.NeuroPulse.brandTeal` and `mindEaseSecondary`).
+  - Added dedicated `ReadMindWavesLandingView.swift` and `EEGConnectionState.swift` UI state model.
+  - Strictly UI-only EEG experience: initial state shows "Not Connected", tapping "Connect EEG Headset" updates state to "Headset Not Connected" without attempting any Bluetooth scanning or requesting hardware permissions.
+  - Automated tests: 72 iOS unit/integration tests and 14 backend pytest tests passing (86 total, 100% pass rate).
+- Active branch: `main`.
 
 ## Confirmed product decisions
 

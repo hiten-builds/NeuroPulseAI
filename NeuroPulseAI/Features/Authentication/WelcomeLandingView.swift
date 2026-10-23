@@ -12,29 +12,31 @@ import SwiftUI
 
 public struct WelcomeLandingView: View {
     @ObservedObject private var authManager = AuthManager.shared
-    @State private var showingAuthSheet = false
-    @State private var initialAuthMode: AuthSheetMode = .signIn
-    
-    public enum AuthSheetMode {
-        case signIn
-        case register
+    public enum AuthDestination: String, Identifiable {
+        case signIn = "signIn"
+        case createAccount = "createAccount"
+
+        public var id: String { rawValue }
     }
-    
+    public typealias AuthSheetMode = AuthDestination
+
+    @State private var activeAuthDestination: AuthDestination? = nil
+
     public init() {}
-    
+
     public var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: DesignTokens.Spacing.xLarge) {
                     // MARK: - App Branding
                     brandingHeader
-                    
+
                     // MARK: - Core Capabilities Overview
                     capabilitiesSection
-                    
+
                     // MARK: - Action Choices
                     actionsSection
-                    
+
                     // MARK: - Privacy Guarantee Banner
                     privacyDisclosure
                 }
@@ -43,14 +45,23 @@ public struct WelcomeLandingView: View {
                 .padding(.bottom, DesignTokens.Spacing.xxLarge)
             }
             .background(Color.NeuroPulse.surfaceBackground.ignoresSafeArea())
-            .sheet(isPresented: $showingAuthSheet) {
-                AuthenticationView(initialMode: initialAuthMode)
+            .sheet(item: $activeAuthDestination) { destination in
+                switch destination {
+                case .signIn:
+                    SignInView(onSwitchToRegister: {
+                        activeAuthDestination = .createAccount
+                    })
+                case .createAccount:
+                    CreateAccountView(onSwitchToSignIn: {
+                        activeAuthDestination = .signIn
+                    })
+                }
             }
         }
     }
-    
+
     // MARK: - Subviews
-    
+
     private var brandingHeader: some View {
         VStack(spacing: DesignTokens.Spacing.small) {
             ZStack {
@@ -64,13 +75,13 @@ public struct WelcomeLandingView: View {
                     )
                     .frame(width: 80, height: 80)
                     .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.3), radius: 12, y: 6)
-                
+
                 Image(systemName: "waveform.path.ecg")
                     .font(.system(size: 38, weight: .bold))
                     .foregroundStyle(.white)
             }
             .padding(.bottom, DesignTokens.Spacing.xSmall)
-            
+
             Text("NeuroPulseAI")
                 .font(.system(size: 32, weight: .bold, design: .rounded))
                 .foregroundStyle(
@@ -80,7 +91,7 @@ public struct WelcomeLandingView: View {
                         endPoint: .trailing
                     )
                 )
-            
+
             Text("Unified Motor Health & Mindful Wellness")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -88,7 +99,7 @@ public struct WelcomeLandingView: View {
         }
         .padding(.top, DesignTokens.Spacing.medium)
     }
-    
+
     private var capabilitiesSection: some View {
         VStack(spacing: DesignTokens.Spacing.medium) {
             HStack(spacing: DesignTokens.Spacing.medium) {
@@ -100,7 +111,7 @@ public struct WelcomeLandingView: View {
                         .font(.system(size: 20, weight: .semibold))
                         .foregroundStyle(Color.NeuroPulse.motorPrimary)
                 }
-                
+
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Motor Health Assessments")
                         .font(.headline)
@@ -118,7 +129,7 @@ public struct WelcomeLandingView: View {
                 RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
                     .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
             )
-            
+
             HStack(spacing: DesignTokens.Spacing.medium) {
                 ZStack {
                     RoundedRectangle(cornerRadius: DesignTokens.Radius.small)
@@ -128,7 +139,7 @@ public struct WelcomeLandingView: View {
                         .font(.system(size: 20, weight: .semibold))
                         .foregroundStyle(Color.NeuroPulse.mindEasePrimary)
                 }
-                
+
                 VStack(alignment: .leading, spacing: 2) {
                     Text("MindEase Wellness Tools")
                         .font(.headline)
@@ -148,13 +159,12 @@ public struct WelcomeLandingView: View {
             )
         }
     }
-    
+
     private var actionsSection: some View {
         VStack(spacing: DesignTokens.Spacing.medium) {
             // Mode A Action: Sign In
             Button {
-                initialAuthMode = .signIn
-                showingAuthSheet = true
+                activeAuthDestination = .signIn
             } label: {
                 HStack {
                     Image(systemName: "person.badge.key.fill")
@@ -176,11 +186,10 @@ public struct WelcomeLandingView: View {
                 .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.3), radius: 8, y: 4)
             }
             .accessibilityLabel("Sign in to your account")
-            
+
             // Mode A Action: Create Account
             Button {
-                initialAuthMode = .register
-                showingAuthSheet = true
+                activeAuthDestination = .createAccount
             } label: {
                 HStack {
                     Image(systemName: "person.crop.circle.badge.plus")
@@ -199,7 +208,7 @@ public struct WelcomeLandingView: View {
                 )
             }
             .accessibilityLabel("Create a new account")
-            
+
             // Divider with OR
             HStack {
                 Rectangle().fill(Color.NeuroPulse.subtleBorder).frame(height: 1)
@@ -211,7 +220,7 @@ public struct WelcomeLandingView: View {
                 Rectangle().fill(Color.NeuroPulse.subtleBorder).frame(height: 1)
             }
             .padding(.vertical, DesignTokens.Spacing.xSmall)
-            
+
             // Mode B Action: Continue Locally
             Button {
                 authManager.continueLocally()
@@ -241,13 +250,13 @@ public struct WelcomeLandingView: View {
             .accessibilityLabel("Continue using the app locally without an account")
         }
     }
-    
+
     private var privacyDisclosure: some View {
         HStack(alignment: .top, spacing: DesignTokens.Spacing.small) {
             Image(systemName: "lock.shield.fill")
                 .font(.system(size: 16))
                 .foregroundStyle(Color.NeuroPulse.brandTeal)
-            
+
             VStack(alignment: .leading, spacing: 2) {
                 Text("Privacy Notice")
                     .font(.caption)
