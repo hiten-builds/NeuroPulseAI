@@ -18,7 +18,13 @@ public struct ProgressDashboardView: View {
     private var filteredRecords: [MotorSessionRecord] {
         store.records
             .filter { $0.testType == selectedTest && $0.testedHand == selectedHand }
-            .sorted(by: { $0.date < $1.date })
+            .sorted(by: { $0.date != $1.date ? $0.date < $1.date : $0.id.uuidString < $1.id.uuidString })
+    }
+    
+    private var loggedAttemptsRecords: [MotorSessionRecord] {
+        store.records
+            .filter { $0.testType == selectedTest && $0.testedHand == selectedHand }
+            .sorted(by: { $0.date != $1.date ? $0.date > $1.date : $0.id.uuidString > $1.id.uuidString })
     }
     
     public var body: some View {
@@ -179,7 +185,7 @@ public struct ProgressDashboardView: View {
                     .foregroundStyle(.secondary)
             } else {
                 VStack(spacing: DesignTokens.Spacing.small) {
-                    ForEach(filteredRecords.reversed()) { record in
+                    ForEach(loggedAttemptsRecords) { record in
                         HStack(spacing: DesignTokens.Spacing.medium) {
                             Circle()
                                 .fill(record.qualityStatus == .valid ? Color.NeuroPulse.success : Color.NeuroPulse.warning)

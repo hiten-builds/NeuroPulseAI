@@ -19,7 +19,15 @@ public struct SessionExportService {
         
         let isoFormatter = ISO8601DateFormatter()
         
-        for record in records {
+        // Sort newest-first with deterministic tie-breaker
+        let sortedRecords = records.sorted(by: {
+            if $0.date != $1.date {
+                return $0.date > $1.date
+            }
+            return $0.id.uuidString > $1.id.uuidString
+        })
+        
+        for record in sortedRecords {
             let meanDevStr = record.meanCenterDeviationPoints != nil ? String(format: "%.2f", record.meanCenterDeviationPoints!) : ""
             let normDevStr = record.meanNormalizedCenterDeviationPercent != nil ? String(format: "%.2f", record.meanNormalizedCenterDeviationPercent!) : ""
             let accStr = record.alternationAccuracyPercent != nil ? String(format: "%.2f", record.alternationAccuracyPercent!) : ""

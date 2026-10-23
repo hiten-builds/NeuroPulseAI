@@ -79,9 +79,43 @@ NeuroPulseAI/
 
 ### Using Command Line
 ```bash
-xcodebuild -project NeuroPulseAI.xcodeproj \
-           -scheme NeuroPulseAI \
-           -sdk iphonesimulator \
-           -destination "generic/platform=iOS Simulator" \
-           clean build CODE_SIGNING_ALLOWED=NO
+# Clean and build iOS application
+xcodebuild -project NeuroPulseAI.xcodeproj -scheme NeuroPulseAI -destination 'platform=iOS Simulator,id=ACTUAL_SIMULATOR_ID' clean build
+
+# Run automated iOS tests
+xcodebuild -project NeuroPulseAI.xcodeproj -scheme NeuroPulseAI -destination 'platform=iOS Simulator,id=ACTUAL_SIMULATOR_ID' test
 ```
+
+---
+
+## Phase 7A: Account Authentication, Data Consent, and Recommendations
+
+NeuroPulseAI Phase 7A introduces a privacy-first account foundation with two equally supported operating modes:
+
+### Operating Modes
+1. **Mode A — Data Sharing Consented**: User creates an account or signs in. When explicit, purpose-specific consent (`v1.0`) is granted for personalization, newly completed assessment and wellness records synchronize securely to the FastAPI backend. Explainable recommendations with evidence metrics are generated. Users can inspect or withdraw consent and request remote data deletion in Settings.
+2. **Mode B — Local-Only Operation**: User selects "Continue Locally" without creating an account. All motor health assessments (two-zone tapping with center deviation, spiral tracing) and MindEase wellness activities remain 100% functional, saved locally on-device. Zero activity records are uploaded to the cloud.
+
+### Backend Setup (`backend/`)
+The backend is built with FastAPI, SQLAlchemy (SQLite default for local dev, PostgreSQL ready), Argon2id password hashing, and PyJWT authentication.
+
+```bash
+# 1. Create and activate virtual environment
+python3 -m venv backend/.venv
+source backend/.venv/bin/activate
+
+# 2. Install dependencies
+pip install -r backend/requirements.txt
+
+# 3. Configure environment
+cp backend/.env.example backend/.env
+
+# 4. Run backend automated tests (14 tests covering auth, consent, sync idempotency, user isolation, recommendations)
+PYTHONPATH=. pytest backend/tests -v
+
+# 5. Start development backend server (accessible to iOS Simulator at http://127.0.0.1:8000)
+uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
+```
+
+Verify backend health at `http://127.0.0.1:8000/health`.
+

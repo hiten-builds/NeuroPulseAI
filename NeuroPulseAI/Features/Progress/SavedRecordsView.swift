@@ -45,6 +45,7 @@ public struct UnifiedActivityItem: Identifiable {
 public struct SavedRecordsView: View {
     @ObservedObject private var motorStore = MotorSessionStore.shared
     @ObservedObject private var wellnessStore = WellnessSessionStore.shared
+    @ObservedObject private var authManager = AuthManager.shared
     
     @State private var selectedFilter: ActivityHistoryFilter = .all
     @State private var selectedRecordForDetail: UnifiedActivityItem? = nil
@@ -149,8 +150,13 @@ public struct SavedRecordsView: View {
             }
         }
         
-        // Sort reverse chronological
-        return items.sorted(by: { $0.date > $1.date })
+        // Sort reverse chronological deterministically (newest first, id tie-breaker)
+        return items.sorted(by: {
+            if $0.date != $1.date {
+                return $0.date > $1.date
+            }
+            return $0.id > $1.id
+        })
     }
     
     public var body: some View {
@@ -213,7 +219,9 @@ public struct SavedRecordsView: View {
                 Image(systemName: "clock.arrow.circlepath")
                     .font(.caption)
                     .foregroundStyle(Color.NeuroPulse.brandTeal)
-                Text("LOCAL ON-DEVICE HISTORY")
+                Text(authManager.currentMode == .authenticated
+                     ? "ACCOUNT HISTORY • \(authManager.currentUser?.email ?? "USER")"
+                     : "LOCAL ON-DEVICE HISTORY")
                     .font(.caption)
                     .fontWeight(.bold)
                     .tracking(1.2)
@@ -225,7 +233,9 @@ public struct SavedRecordsView: View {
                 .fontWeight(.bold)
                 .foregroundStyle(.primary)
             
-            Text("Review completed Motor Health assessments and MindEase wellness moments stored locally on this device.")
+            Text(authManager.currentMode == .authenticated
+                 ? "Review your account's completed fine-motor assessments and MindEase sessions."
+                 : "Review completed Motor Health assessments and MindEase wellness moments stored locally on this device.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }

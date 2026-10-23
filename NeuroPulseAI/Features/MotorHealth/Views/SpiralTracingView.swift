@@ -311,6 +311,7 @@ public struct SpiralTracingView: View {
             
             await MainActor.run {
                 let session = MotorSessionRecord(
+                    accountID: AuthManager.shared.currentUser?.id,
                     date: Date(),
                     testType: .spiral,
                     testedHand: hand,

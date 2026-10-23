@@ -191,32 +191,32 @@ Build a complete but separate guided wellness experience.
 - [ ] Wellness ratings are not treated as motor or diagnostic labels.
 - [ ] App builds and flows are tested.
 
-## Phase 7 — Backend and consented data contribution (future)
+## Phase 7A — Account Authentication, Optional Data Consent, and Personalized Recommendations (COMPLETED)
 
 ### Objective
-Add a secure multi-user service only when the local MVP is stable and cloud sharing is approved.
+Add a secure multi-user backend foundation, two equally supported operating modes (Local-Only vs Consented), purpose-specific versioned consent, idempotent session synchronization, and explainable recommendations while strictly preserving local storage and MVP assessment features.
 
 ### Features/tasks
-- Define account/authentication and resource-ownership strategy.
-- Implement FastAPI endpoints and PostgreSQL migrations.
-- Implement specific consent scopes for app use, report sharing, and model-training contributions.
-- Design retention, revocation, deletion, and raw-data storage policies.
-- Implement secure upload, validation, and idempotent handling.
-
-### Deliverables
-- Documented API contract.
-- Secure backend and database schema.
-- Consent and data-governance workflow.
-
-### Dependencies
-- MVP flows and data models are stable; privacy/security requirements have been reviewed.
+- Implement Welcome landing screen supporting both "Sign In / Register" and prominent "Continue Locally".
+- Implement secure email/password authentication using Argon2id password hashing and PyJWT tokens on FastAPI backend (`backend/`).
+- Secure iOS Keychain storage (`KeychainHelper.swift`) for tokens and sensitive session data.
+- Implement purpose-specific versioned data consent (`v1.0`) for personalized recommendations.
+- Keep account creation and data-sharing permission strictly separate.
+- Implement server-side consent enforcement: reject session uploads with 403 Forbidden if consent is absent, declined, or withdrawn.
+- Implement idempotent sync service (`SyncService.swift` and `/sessions/sync`) tracking local IDs so duplicate uploads are avoided.
+- Implement explainable recommendations: data-driven insights with evidence metrics for consented accounts, deterministic on-device baseline guidance for local-only users.
+- Add Account & Privacy settings screen with consent review, consent withdrawal, and remote data deletion (`DELETE /account/data`).
+- Comprehensive automated tests: 14 backend pytest tests + 6 new iOS unit tests (31/31 passed).
 
 ### Completion checklist
-- [ ] Auth and ownership checks are tested.
-- [ ] Research consent is separate from basic app access.
-- [ ] No raw health data or secrets are logged/committed.
-- [ ] Retention and revocation behavior is documented.
-- [ ] Deployment and backup approach is documented.
+- [x] Auth and ownership checks are tested.
+- [x] Consent is separate from basic app access and account creation.
+- [x] Declining consent does not disable or reduce motor assessment or wellness features.
+- [x] No raw health data or secrets are logged or committed.
+- [x] Idempotent session synchronization implemented and verified.
+- [x] Consent withdrawal and remote-data deletion workflow implemented and verified.
+- [x] Backend startup, migrations, and health check verified.
+
 
 ## Phase 8 — XGBoost model pipeline (future)
 

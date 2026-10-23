@@ -167,6 +167,7 @@ public struct MindfulTracingView: View {
     private func finishSession() {
         let duration = Date().timeIntervalSince(startTimestamp)
         let record = WellnessSessionRecord(
+            accountID: AuthManager.shared.currentUser?.id,
             activityType: .mindfulTracing,
             durationSeconds: duration,
             completionStatus: "Completed"

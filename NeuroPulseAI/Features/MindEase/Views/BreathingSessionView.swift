@@ -350,6 +350,7 @@ public struct BreathingSessionView: View {
         guard !hasSaved else { return }
         hasSaved = true
         let session = WellnessSessionRecord(
+            accountID: AuthManager.shared.currentUser?.id,
             activityType: .breathing,
             durationSeconds: elapsedSeconds,
             completionStatus: status,

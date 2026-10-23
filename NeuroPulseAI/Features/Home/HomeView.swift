@@ -3,19 +3,24 @@
 //  NeuroPulseAI
 //
 //  Main application dashboard providing discovery and navigation to
-//  Motor Health assessments and MindEase wellness tools.
+//  Motor Health assessments, MindEase wellness tools, Saved Records,
+//  and Personalized Recommendations.
 //
 
 import SwiftUI
 
 public struct HomeView: View {
+    @ObservedObject private var authManager = AuthManager.shared
+    @ObservedObject private var consentManager = ConsentManager.shared
+    @State private var showingAccountSettings = false
+    
     public init() {}
     
     public var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.large) {
-                    // MARK: - App Brand Header
+                    // MARK: - App Brand Header & Account Settings Action
                     headerSection
                     
                     // MARK: - Privacy & Architecture Status Pill
@@ -57,6 +62,65 @@ public struct HomeView: View {
                         }
                         .buttonStyle(PlainButtonStyle())
                         
+                        // Recommendations Card
+                        NavigationLink {
+                            RecommendationsView()
+                        } label: {
+                            HStack(spacing: DesignTokens.Spacing.medium) {
+                                ZStack {
+                                    Circle()
+                                        .fill(
+                                            LinearGradient(
+                                                colors: [Color.NeuroPulse.brandTeal, Color.NeuroPulse.motorPrimary],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            )
+                                        )
+                                        .frame(width: 44, height: 44)
+                                    Image(systemName: "sparkles")
+                                        .font(.system(size: 20, weight: .semibold))
+                                        .foregroundStyle(.white)
+                                }
+                                
+                                VStack(alignment: .leading, spacing: DesignTokens.Spacing.xSmall) {
+                                    HStack {
+                                        Text("Recommendations")
+                                            .font(.headline)
+                                            .foregroundStyle(.primary)
+                                        Spacer()
+                                        Text(isCloudPersonalized ? "Cloud Personalized" : "Local Guidance")
+                                            .font(.caption2)
+                                            .fontWeight(.semibold)
+                                            .foregroundStyle(isCloudPersonalized ? Color.NeuroPulse.brandTeal : Color.NeuroPulse.motorPrimary)
+                                            .padding(.horizontal, DesignTokens.Spacing.small)
+                                            .padding(.vertical, 2)
+                                            .background(
+                                                Capsule()
+                                                    .fill((isCloudPersonalized ? Color.NeuroPulse.brandTeal : Color.NeuroPulse.motorPrimary).opacity(0.12))
+                                            )
+                                    }
+                                    Text("Explainable pacing suggestions and recovery insights based on your activities.")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                                
+                                Image(systemName: "chevron.right")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            .padding(DesignTokens.Spacing.medium)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color.NeuroPulse.cardBackground)
+                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
+                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                            )
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        
+                        // Saved Records Card
                         NavigationLink {
                             SavedRecordsView()
                         } label: {
@@ -115,7 +179,25 @@ public struct HomeView: View {
             }
             .background(Color.NeuroPulse.surfaceBackground.ignoresSafeArea())
             .toolbar(.hidden, for: .navigationBar)
+            .sheet(isPresented: $showingAccountSettings) {
+                NavigationStack {
+                    AccountSettingsView()
+                        .toolbar {
+                            ToolbarItem(placement: .topBarLeading) {
+                                Button("Done") {
+                                    showingAccountSettings = false
+                                }
+                            }
+                        }
+                }
+            }
         }
+    }
+    
+    // MARK: - Computed Properties
+    
+    private var isCloudPersonalized: Bool {
+        return authManager.currentMode == .authenticated && consentManager.isPersonalizationConsented
     }
     
     // MARK: - Subviews
@@ -153,25 +235,42 @@ public struct HomeView: View {
             }
             
             Spacer()
+            
+            // Account & Privacy Button
+            Button {
+                showingAccountSettings = true
+            } label: {
+                ZStack {
+                    Circle()
+                        .fill(Color.NeuroPulse.cardBackground)
+                        .frame(width: 40, height: 40)
+                    Image(systemName: authManager.currentMode == .authenticated ? "person.crop.circle.fill" : "person.crop.circle")
+                        .font(.system(size: 22))
+                        .foregroundStyle(Color.NeuroPulse.brandTeal)
+                }
+                .overlay(
+                    Circle()
+                        .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                )
+            }
+            .accessibilityLabel("Account and Privacy Settings")
         }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("NeuroPulse AI, Neurological Health and Mindful Wellness")
     }
     
     private var privacyStatusPill: some View {
         HStack(spacing: DesignTokens.Spacing.small) {
-            Image(systemName: "lock.shield.fill")
+            Image(systemName: isCloudPersonalized ? "cloud.shield.fill" : "lock.shield.fill")
                 .font(.caption)
                 .foregroundStyle(Color.NeuroPulse.success)
             
-            Text("On-Device Local Processing")
+            Text(statusTitle)
                 .font(.caption2)
                 .fontWeight(.semibold)
                 .foregroundStyle(.secondary)
             
             Spacer()
             
-            Text("Private & Offline")
+            Text(statusSubtitle)
                 .font(.caption2)
                 .fontWeight(.medium)
                 .foregroundStyle(Color.NeuroPulse.success)
@@ -184,8 +283,28 @@ public struct HomeView: View {
             Capsule()
                 .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
         )
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("On-device local processing. Private and offline.")
+    }
+    
+    private var statusTitle: String {
+        switch authManager.currentMode {
+        case .localOnly:
+            return "Local-Only Operation"
+        case .authenticated:
+            return consentManager.isPersonalizationConsented ? "Authenticated Account" : "Authenticated (Local Storage)"
+        case .welcome:
+            return "Local-Only Operation"
+        }
+    }
+    
+    private var statusSubtitle: String {
+        switch authManager.currentMode {
+        case .localOnly:
+            return "Private & On-Device"
+        case .authenticated:
+            return consentManager.isPersonalizationConsented ? "Cloud Personalized" : "Uploads Blocked"
+        case .welcome:
+            return "Private & On-Device"
+        }
     }
 }
 

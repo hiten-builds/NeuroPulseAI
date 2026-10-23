@@ -220,6 +220,7 @@ public struct MindfulnessMeditationView: View {
         }
         hasSaved = true
         let record = WellnessSessionRecord(
+            accountID: AuthManager.shared.currentUser?.id,
             activityType: .meditation,
             durationSeconds: elapsedSeconds,
             completionStatus: elapsedSeconds >= totalSeconds ? "Completed" : "Self-Directed"

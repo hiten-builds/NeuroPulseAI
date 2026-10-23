@@ -3,8 +3,8 @@
 //  NeuroPulseAI
 //
 //  Hardened local file-based persistence for motor assessment sessions.
-//  Uses atomic writes, isolated Application Support directory, and supports
-//  dependency-injected storage directories for isolated unit tests.
+//  Implements account-scoped data isolation, deterministic newest-first sorting,
+//  atomic writes, and isolated Application Support directory.
 //
 
 import Foundation
@@ -14,8 +14,14 @@ import Combine
 public final class MotorSessionStore: ObservableObject {
     public static let shared = MotorSessionStore()
     
+    /// The visible records for the currently active account (or local/legacy if nil).
     @Published public private(set) var records: [MotorSessionRecord] = []
     @Published public var lastErrorMessage: String? = nil
+    
+    public private(set) var activeAccountID: String? = nil
+    
+    /// All records loaded from disk across accounts.
+    private var allPersistedRecords: [MotorSessionRecord] = []
     
     private let fileName = "motor_sessions.json"
     private let customDirectory: URL?
@@ -39,19 +45,76 @@ public final class MotorSessionStore: ObservableObject {
         return dir.appendingPathComponent(fileName)
     }
     
+    /// Switches the active account and updates the visible in-memory records.
+    public func reload(for accountID: String?) {
+        self.activeAccountID = accountID
+        updateVisibleRecords()
+    }
+    
+    /// Query records for a specific account (or local/legacy if nil), deterministically sorted newest-first.
+    public func records(for accountID: String?) -> [MotorSessionRecord] {
+        var filtered = allPersistedRecords.filter { record in
+            if let target = accountID {
+                return record.accountID == target
+            } else {
+                return record.accountID == nil
+            }
+        }
+        sortRecordsDescending(&filtered)
+        return filtered
+    }
+    
+    /// Save a record with guaranteed ownership attachment, deterministic sorting, and atomic persistence.
     public func save(record: MotorSessionRecord) {
-        records.insert(record, at: 0)
+        // Guarantee account ownership is attached if not already set
+        let targetAccount = record.accountID ?? activeAccountID
+        let recordToSave: MotorSessionRecord
+        if record.accountID == targetAccount {
+            recordToSave = record
+        } else {
+            recordToSave = MotorSessionRecord(
+                id: record.id,
+                accountID: targetAccount,
+                date: record.date,
+                testType: record.testType,
+                testedHand: record.testedHand,
+                durationSeconds: record.durationSeconds,
+                primaryScoreLabel: record.primaryScoreLabel,
+                primaryScoreValue: record.primaryScoreValue,
+                secondaryScoreLabel: record.secondaryScoreLabel,
+                qualityStatus: record.qualityStatus,
+                protocolVersion: record.protocolVersion,
+                isSampleData: record.isSampleData,
+                completionStatus: record.completionStatus,
+                meanCenterDeviationPoints: record.meanCenterDeviationPoints,
+                meanNormalizedCenterDeviationPercent: record.meanNormalizedCenterDeviationPercent,
+                totalAttempts: record.totalAttempts,
+                correctAlternatingTaps: record.correctAlternatingTaps,
+                alternationAccuracyPercent: record.alternationAccuracyPercent
+            )
+        }
+        
+        allPersistedRecords.append(recordToSave)
+        sortRecordsDescending(&allPersistedRecords)
         persist()
+        updateVisibleRecords()
     }
     
     public func delete(id: UUID) {
-        records.removeAll { $0.id == id }
+        allPersistedRecords.removeAll { $0.id == id }
         persist()
+        updateVisibleRecords()
     }
     
+    /// Clear all records belonging to the active account only (does NOT wipe other accounts).
     public func clearAll() {
-        records.removeAll()
+        if let active = activeAccountID {
+            allPersistedRecords.removeAll { $0.accountID == active }
+        } else {
+            allPersistedRecords.removeAll { $0.accountID == nil }
+        }
         persist()
+        updateVisibleRecords()
     }
     
     public func loadSampleDemonstrationData() {
@@ -60,6 +123,7 @@ public final class MotorSessionStore: ObservableObject {
         
         let samples: [MotorSessionRecord] = [
             MotorSessionRecord(
+                accountID: activeAccountID,
                 date: calendar.date(byAdding: .day, value: -6, to: now) ?? now,
                 testType: .tapping,
                 testedHand: "Right",
@@ -71,6 +135,7 @@ public final class MotorSessionStore: ObservableObject {
                 isSampleData: true
             ),
             MotorSessionRecord(
+                accountID: activeAccountID,
                 date: calendar.date(byAdding: .day, value: -4, to: now) ?? now,
                 testType: .tapping,
                 testedHand: "Right",
@@ -82,6 +147,7 @@ public final class MotorSessionStore: ObservableObject {
                 isSampleData: true
             ),
             MotorSessionRecord(
+                accountID: activeAccountID,
                 date: calendar.date(byAdding: .day, value: -2, to: now) ?? now,
                 testType: .tapping,
                 testedHand: "Right",
@@ -93,6 +159,7 @@ public final class MotorSessionStore: ObservableObject {
                 isSampleData: true
             ),
             MotorSessionRecord(
+                accountID: activeAccountID,
                 date: calendar.date(byAdding: .day, value: -5, to: now) ?? now,
                 testType: .spiral,
                 testedHand: "Right",
@@ -104,6 +171,7 @@ public final class MotorSessionStore: ObservableObject {
                 isSampleData: true
             ),
             MotorSessionRecord(
+                accountID: activeAccountID,
                 date: calendar.date(byAdding: .day, value: -3, to: now) ?? now,
                 testType: .spiral,
                 testedHand: "Right",
@@ -115,6 +183,7 @@ public final class MotorSessionStore: ObservableObject {
                 isSampleData: true
             ),
             MotorSessionRecord(
+                accountID: activeAccountID,
                 date: calendar.date(byAdding: .day, value: -1, to: now) ?? now,
                 testType: .spiral,
                 testedHand: "Right",
@@ -127,19 +196,19 @@ public final class MotorSessionStore: ObservableObject {
             )
         ]
         
-        // Add only if not already containing records
         for s in samples {
-            if !records.contains(where: { $0.id == s.id }) {
-                records.append(s)
+            if !allPersistedRecords.contains(where: { $0.id == s.id }) {
+                allPersistedRecords.append(s)
             }
         }
-        records.sort(by: { $0.date > $1.date })
+        sortRecordsDescending(&allPersistedRecords)
         persist()
+        updateVisibleRecords()
     }
     
     public func persist() {
         do {
-            let data = try JSONEncoder().encode(records)
+            let data = try JSONEncoder().encode(allPersistedRecords)
             try data.write(to: fileURL, options: [.atomic])
             lastErrorMessage = nil
         } catch {
@@ -150,16 +219,32 @@ public final class MotorSessionStore: ObservableObject {
     
     public func load() {
         guard FileManager.default.fileExists(atPath: fileURL.path) else {
+            allPersistedRecords = []
+            updateVisibleRecords()
             return
         }
         do {
             let data = try Data(contentsOf: fileURL)
-            records = try JSONDecoder().decode([MotorSessionRecord].self, from: data)
-            records.sort(by: { $0.date > $1.date })
+            allPersistedRecords = try JSONDecoder().decode([MotorSessionRecord].self, from: data)
+            sortRecordsDescending(&allPersistedRecords)
             lastErrorMessage = nil
         } catch {
             lastErrorMessage = "Failed to load saved sessions. Previous data preserved."
             print("MotorSessionStore load error: \(error)")
+        }
+        updateVisibleRecords()
+    }
+    
+    private func updateVisibleRecords() {
+        records = records(for: activeAccountID)
+    }
+    
+    private func sortRecordsDescending(_ list: inout [MotorSessionRecord]) {
+        list.sort {
+            if $0.date != $1.date {
+                return $0.date > $1.date // Newest first
+            }
+            return $0.id.uuidString > $1.id.uuidString // Deterministic tie-breaker
         }
     }
 }

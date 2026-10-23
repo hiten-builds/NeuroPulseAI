@@ -574,6 +574,7 @@ public struct TappingTestView: View {
         let completionStatus = (metrics.qualityStatus == .interruptedEarly) ? "Interrupted Early" : "Completed"
         
         let session = MotorSessionRecord(
+            accountID: AuthManager.shared.currentUser?.id,
             date: Date(),
             testType: .tapping,
             testedHand: selectedHand,

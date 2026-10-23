@@ -15,6 +15,7 @@ public enum MotorTestType: String, Codable, CaseIterable, Sendable {
 
 public struct MotorSessionRecord: Identifiable, Codable, Sendable {
     public let id: UUID
+    public let accountID: String?
     public let date: Date
     public let testType: MotorTestType
     public let testedHand: String
@@ -36,6 +37,7 @@ public struct MotorSessionRecord: Identifiable, Codable, Sendable {
     
     public init(
         id: UUID = UUID(),
+        accountID: String? = nil,
         date: Date = Date(),
         testType: MotorTestType,
         testedHand: String,
@@ -54,6 +56,7 @@ public struct MotorSessionRecord: Identifiable, Codable, Sendable {
         alternationAccuracyPercent: Double? = nil
     ) {
         self.id = id
+        self.accountID = accountID
         self.date = date
         self.testType = testType
         self.testedHand = testedHand
@@ -74,7 +77,7 @@ public struct MotorSessionRecord: Identifiable, Codable, Sendable {
     
     // Custom Decodable to guarantee older saved JSON without the new fields decodes flawlessly
     enum CodingKeys: String, CodingKey {
-        case id, date, testType, testedHand, durationSeconds
+        case id, accountID, date, testType, testedHand, durationSeconds
         case primaryScoreLabel, primaryScoreValue, secondaryScoreLabel
         case qualityStatus, protocolVersion, isSampleData
         case completionStatus, meanCenterDeviationPoints, meanNormalizedCenterDeviationPercent
@@ -84,6 +87,7 @@ public struct MotorSessionRecord: Identifiable, Codable, Sendable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decode(UUID.self, forKey: .id)
+        self.accountID = try container.decodeIfPresent(String.self, forKey: .accountID)
         self.date = try container.decode(Date.self, forKey: .date)
         self.testType = try container.decode(MotorTestType.self, forKey: .testType)
         self.testedHand = try container.decode(String.self, forKey: .testedHand)

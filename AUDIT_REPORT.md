@@ -792,8 +792,167 @@ In order of execution:
 
 ### 3. Simulator Verification
 - **Device:** iPhone 18 Pro (`9B303C12-27D4-49E7-9F28-898E973E0F50`)
-- **Bundle ID:** `com.Sleepy-potatoes.NeuroPulseAI`
-- **Verification:**
-  - App launched into simulator, screenshot captured confirming Home screen with "Activity History / Saved Records".
-  - Test session files loaded from Application Support, app terminated and relaunched, verifying persistence across app lifecycles.
+
+---
+
+## Phase 7A Implementation Audit & Verification Report
+
+### 1. Scope & Accomplishments
+1. **Welcome Landing Screen & Navigation (`WelcomeLandingView.swift`, `NeuroPulseAIApp.swift`):**
+   - Implemented first-launch / signed-out landing page with glowing pulse branding, feature overviews, and three explicit actions: "Sign In", "Create An Account", and prominent "Continue Locally".
+   - Clear privacy guarantee statement: Account creation and data sharing are completely separate decisions.
+
+2. **Operating Modes Supported Equally:**
+   - **Mode A (Authenticated + Data Sharing Consented):** User authenticates, grants versioned consent (`v1.0`), records synchronize idempotently to backend, explainable personalized recommendations generated from user's history.
+   - **Mode B (Local-Only Operation):** 100% of motor assessments (two-zone tapping with center deviation, spiral tracing) and MindEase activities remain operational locally. Zero network activity, zero data uploaded. Honest on-device baseline guidance provided.
+
+3. **Backend Service (`backend/`):**
+   - FastAPI REST API with SQLAlchemy ORM (SQLite default for zero-friction local run, PostgreSQL ready).
+   - Argon2id password hashing + PyJWT bearer authentication.
+   - Purpose-specific versioned consent endpoints (`/consent`, `/consent/personalization`, `/consent/withdraw`).
+   - Server-side consent gate: Uploads and cloud recommendations rejected with HTTP 403 Forbidden if consent is absent, declined, or withdrawn.
+   - Idempotent session sync (`/sessions/sync`): checks `(user_id, local_id)` unique constraint so retried network batches never duplicate data.
+   - Deterministic explainable recommendations: analyzes tapping rhythm (CV, cadence), spiral trajectory (RMSE), and wellness check-in scores. Returns structured evidence summary.
+   - Remote data deletion (`DELETE /account/data`): permanently deletes cloud records and marks consent withdrawn while preserving user account.
+
+4. **iOS Client Integration:**
+   - `KeychainHelper.swift`: Secure storage for JWT bearer tokens in iOS Keychain.
+   - `APIClient.swift`: Type-safe async network client with configurable base URL.
+   - `AuthManager.swift`: Reactive authentication lifecycle (`.welcome`, `.localOnly`, `.authenticated`).
+   - `ConsentManager.swift`: Purpose-specific consent tracking with withdrawal support.
+   - `SyncService.swift`: Idempotent session synchronization adhering strictly to consent gates.
+   - `RecommendationService.swift`: Dual-mode recommendation service (Cloud Personalized vs Local Guidance).
+   - `RecommendationsView.swift`: Explainable cards showing why suggestions are displayed, evidence metrics, and safety disclaimers.
+   - `AccountSettingsView.swift`: Full account & privacy management, consent toggle/withdrawal, remote data deletion, and sign-out.
+
+### 2. Automated Test Results
+- **Backend Pytest Suite (`backend/tests/`):**
+  - **Command:** `PYTHONPATH=. ./backend/.venv/bin/pytest backend/tests -v`
+  - **Total Tests:** 14
+  - **Passed:** 14 (100%)
+  - **Failed:** 0
+  - **Coverage:** Auth registration, duplicate rejection, login, invalid credentials, token authentication, consent lifecycle, unconsented sync rejection (403), sync idempotency, withdrawal sync rejection (403), user isolation, insufficient data recommendations, personalized recommendations with evidence summary, remote data deletion.
+
+- **iOS XCTest Suite (`Tests/NeuroPulseAITests/`):**
+  - **Command:** `xcodebuild -project NeuroPulseAI.xcodeproj -scheme NeuroPulseAI -destination 'platform=iOS Simulator,id=9B303C12-27D4-49E7-9F28-898E973E0F50' test`
+  - **Total Tests:** 31 (25 baseline + 6 new in `AuthAndConsentTests`)
+  - **Passed:** 31 (100%)
+  - **Failed:** 0
+
+### 3. Simulator Validation
+- **Device:** iPhone 18 Pro (`9B303C12-27D4-49E7-9F28-898E973E0F50`), iOS 27.0
+- **Screenshots:**
+  - `landing_screen.png`: Welcome landing page with Sign In, Create Account, and Continue Locally.
+  - `home_local_screen.png`: Local-Only Home screen with "Local-Only Operation | Private & On-Device" status pill and Recommendations card.
+
+---
+
+## Phase 7B Defect Resolution Report: Account Isolation, History Sorting, Terms & Conditions, and Consent
+
+### 1. Root Cause Analysis & Implemented Solutions
+
+| Defect # | Problem Description | Root Cause | Implemented Solution |
+| :--- | :--- | :--- | :--- |
+| **Defect 1** | Activity History not consistently sorted by time. | Sessions relied on natural array insertion order or unstable single-key date comparisons without deterministic tie-breakers. | Implemented deterministic descending chronological sorting (`$0.date != $1.date ? $0.date > $1.date : $0.id.uuidString > $1.id.uuidString`) across `MotorSessionStore`, `WellnessSessionStore`, `SavedRecordsView`, `ProgressDashboardView`, and `SessionExportService`. |
+| **Defect 2** | Activity History shared between different user accounts. | Session records had no account ownership attribute; stores maintained a single global list without account-scoped query or storage filters. | Added `accountID: String?` to `MotorSessionRecord` and `WellnessSessionRecord` with backward-compatible decoding. Updated `MotorSessionStore` and `WellnessSessionStore` with account-scoped query methods (`records(for:)`), active account reloading (`reload(for:)`), and account-isolated mutations (`clearAll` only removes active account's records). Legacy records without account ID are safely isolated under local/unattributed scope. |
+| **Defect 3** | Terms & Conditions prompt does not appear appropriately during sign-in/registration. | `AuthenticationView` bypassed Terms & Conditions check and jumped straight to data consent or dismissal; no versioned Terms manager existed. | Created `TermsManager` with versioning (`currentTermsVersion = "2026-10-24"`) and account-scoped acceptance storage (`neuropulse_terms_version_<accountID>`). Created `TermsAndConditionsView` with 4 clear terms sections and explicit "Agree & Continue" / "Decline" buttons. Wired `AuthenticationView` to require current version acceptance upon registration or login before granting app access. |
+| **Defect 4** | Data-sharing consent shared between user accounts. | `ConsentManager` stored decision in a global device-wide `UserDefaults` key (`neuropulse_consent_decision`). | Updated `ConsentManager` to strictly scope decision keys per account (`neuropulse_consent_decision_<accountID>`). Account A granting consent has zero effect on Account B. Reset in-memory decision on sign-out. Downstream `SyncService` uses the authenticated account's consent. |
+
+### 2. Account Lifecycle & In-Memory State Reset
+- **Sign Out (`AuthManager.signOut()`):**
+  - Clears JWT bearer token from Keychain.
+  - Clears active user cache from `UserDefaults`.
+  - Clears `currentUser` to `nil`.
+  - Resets `MotorSessionStore.shared.reload(for: nil)` and `WellnessSessionStore.shared.reload(for: nil)`.
+  - Resets `ConsentManager.shared.resetForSignOut()` (in-memory decision set to `.undecided`).
+  - Resets `TermsManager.shared.resetForSignOut()` (in-memory state reset).
+  - Clears `SyncService.shared.clearSyncCache()`.
+  - Clears `RecommendationService.shared.clearOnSignOut()`.
+  - **Crucially:** Does NOT delete or wipe persisted user records from disk. Data remains intact for future login.
+- **Sign In / Registration / Session Restoration:**
+  - Authenticates and retrieves `UserDTO`.
+  - Calls `reload(for: user.id)` on `MotorSessionStore` and `WellnessSessionStore`.
+  - Calls `loadForAccount(accountID: user.id)` on `ConsentManager` and `TermsManager`.
+  - Reconstructs account-specific UI state cleanly.
+- **Race Condition Protection:**
+  - Asynchronous background tasks (`SyncService.syncEligibleSessions()` and `RecommendationService.loadRecommendations()`) capture `requestingAccountID` before awaiting network responses and verify that `authManager.currentUser?.id == requestingAccountID` before applying results.
+
+### 3. Automated Regression Test Suite
+- **iOS Unit Tests (`Tests/NeuroPulseAITests/`):**
+  - **Command:** `xcodebuild -project NeuroPulseAI.xcodeproj -scheme NeuroPulseAI -destination 'platform=iOS Simulator,id=9B303C12-27D4-49E7-9F28-898E973E0F50' test`
+  - **Total Tests:** 43
+  - **Passed:** 43 (100%)
+  - **Failed:** 0
+  - **Coverage Breakdown:**
+    - `AccountIsolationAndSortingTests`: 7 tests covering out-of-order sorting (11:00 > 10:00 > 09:00 > 08:00), identical timestamps tie-breaking, restart persistence sorting, wellness sorting, Account A vs Account B store isolation, clearAll active-only wipe, legacy unattributed isolation, terms versioning and account isolation, consent per-account isolation, logout/login switching lifecycle without data leakage, and CSV export deterministic ordering.
+    - `AuthAndConsentTests`: 6 tests covering operating modes, consent gate, and recommendation generation.
+    - `MonotonicClockTests`: 3 tests.
+    - `MotorFeatureCalculatorTests`: 9 tests.
+    - `SessionExportServiceTests`: 3 tests.
+    - `SessionStoreTests`: 5 tests.
+    - `SpiralFeatureCalculatorTests`: 5 tests.
+- **Backend Tests (`backend/tests/`):**
+  - **Command:** `PYTHONPATH=. ./backend/.venv/bin/pytest backend/tests -v`
+  - **Total Tests:** 14
+  - **Passed:** 14 (100%)
+  - **Failed:** 0
+
+---
+
+## Phase 7C Defect Resolution Report: Blocking Terms & Conditions + Data-Sharing Consent Flow
+
+### 1. Root Cause Analysis
+During manual simulator testing, Terms & Conditions and Data-Sharing Consent appeared briefly and disappeared without waiting for user action.
+- **Root Cause Identified:**
+  1. `WelcomeLandingView` presented `AuthenticationView` inside a modal `.sheet`.
+  2. In `AuthManager.swift`, completing `register()` or `signIn()` immediately mutated `currentMode = .authenticated`.
+  3. `NeuroPulseAIApp.swift` was routing via binary condition `if authManager.currentMode == .welcome { WelcomeLandingView() } else { HomeView() }`.
+  4. The instant `currentMode` became `.authenticated`, SwiftUI removed `WelcomeLandingView` from the hierarchy and replaced it with `HomeView()`.
+  5. Dismantling `WelcomeLandingView` immediately destroyed its child `.sheet` (`AuthenticationView`) and any nested navigation destinations (`TermsAndConditionsView`, `PersonalizationConsentView`), tearing down the required screens before user interaction.
+  6. Furthermore, on app relaunch, `restoreState()` immediately loaded `HomeView()` whenever a token was cached, failing to check Terms or Consent as prerequisite gates.
+
+### 2. Architecture & Implementation: Explicit AppFlowState State Machine
+- **Top-Level Routing (`AppFlowState`):**
+  ```swift
+  public enum AppFlowState: String, Codable, Sendable {
+      case welcome = "welcome"
+      case localOnly = "local_only"
+      case termsRequired = "terms_required"
+      case dataSharingConsentRequired = "consent_required"
+      case ready = "ready"
+  }
+  ```
+- **Authoritative Gatekeeper (`AuthManager.evaluateOnboardingRequirements()`):**
+  - Authentication alone (`authenticated == true`) does NOT grant access to the application.
+  - State progression strictly follows:
+    `Authenticated -> Check Terms -> (Incomplete ? .termsRequired) -> Check Consent -> (Undecided ? .dataSharingConsentRequired) -> .ready`.
+- **Root Window State Routing (`NeuroPulseAIApp.swift`):**
+  - Instead of presenting Terms and Consent inside a sheet, `NeuroPulseAIApp` renders them as the root view of the application whenever required.
+  - As root-level views, they cannot be swiped away, tapped outside, or dismissed via navigation.
+  - `.interactiveDismissDisabled(true)` applied on both views.
+- **Atomic Persistence Before Navigation:**
+  - Tapping "Agree & Continue" in `TermsAndConditionsView` persists acceptance to `UserDefaults` under `neuropulse_terms_version_<accountID>` and evaluates onboarding requirements before advancing.
+  - Tapping "Allow" or "Decline" in `PersonalizationConsentView` persists decision (`.granted` or `.declined`) to `UserDefaults` under `neuropulse_consent_decision_<accountID>` and evaluates onboarding requirements before advancing.
+- **Double-Submission & Race Protection:**
+  - `@State private var isProcessing: Bool = false` added to both views, disabling buttons and showing spinners during persistence.
+  - Concurrency checks ensure decisions apply strictly to the currently authenticated account.
+
+### 3. Automated Test Suite Results
+- **iOS Unit Tests (`Tests/NeuroPulseAITests/`):**
+  - Total Tests: **62**
+  - Passed: **62** (100%)
+  - Failed: **0**
+  - Included 19 dedicated state machine tests in `OnboardingFlowStateMachineTests.swift`:
+    - Phase 19 Terms tests: new account requires terms, current terms accepted, old version requires terms, showing terms does not complete requirement, accept completes terms.
+    - Phase 20 Consent tests: new account requires consent, allow completes consent, deny completes consent, showing consent does not complete it.
+    - Phase 21 Flow tests: full register -> terms -> consent -> ready, decline paths, login with incomplete requirements.
+    - Phase 22 Account isolation regression: Account B never inherits Account A's terms or consent.
+    - Phase 25 & 26 Relaunch tests: relaunch while terms or consent is required restores required state.
+- **Backend Tests (`backend/tests/`):**
+  - Total Tests: **14**
+  - Passed: **14** (100%)
+  - Failed: **0**
+- **Total Tests Passing:** **76** (100% pass rate)
+
+
 

@@ -28,6 +28,7 @@ public extension Color {
         // MARK: - Functional Colors
         public static let success = Color(red: 0.22, green: 0.78, blue: 0.46)
         public static let warning = Color(red: 0.98, green: 0.65, blue: 0.20)
+        public static let error = Color(red: 0.95, green: 0.32, blue: 0.32)
         public static let info = Color(red: 0.25, green: 0.65, blue: 0.96)
         
         // MARK: - Dynamic Surfaces

@@ -14,3 +14,15 @@ build/
 .env
 .env.*
 !.env.example
+
+# Python & Backend
+__pycache__/
+*.py[cod]
+*$py.class
+*.sqlite
+*.sqlite3
+*.db
+.pytest_cache/
+.venv/
+backend/.venv/
+backend/*.db
