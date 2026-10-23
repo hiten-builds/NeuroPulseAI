@@ -91,12 +91,38 @@ public struct MindEaseHomeView: View {
                 }
                 
                 // Recent Wellness Sessions List
-                if !store.records.isEmpty {
-                    VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
+                VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
+                    HStack {
                         Text("Recent Peaceful Moments")
                             .font(.headline)
                             .foregroundStyle(.primary)
-                        
+                        Spacer()
+                        NavigationLink {
+                            SavedRecordsView()
+                        } label: {
+                            HStack(spacing: 4) {
+                                Text("All History")
+                                Image(systemName: "chevron.right")
+                            }
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(Color.NeuroPulse.mindEasePrimary)
+                        }
+                    }
+                    
+                    if store.records.isEmpty {
+                        Text("No wellness sessions recorded yet. Completed breathing or stillness sessions will appear here.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .padding(DesignTokens.Spacing.medium)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color.NeuroPulse.cardBackground)
+                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
+                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                            )
+                    } else {
                         VStack(spacing: DesignTokens.Spacing.small) {
                             ForEach(store.records.prefix(4)) { record in
                                 HStack {

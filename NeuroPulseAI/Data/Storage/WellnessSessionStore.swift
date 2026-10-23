@@ -2,7 +2,8 @@
 //  WellnessSessionStore.swift
 //  NeuroPulseAI
 //
-//  Local file-based persistence for MindEase wellness sessions, isolated from motor data.
+//  Hardened local file-based persistence for MindEase wellness sessions,
+//  isolated from motor data, with support for injectable testing directories.
 //
 
 import Foundation
@@ -13,16 +14,24 @@ public final class WellnessSessionStore: ObservableObject {
     public static let shared = WellnessSessionStore()
     
     @Published public private(set) var records: [WellnessSessionRecord] = []
+    @Published public var lastErrorMessage: String? = nil
     
     private let fileName = "wellness_sessions.json"
+    private let customDirectory: URL?
     
-    public init() {
+    public init(customDirectory: URL? = nil) {
+        self.customDirectory = customDirectory
         load()
     }
     
-    private var fileURL: URL {
-        let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
-        let dir = paths[0].appendingPathComponent("NeuroPulseAI", isDirectory: true)
+    public var fileURL: URL {
+        let dir: URL
+        if let custom = customDirectory {
+            dir = custom
+        } else {
+            let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
+            dir = paths[0].appendingPathComponent("NeuroPulseAI", isDirectory: true)
+        }
         if !FileManager.default.fileExists(atPath: dir.path) {
             try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         }
@@ -39,23 +48,27 @@ public final class WellnessSessionStore: ObservableObject {
         persist()
     }
     
-    private func persist() {
+    public func persist() {
         do {
             let data = try JSONEncoder().encode(records)
             try data.write(to: fileURL, options: [.atomic])
+            lastErrorMessage = nil
         } catch {
-            print("Failed to persist wellness sessions: \(error)")
+            lastErrorMessage = "Failed to persist wellness sessions: \(error.localizedDescription)"
+            print("WellnessSessionStore persist error: \(error)")
         }
     }
     
-    private func load() {
+    public func load() {
         guard FileManager.default.fileExists(atPath: fileURL.path) else { return }
         do {
             let data = try Data(contentsOf: fileURL)
             records = try JSONDecoder().decode([WellnessSessionRecord].self, from: data)
             records.sort(by: { $0.date > $1.date })
+            lastErrorMessage = nil
         } catch {
-            print("Failed to load wellness sessions: \(error)")
+            lastErrorMessage = "Failed to load wellness sessions. Previous data preserved."
+            print("WellnessSessionStore load error: \(error)")
         }
     }
 }

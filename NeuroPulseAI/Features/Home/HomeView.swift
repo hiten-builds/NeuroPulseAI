@@ -56,6 +56,54 @@ public struct HomeView: View {
                             )
                         }
                         .buttonStyle(PlainButtonStyle())
+                        
+                        NavigationLink {
+                            SavedRecordsView()
+                        } label: {
+                            HStack(spacing: DesignTokens.Spacing.medium) {
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.NeuroPulse.brandTeal.opacity(0.15))
+                                        .frame(width: 44, height: 44)
+                                    Image(systemName: "clock.arrow.circlepath")
+                                        .font(.system(size: 20, weight: .semibold))
+                                        .foregroundStyle(Color.NeuroPulse.brandTeal)
+                                }
+                                
+                                VStack(alignment: .leading, spacing: DesignTokens.Spacing.xSmall) {
+                                    HStack {
+                                        Text("Activity History")
+                                            .font(.headline)
+                                            .foregroundStyle(.primary)
+                                        Spacer()
+                                        Text("Saved Records")
+                                            .font(.caption2)
+                                            .fontWeight(.semibold)
+                                            .foregroundStyle(Color.NeuroPulse.brandTeal)
+                                            .padding(.horizontal, DesignTokens.Spacing.small)
+                                            .padding(.vertical, 2)
+                                            .background(Capsule().fill(Color.NeuroPulse.brandTeal.opacity(0.12)))
+                                    }
+                                    Text("Inspect on-device history, alternating tapping metrics, and MindEase records.")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                                
+                                Image(systemName: "chevron.right")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            .padding(DesignTokens.Spacing.medium)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color.NeuroPulse.cardBackground)
+                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
+                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                            )
+                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
                     
                     // MARK: - Non-Diagnostic Safety Disclosure
@@ -66,8 +114,7 @@ public struct HomeView: View {
                 .padding(.bottom, DesignTokens.Spacing.xxLarge)
             }
             .background(Color.NeuroPulse.surfaceBackground.ignoresSafeArea())
-            .navigationTitle("")
-            .navigationBarHidden(true)
+            .toolbar(.hidden, for: .navigationBar)
         }
     }
     

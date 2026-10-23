@@ -2,11 +2,11 @@
 //  SpiralTracingView.swift
 //  NeuroPulseAI
 //
-//  Interactive spiral-tracing assessment with normalized touch coordinates and reference curve.
+//  Interactive spiral-tracing assessment with normalized touch coordinates,
+//  accelerated Canvas rendering, and asynchronous metric calculations.
 //
 
 import SwiftUI
-import Darwin
 
 public struct SpiralTracingView: View {
     @Environment(\.dismiss) private var dismiss
@@ -22,15 +22,13 @@ public struct SpiralTracingView: View {
     
     // Drawing capture state
     @State private var capturedPoints: [SpiralPoint] = []
-    @State private var startTicks: UInt64 = 0
-    @State private var timebaseInfo = mach_timebase_info()
+    @State private var startNanos: UInt64 = 0
     @State private var isDrawingActive: Bool = false
+    @State private var isCalculating: Bool = false
     
-    private let referencePoints = SpiralFeatureCalculator.generateReferencePoints()
+    private let referencePoints = SpiralFeatureCalculator.sharedReferencePoints
     
-    public init() {
-        mach_timebase_info(&timebaseInfo)
-    }
+    public init() {}
     
     public var body: some View {
         ZStack {
@@ -143,11 +141,12 @@ public struct SpiralTracingView: View {
                 }
                 .font(.footnote)
                 .foregroundStyle(Color.NeuroPulse.warning)
+                .disabled(isCalculating)
             }
             .padding(.horizontal, DesignTokens.Spacing.large)
             .padding(.top, DesignTokens.Spacing.small)
             
-            // The Drawing Canvas
+            // High-performance Drawing Canvas
             GeometryReader { geo in
                 let w = geo.size.width
                 let h = geo.size.height
@@ -163,49 +162,55 @@ public struct SpiralTracingView: View {
                             y: 4
                         )
                     
-                    // Reference Archimedean Spiral Guide
-                    Path { path in
-                        guard let first = referencePoints.first else { return }
-                        path.move(to: CGPoint(x: first.x * w, y: first.y * h))
-                        for pt in referencePoints.dropFirst() {
-                            path.addLine(to: CGPoint(x: pt.x * w, y: pt.y * h))
+                    // Hardware-accelerated Canvas for smooth 60fps rendering
+                    Canvas { context, size in
+                        let width = size.width
+                        let height = size.height
+                        
+                        // 1. Reference Archimedean Spiral Guide
+                        var refPath = Path()
+                        if let first = referencePoints.first {
+                            refPath.move(to: CGPoint(x: first.x * width, y: first.y * height))
+                            for pt in referencePoints.dropFirst() {
+                                refPath.addLine(to: CGPoint(x: pt.x * width, y: pt.y * height))
+                            }
+                        }
+                        context.stroke(
+                            refPath,
+                            with: .color(Color.primary.opacity(0.18)),
+                            style: StrokeStyle(lineWidth: 3, lineCap: .round, dash: [6, 6])
+                        )
+                        
+                        // 2. User Drawn Trace Path
+                        if !capturedPoints.isEmpty {
+                            var userPath = Path()
+                            if let first = capturedPoints.first {
+                                userPath.move(to: CGPoint(x: first.x * width, y: first.y * height))
+                                for pt in capturedPoints.dropFirst() {
+                                    userPath.addLine(to: CGPoint(x: pt.x * width, y: pt.y * height))
+                                }
+                            }
+                            context.stroke(
+                                userPath,
+                                with: .linearGradient(
+                                    Gradient(colors: [Color.NeuroPulse.brandTeal, Color.NeuroPulse.motorSecondary]),
+                                    startPoint: .zero,
+                                    endPoint: CGPoint(x: width, y: height)
+                                ),
+                                style: StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round)
+                            )
                         }
                     }
-                    .stroke(
-                        Color.primary.opacity(0.18),
-                        style: StrokeStyle(lineWidth: 3, lineCap: .round, dash: [6, 6])
-                    )
                     
-                    // Center Start Target Dot
+                    // Center Start Target Dot (Correctly aligned to reference center)
                     Circle()
                         .fill(Color.NeuroPulse.brandTeal)
                         .frame(width: 14, height: 14)
-                        .position(x: 0.5 * w, y: 0.5 * h)
                         .overlay(
                             Circle()
                                 .stroke(Color.white, lineWidth: 2)
-                                .frame(width: 14, height: 14)
-                                .position(x: 0.5 * w, y: 0.5 * h)
                         )
-                    
-                    // User Drawn Path
-                    if !capturedPoints.isEmpty {
-                        Path { path in
-                            guard let first = capturedPoints.first else { return }
-                            path.move(to: CGPoint(x: first.x * w, y: first.y * h))
-                            for pt in capturedPoints.dropFirst() {
-                                path.addLine(to: CGPoint(x: pt.x * w, y: pt.y * h))
-                            }
-                        }
-                        .stroke(
-                            LinearGradient(
-                                colors: [Color.NeuroPulse.brandTeal, Color.NeuroPulse.motorSecondary],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
-                            style: StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round)
-                        )
-                    }
+                        .position(x: 0.5 * w, y: 0.5 * h)
                 }
                 .contentShape(Rectangle())
                 .gesture(
@@ -226,17 +231,23 @@ public struct SpiralTracingView: View {
                 finishAssessment()
             } label: {
                 HStack(spacing: DesignTokens.Spacing.small) {
-                    Text("Complete Assessment")
-                    Image(systemName: "checkmark.circle.fill")
+                    if isCalculating {
+                        ProgressView()
+                            .tint(.white)
+                        Text("Analyzing Trajectory...")
+                    } else {
+                        Text("Complete Assessment")
+                        Image(systemName: "checkmark.circle.fill")
+                    }
                 }
                 .font(.headline)
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, DesignTokens.Spacing.medium)
-                .background(capturedPoints.count >= 20 ? Color.NeuroPulse.motorSecondary : Color.secondary.opacity(0.4))
+                .background(capturedPoints.count >= 20 && !isCalculating ? Color.NeuroPulse.motorSecondary : Color.secondary.opacity(0.4))
                 .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
             }
-            .disabled(capturedPoints.count < 20)
+            .disabled(capturedPoints.count < 20 || isCalculating)
             .padding(.horizontal, DesignTokens.Spacing.large)
             .padding(.bottom, DesignTokens.Spacing.large)
         }
@@ -246,55 +257,76 @@ public struct SpiralTracingView: View {
     
     private func startDrawing() {
         capturedPoints = []
-        startTicks = mach_absolute_time()
+        startNanos = MonotonicClock.nowNanoseconds()
         state = .drawing
     }
     
     private func handleDrag(location: CGPoint, in size: CGSize) {
-        guard size.width > 0, size.height > 0 else { return }
+        guard size.width > 0, size.height > 0, !isCalculating else { return }
         
         let normX = min(max(Double(location.x / size.width), 0.0), 1.0)
         let normY = min(max(Double(location.y / size.height), 0.0), 1.0)
-        
         let elapsed = getMonotonicElapsedSeconds()
+        
+        // Jitter filter: avoid recording redundant sub-pixel noise when finger is stationary
+        if let last = capturedPoints.last {
+            let dx = (normX - last.x) * Double(size.width)
+            let dy = (normY - last.y) * Double(size.height)
+            let distSq = dx * dx + dy * dy
+            if distSq < 2.25 && (elapsed - last.elapsedSeconds) < 0.035 {
+                return
+            }
+        }
+        
         let point = SpiralPoint(x: normX, y: normY, elapsedSeconds: elapsed)
         capturedPoints.append(point)
         isDrawingActive = true
     }
     
     private func getMonotonicElapsedSeconds() -> TimeInterval {
-        let nowTicks = mach_absolute_time()
-        let elapsedTicks = nowTicks >= startTicks ? nowTicks - startTicks : 0
-        let elapsedNanos = elapsedTicks * UInt64(timebaseInfo.numer) / UInt64(timebaseInfo.denom)
-        return Double(elapsedNanos) / 1_000_000_000.0
+        guard startNanos > 0 else { return 0.0 }
+        return MonotonicClock.elapsedSeconds(since: startNanos)
     }
     
     private func resetDrawing() {
         capturedPoints = []
-        startTicks = mach_absolute_time()
+        startNanos = MonotonicClock.nowNanoseconds()
     }
     
     private func finishAssessment() {
+        guard !isCalculating, capturedPoints.count >= 20 else { return }
+        isCalculating = true
+        
         let finalElapsed = getMonotonicElapsedSeconds()
-        let metrics = SpiralFeatureCalculator.calculateMetrics(
-            userPoints: capturedPoints,
-            testedHand: selectedHand,
-            actualDuration: finalElapsed
-        )
-        let session = MotorSessionRecord(
-            date: Date(),
-            testType: .spiral,
-            testedHand: selectedHand,
-            durationSeconds: finalElapsed,
-            primaryScoreLabel: String(format: "%.1f%% RMSE", metrics.rmsePercent),
-            primaryScoreValue: metrics.rmsePercent,
-            secondaryScoreLabel: String(format: "%.2fx length", metrics.pathLengthRatio),
-            qualityStatus: metrics.qualityStatus,
-            protocolVersion: metrics.protocolVersion,
-            isSampleData: false
-        )
-        MotorSessionStore.shared.save(record: session)
-        state = .finished(metrics)
+        let points = capturedPoints
+        let hand = selectedHand
+        
+        // Offload metric calculation to background task to guarantee smooth UI
+        Task.detached(priority: .userInitiated) {
+            let metrics = SpiralFeatureCalculator.calculateMetrics(
+                userPoints: points,
+                testedHand: hand,
+                actualDuration: finalElapsed
+            )
+            
+            await MainActor.run {
+                let session = MotorSessionRecord(
+                    date: Date(),
+                    testType: .spiral,
+                    testedHand: hand,
+                    durationSeconds: finalElapsed,
+                    primaryScoreLabel: String(format: "%.1f%% RMSE", metrics.rmsePercent),
+                    primaryScoreValue: metrics.rmsePercent,
+                    secondaryScoreLabel: String(format: "%.2fx length", metrics.pathLengthRatio),
+                    qualityStatus: metrics.qualityStatus,
+                    protocolVersion: metrics.protocolVersion,
+                    isSampleData: false
+                )
+                MotorSessionStore.shared.save(record: session)
+                self.state = .finished(metrics)
+                self.isCalculating = false
+            }
+        }
     }
 }
 

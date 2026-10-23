@@ -14,11 +14,17 @@ public struct SpiralFeatureCalculator {
     public static let referenceSamplePoints: Int = 400
     public static let minimumPointsForValidSession: Int = 20
     
+    /// Cached static reference points to avoid recomputing geometry on every render or assessment.
+    public static let sharedReferencePoints: [CGPoint] = generateReferencePoints()
+    
+    /// Cached static reference arc length.
+    public static let sharedReferenceArcLength: Double = calculateReferenceArcLength(referencePoints: sharedReferencePoints)
+    
     /// Generates normalized reference points for drawing and metric projection.
     public static func generateReferencePoints() -> [CGPoint] {
         let a = maxRadius / maxTheta
         var points: [CGPoint] = []
-        points.reserveCapacity(referenceSamplePoints)
+        points.reserveCapacity(referenceSamplePoints + 1)
         
         for i in 0...referenceSamplePoints {
             let theta = (Double(i) / Double(referenceSamplePoints)) * maxTheta
@@ -48,25 +54,27 @@ public struct SpiralFeatureCalculator {
         actualDuration: TimeInterval
     ) -> SpiralMetrics {
         let pointCount = userPoints.count
-        let referencePoints = generateReferencePoints()
-        let refArcLength = calculateReferenceArcLength(referencePoints: referencePoints)
+        let referencePoints = sharedReferencePoints
+        let refArcLength = sharedReferenceArcLength
+        let safeDuration = max(actualDuration, 0.0)
         
         // Quality Gate 1: Minimum point volume
         guard pointCount >= minimumPointsForValidSession else {
             return SpiralMetrics(
                 testedHand: testedHand,
-                durationSeconds: actualDuration,
+                durationSeconds: safeDuration,
                 pointCount: pointCount,
                 rmsePercent: 0,
                 meanDeviationPercent: 0,
                 pathLengthRatio: 0,
                 speedVariabilityPercent: 0,
-                qualityStatus: .tooFewTaps,
+                qualityStatus: .insufficientPoints,
                 qualityExplanation: "Fewer than \(minimumPointsForValidSession) points recorded. Please trace smoothly from the center outwards."
             )
         }
         
         // 1. Calculate Minimum Distance from each User Point to the Reference Curve
+        // Optimization: compare squared distances in inner loop to avoid redundant sqrt calls.
         var squaredDistances: [Double] = []
         var distances: [Double] = []
         squaredDistances.reserveCapacity(pointCount)
@@ -82,18 +90,19 @@ public struct SpiralFeatureCalculator {
                 maxUserRadius = r
             }
             
-            // Find closest distance to reference curve
-            var minDistance = Double.infinity
+            // Find closest distance to reference curve by minimizing squared distance
+            var minDistanceSq = Double.infinity
             for ref in referencePoints {
                 let dx = p.x - Double(ref.x)
                 let dy = p.y - Double(ref.y)
-                let d = sqrt(dx * dx + dy * dy)
-                if d < minDistance {
-                    minDistance = d
+                let dSq = dx * dx + dy * dy
+                if dSq < minDistanceSq {
+                    minDistanceSq = dSq
                 }
             }
+            let minDistance = sqrt(minDistanceSq)
             distances.append(minDistance)
-            squaredDistances.append(minDistance * minDistance)
+            squaredDistances.append(minDistanceSq)
         }
         
         // 2. RMSE and Mean Deviation (scaled to percentage of canvas dimension)
@@ -150,7 +159,7 @@ public struct SpiralFeatureCalculator {
         
         return SpiralMetrics(
             testedHand: testedHand,
-            durationSeconds: actualDuration,
+            durationSeconds: safeDuration,
             pointCount: pointCount,
             rmsePercent: rmsePercent,
             meanDeviationPercent: meanDeviationPercent,

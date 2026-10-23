@@ -26,6 +26,9 @@ public struct SpiralResultView: View {
                 // Header & Quality Badge
                 headerSection
                 
+                // Persistence Confirmation Banner
+                saveConfirmationBanner
+                
                 // Mini Trace Path Overlay Preview
                 tracePreviewCard
                 
@@ -88,6 +91,38 @@ public struct SpiralResultView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
+    }
+    
+    private var saveConfirmationBanner: some View {
+        HStack(spacing: DesignTokens.Spacing.medium) {
+            ZStack {
+                Circle()
+                    .fill(Color.NeuroPulse.success.opacity(0.15))
+                    .frame(width: 36, height: 36)
+                Image(systemName: "checkmark.seal.fill")
+                    .font(.subheadline)
+                    .foregroundStyle(Color.NeuroPulse.success)
+            }
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Saved to On-Device History")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.primary)
+                Text("Record is securely stored on this device and available in Activity History.")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            
+            Spacer()
+        }
+        .padding(DesignTokens.Spacing.medium)
+        .background(Color.NeuroPulse.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+        .overlay(
+            RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
+                .stroke(Color.NeuroPulse.success.opacity(0.35), lineWidth: 1)
+        )
     }
     
     private var tracePreviewCard: some View {

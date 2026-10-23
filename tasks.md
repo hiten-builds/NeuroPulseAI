@@ -9,27 +9,29 @@
 
 ## Current task
 
-- **ID:** QA-01
-- **Task:** Add test cases for motor calculations and quality rules.
-- **Priority:** P1 — High
+- **ID:** DOC-01
+- **Task:** Update README with project purpose, build instructions, and limitations.
+- **Priority:** P2 — Medium
 - **Status:** Pending
-- **Progress:** 0%
+- **Progress:** 50%
 - **Owner:** Project team / coding assistant as assigned
-- **Dependencies:** MOTOR-02, MOTOR-04 (completed)
-- **Acceptance criteria:** Unit tests verify cadence, inter-tap intervals, median, CV, RMSE, and quality boundaries under known test vectors.
+- **Dependencies:** SETUP-02, MVP-STABILIZE (completed)
 
 ## Pending tasks
 
 | ID | Task | Priority | Status | Progress | Dependencies |
 |---|---|---:|---|---:|---|
-| QA-01 | Add test cases for motor calculations and quality rules | P1 | Pending | 0% | MOTOR-02, MOTOR-04 |
-| DOC-01 | Update README with project purpose, build instructions, and limitations | P2 | Pending | 0% | SETUP-02 |
+| DOC-01 | Update README with project purpose, build instructions, and limitations | P2 | Pending | 50% | SETUP-02 |
 | FUTURE-01 | Design consented server-side data contributions and FastAPI/PostgreSQL backend | P3 | Deferred | 0% | MVP stable; privacy review |
 | FUTURE-02 | Obtain suitable labelled data and evaluate an XGBoost model | P3 | Deferred | 0% | FUTURE-01 and valid labels |
 | FUTURE-03 | Select supported EEG headset and prototype real signal acquisition | P3 | Deferred | 0% | MVP stable; hardware/SDK/privacy review |
 | FUTURE-04 | Add optional authorized clinician dashboard/report sharing | P3 | Deferred | 0% | Backend/auth design |
 
 ## Completed tasks
+
+- [x] QA-01: Added Xcode test target `NeuroPulseAITests` with 25 unit tests covering monotonic timing, motor metrics, spiral RMSE, two-zone center deviation, alternation accuracy, backward compatibility, and isolated session persistence. Verified with `xcodebuild test` (100% pass rate).
+- [x] FEAT-A: Persistent local activity records & dedicated `SavedRecordsView` with category filtering, detailed inspection sheet, session status badges, and user-initiated CSV export.
+- [x] FEAT-B: Two-zone alternating finger-tapping protocol in `TappingTestView`, contact coordinates capture, Euclidean center-deviation calculation in `MotorFeatureCalculator`, and result display in `TappingResultView`.
 
 - [x] Created initial Xcode iOS App project using Swift and SwiftUI.
 - [x] Initialized local Git repository on the iMac.

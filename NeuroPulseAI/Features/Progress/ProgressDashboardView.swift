@@ -201,7 +201,7 @@ public struct ProgressDashboardView: View {
                                     }
                                 }
                                 
-                                Text("\(record.secondaryScoreLabel) • \(record.qualityStatus.rawValue)")
+                                Text(recordSubtitle(for: record))
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
@@ -226,28 +226,62 @@ public struct ProgressDashboardView: View {
         }
     }
     
-    // MARK: - Demo Data Helper
+    private func recordSubtitle(for record: MotorSessionRecord) -> String {
+        var subText = "\(record.secondaryScoreLabel) • \(record.qualityStatus.rawValue)"
+        if let dev = record.meanCenterDeviationPoints {
+            subText += String(format: " • %.1f pt dev", dev)
+        }
+        return subText
+    }
+    
+    // MARK: - Demo Data & Export Helpers
     
     private var demoDataHelperSection: some View {
-        VStack(spacing: DesignTokens.Spacing.small) {
-            Button {
-                store.loadSampleDemonstrationData()
-            } label: {
-                HStack(spacing: DesignTokens.Spacing.small) {
-                    Image(systemName: "plus.circle")
-                    Text("Load Sample Trend Data (Clearly Labelled)")
+        VStack(spacing: DesignTokens.Spacing.medium) {
+            // User-initiated CSV Export
+            if !store.records.isEmpty, let exportURL = SessionExportService.exportTemporaryCSVFile(from: store.records) {
+                ShareLink(
+                    item: exportURL,
+                    preview: SharePreview("NeuroPulse AI Sessions CSV", image: Image(systemName: "doc.text.fill"))
+                ) {
+                    HStack(spacing: DesignTokens.Spacing.small) {
+                        Image(systemName: "square.and.arrow.up")
+                        Text("Export Session History (CSV)")
+                    }
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(Color.NeuroPulse.brandTeal)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, DesignTokens.Spacing.medium)
+                    .background(Color.NeuroPulse.cardBackground)
+                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
+                            .stroke(Color.NeuroPulse.brandTeal.opacity(0.4), lineWidth: 1)
+                    )
                 }
-                .font(.footnote)
-                .foregroundStyle(Color.NeuroPulse.brandTeal)
             }
             
-            if !store.records.isEmpty {
-                Button(role: .destructive) {
-                    store.clearAll()
+            VStack(spacing: DesignTokens.Spacing.small) {
+                Button {
+                    store.loadSampleDemonstrationData()
                 } label: {
-                    Text("Clear All Sessions")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    HStack(spacing: DesignTokens.Spacing.small) {
+                        Image(systemName: "plus.circle")
+                        Text("Load Sample Trend Data (Clearly Labelled)")
+                    }
+                    .font(.footnote)
+                    .foregroundStyle(Color.NeuroPulse.brandTeal)
+                }
+                
+                if !store.records.isEmpty {
+                    Button(role: .destructive) {
+                        store.clearAll()
+                    } label: {
+                        Text("Clear All Sessions")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
         }

@@ -46,6 +46,9 @@ public struct BreathingSessionView: View {
     @State private var ratingBefore: Int? = nil
     @State private var ratingAfter: Int? = nil
     
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var hasSaved: Bool = false
+    
     public init() {}
     
     public var body: some View {
@@ -79,6 +82,14 @@ public struct BreathingSessionView: View {
         }
         .navigationTitle("Guided Breathing")
         .navigationBarTitleDisplayMode(.inline)
+        .onDisappear {
+            stopTimer()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .background && isRunning {
+                isRunning = false
+            }
+        }
     }
     
     // MARK: - Active Breathing Interface
@@ -324,13 +335,20 @@ public struct BreathingSessionView: View {
     }
     
     private func endSessionEarly() {
-        timer?.invalidate()
-        timer = nil
+        stopTimer()
         saveSession(status: "Interrupted Early")
         currentStep = .completed
     }
     
+    private func stopTimer() {
+        timer?.invalidate()
+        timer = nil
+        isRunning = false
+    }
+    
     private func saveSession(status: String = "Completed") {
+        guard !hasSaved else { return }
+        hasSaved = true
         let session = WellnessSessionRecord(
             activityType: .breathing,
             durationSeconds: elapsedSeconds,
