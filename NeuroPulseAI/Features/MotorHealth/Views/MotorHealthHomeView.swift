@@ -60,13 +60,18 @@ public struct MotorHealthHomeView: View {
                     .buttonStyle(PlainButtonStyle())
                     
                     // Spiral Tracing Card
-                    assessmentCard(
-                        title: "Spiral-Tracing Test",
-                        subtitle: "Trace a reference curve to measure path deviation, smoothness, and tremor characteristics.",
-                        icon: "scribble.variable",
-                        badge: "Geometry v1",
-                        badgeColor: Color.NeuroPulse.motorSecondary
-                    )
+                    NavigationLink {
+                        SpiralTracingView()
+                    } label: {
+                        assessmentCard(
+                            title: "Spiral-Tracing Test",
+                            subtitle: "Trace a reference curve to measure path deviation, smoothness, and tremor characteristics.",
+                            icon: "scribble.variable",
+                            badge: "Geometry v1",
+                            badgeColor: Color.NeuroPulse.motorSecondary
+                        )
+                    }
+                    .buttonStyle(PlainButtonStyle())
                 }
                 
                 // Baseline & History Preview Card
