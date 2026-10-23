@@ -11,10 +11,13 @@ This file is intentionally kept lightweight. Record durable decisions, verified 
 - App builds and verifies cleanly with Xcode 16 / `xcodebuild` targeting iOS Simulator SDK.
 - Project reference strategy confirmed: Xcode 16 `PBXFileSystemSynchronizedRootGroup` dynamically synchronizes `NeuroPulseAI/` directory.
 - Root documentation suite (`requirements.md`, `architecture.md`, `rules.md`, `phases.md`, `tasks.md`, `memory.md`) committed to repository.
-- Phase 0, 1, and 2 completed.
-- Phase 2 implemented: `HomeView.swift` dashboard with `ModeCardView` navigation, non-diagnostic `DisclaimerBanner.swift`, design tokens (`ColorTheme.swift`, `DesignTokens.swift`), and feature landing shells (`MotorHealthHomeView.swift`, `MindEaseHomeView.swift`).
-- Clean build verified on iOS Simulator SDK with 0 errors / 0 warnings.
-- Currently active phase: Phase 3 (Motor Health: finger-tapping assessment).
+- Phase 0, 1, 2, 3, 4, 5, and 6 completed and verified with clean xcodebuild runs (0 errors, 0 warnings).
+- Phase 3 implemented: Finger-Tapping protocol with monotonic elapsed time recording (`mach_absolute_time`), `MotorFeatureCalculator` (cadence, intervals, CV, fatigue ratio, quality status gate), and `TappingResultView`.
+- Phase 4 implemented: Spiral-Tracing assessment, mathematical Archimedean reference spiral, normalized canvas drag gesture recording, `SpiralFeatureCalculator` (RMSE deviation %, mean deviation, path length ratio, speed CV), and `SpiralResultView`.
+- Phase 5 implemented: Local persistence (`MotorSessionRecord`, `MotorSessionStore`), automatic session recording upon test completion, and `ProgressDashboardView` with `Swift Charts` visualizing cadence and RMSE trends.
+- Phase 6 implemented: MindEase guided breathing visual pacer (`BreathingSessionView`), mindfulness pause (`MindfulnessMeditationView`), unscored tactile grounding (`MindfulTracingView`), optional relaxation check-ins (`WellnessCheckInView`), and isolated `WellnessSessionStore`.
+- All assessment metrics and wellness sessions work offline with on-device persistence and zero network requirements.
+- Currently active phase: Ready for Phase 10 (Final release validation and quality review).
 
 ## Confirmed product decisions
 
@@ -22,10 +25,8 @@ This file is intentionally kept lightweight. Record durable decisions, verified 
 - Main modes: Motor Health and MindEase.
 - Motor Health MVP: finger tapping, spiral tracing, transparent movement metrics, and personal trend tracking.
 - MindEase MVP: guided breathing, mindfulness/meditation, optional mindful tracing, and optional self-reported relaxation check-ins.
-- Initial MVP should work locally without requiring a backend, PostgreSQL, trained ML, or EEG hardware.
-- Future direction: FastAPI + PostgreSQL, separate consent-based research contribution workflow, server-hosted XGBoost model, optional EEG headset integration, and potentially a clinician-facing dashboard.
-- Health boundaries: do not claim diagnosis or clinical validation; label demo/synthetic data clearly; keep wellness records distinct from motor measurements.
-- Development uses AI coding tools heavily, but generated changes must be inspected, built/tested, and tracked in Git.
+- Initial MVP works locally without requiring a backend, PostgreSQL, trained ML, or EEG hardware.
+- Health boundaries: strictly non-diagnostic; clearly labelled demo/sample data; separate wellness storage from motor records.
 
 ## Decision log
 
@@ -37,10 +38,13 @@ This file is intentionally kept lightweight. Record durable decisions, verified 
 | 2026-10-23 | Separate Motor Health data from MindEase wellness data | Prevents relaxation ratings from being interpreted as motor or clinical labels. |
 | 2026-10-23 | Leverage Xcode 16 PBXFileSystemSynchronizedRootGroup | Automatically syncs filesystem changes in `NeuroPulseAI/` without risk of `.pbxproj` merge conflicts. |
 | 2026-10-23 | Core Design Tokens & Component Library | Established reusable ColorTheme, DesignTokens, ModeCardView, and DisclaimerBanner in Core/ for consistent UX. |
+| 2026-10-23 | Monotonic High-Resolution Timing | Used `mach_absolute_time` for finger-tapping and spiral-tracing elapsed intervals to avoid clock skew. |
+| 2026-10-23 | Mathematical Archimedean Spiral in Unit Coordinates | Normalized drawing coordinates $[0, 1] \times [0, 1]$ make metrics invariant across iPhone screen sizes. |
+| 2026-10-23 | Isolated Sandbox JSON Stores | File-based local persistence works offline, preserves privacy, and eliminates cloud dependency. |
 
 ## Current file being worked on
 
-Phase 2 completed. Next is Phase 3: `Features/MotorHealth/` (tapping recorder and protocol views).
+Phases 0 through 6 fully implemented and verified. Next is Phase 10 / QA test cases.
 
 ## Known issues / verification needed
 
