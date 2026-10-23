@@ -11,7 +11,10 @@ This file is intentionally kept lightweight. Record durable decisions, verified 
 - App builds and verifies cleanly with Xcode 16 / `xcodebuild` targeting iOS Simulator SDK.
 - Project reference strategy confirmed: Xcode 16 `PBXFileSystemSynchronizedRootGroup` dynamically synchronizes `NeuroPulseAI/` directory.
 - Root documentation suite (`requirements.md`, `architecture.md`, `rules.md`, `phases.md`, `tasks.md`, `memory.md`) committed to repository.
-- Phase 0 and Phase 1 completed; currently active phase is Phase 2 (Home screen and navigation).
+- Phase 0, 1, and 2 completed.
+- Phase 2 implemented: `HomeView.swift` dashboard with `ModeCardView` navigation, non-diagnostic `DisclaimerBanner.swift`, design tokens (`ColorTheme.swift`, `DesignTokens.swift`), and feature landing shells (`MotorHealthHomeView.swift`, `MindEaseHomeView.swift`).
+- Clean build verified on iOS Simulator SDK with 0 errors / 0 warnings.
+- Currently active phase: Phase 3 (Motor Health: finger-tapping assessment).
 
 ## Confirmed product decisions
 
@@ -33,10 +36,11 @@ This file is intentionally kept lightweight. Record durable decisions, verified 
 | 2026-10-23 | Use GitHub as the common synchronization point for multiple Macs | Each device keeps a separate local clone; shared changes move through commit/push/pull. |
 | 2026-10-23 | Separate Motor Health data from MindEase wellness data | Prevents relaxation ratings from being interpreted as motor or clinical labels. |
 | 2026-10-23 | Leverage Xcode 16 PBXFileSystemSynchronizedRootGroup | Automatically syncs filesystem changes in `NeuroPulseAI/` without risk of `.pbxproj` merge conflicts. |
+| 2026-10-23 | Core Design Tokens & Component Library | Established reusable ColorTheme, DesignTokens, ModeCardView, and DisclaimerBanner in Core/ for consistent UX. |
 
 ## Current file being worked on
 
-`tasks.md` and `memory.md` (Phase 0 wrap-up); next is `Features/Home/HomeView.swift` and `Core/DesignSystem/`.
+Phase 2 completed. Next is Phase 3: `Features/MotorHealth/` (tapping recorder and protocol views).
 
 ## Known issues / verification needed
 

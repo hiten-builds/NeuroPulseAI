@@ -2,27 +2,26 @@
 
 **Purpose:** Source of truth for the current work queue. Update after every meaningful code, documentation, architecture, or test change.  
 **Last tracker review:** 2026-10-23  
-**Current phase:** Phase 2 — Home screen and navigation  
-**Overall project completion:** Phase 0 & Phase 1 baseline established; entering Phase 2.
+**Current phase:** Phase 3 — Motor Health: finger-tapping assessment  
+**Overall project completion:** Phase 0, 1, and 2 complete. Advancing to motor assessment protocols.
 
 > Progress percentages describe task completion, not clinical validation or product readiness. Do not mark a task complete without evidence.
 
 ## Current task
 
-- **ID:** UI-01
-- **Task:** Implement home screen and navigation to Motor Health and MindEase.
-- **Priority:** P0 — Critical
+- **ID:** MOTOR-01
+- **Task:** Implement finger-tapping capture with monotonic timestamps.
+- **Priority:** P1 — High
 - **Status:** Pending
 - **Progress:** 0%
 - **Owner:** Project team / coding assistant as assigned
-- **Dependencies:** Phase 0 and Phase 1 completion (satisfied)
-- **Acceptance criteria:** Both mode cards are visible, responsive, and navigate cleanly; non-diagnostic disclaimer is displayed; layout works across iPhone simulator screen sizes; clean build succeeds.
+- **Dependencies:** UI-01 (completed)
+- **Acceptance criteria:** Touch events are captured with monotonic elapsed timestamps; timed protocol countdown and live feedback; handles cancellation and invalid/short attempts without crashing.
 
 ## Pending tasks
 
 | ID | Task | Priority | Status | Progress | Dependencies |
 |---|---|---:|---|---:|---|
-| UI-01 | Implement home screen and navigation to Motor Health and MindEase | P0 | Pending | 0% | Phase 1 foundation |
 | MOTOR-01 | Implement finger-tapping capture with monotonic timestamps | P1 | Pending | 0% | UI-01 |
 | MOTOR-02 | Implement tapping metrics, input validation, and quality status | P1 | Pending | 0% | MOTOR-01 |
 | MOTOR-03 | Implement spiral tracing and normalized path capture | P1 | Pending | 0% | UI-01 |
@@ -52,6 +51,7 @@
 - [x] SETUP-02: Established and committed root documentation suite (`requirements.md`, `architecture.md`, `rules.md`, `phases.md`, `tasks.md`, `memory.md`).
 - [x] SETUP-03: Confirmed Xcode 16 `PBXFileSystemSynchronizedRootGroup` dynamic target membership and build settings.
 - [x] SETUP-04: Verified clean build on iOS Simulator SDK via `xcodebuild` (0 errors, 0 warnings).
+- [x] UI-01: Implemented Phase 2 Home screen (`HomeView.swift`), interactive mode cards (`ModeCardView.swift`), safety disclaimer (`DisclaimerBanner.swift`), design system tokens (`ColorTheme.swift`, `DesignTokens.swift`), and feature landing screens (`MotorHealthHomeView.swift`, `MindEaseHomeView.swift`). Clean build verified.
 
 ## Blocked tasks
 
