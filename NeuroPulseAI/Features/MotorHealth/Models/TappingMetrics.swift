@@ -10,6 +10,7 @@ import Foundation
 public enum AssessmentQualityStatus: String, Codable, Sendable {
     case valid = "Valid Session"
     case tooFewTaps = "Insufficient Taps"
+    case insufficientPoints = "Insufficient Points"
     case interruptedEarly = "Interrupted"
     case irregularTiming = "Irregular Timing"
 }

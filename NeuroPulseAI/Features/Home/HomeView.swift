@@ -66,8 +66,7 @@ public struct HomeView: View {
                 .padding(.bottom, DesignTokens.Spacing.xxLarge)
             }
             .background(Color.NeuroPulse.surfaceBackground.ignoresSafeArea())
-            .navigationTitle("")
-            .navigationBarHidden(true)
+            .toolbar(.hidden, for: .navigationBar)
         }
     }
     

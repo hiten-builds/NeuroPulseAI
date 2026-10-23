@@ -9,6 +9,7 @@ import SwiftUI
 
 public struct MindfulnessMeditationView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.scenePhase) private var scenePhase
     
     @State private var selectedMinutes: Int = 3
     @State private var isRunning: Bool = false
@@ -16,6 +17,7 @@ public struct MindfulnessMeditationView: View {
     @State private var reflectionIndex: Int = 0
     @State private var timer: Timer? = nil
     @State private var auraScale: CGFloat = 1.0
+    @State private var hasSaved: Bool = false
     
     private let reflections = [
         "Notice the sensation of your natural breath.",
@@ -139,6 +141,14 @@ public struct MindfulnessMeditationView: View {
         .background(Color.NeuroPulse.surfaceBackground.ignoresSafeArea())
         .navigationTitle("Mindfulness Pause")
         .navigationBarTitleDisplayMode(.inline)
+        .onDisappear {
+            stopTimer()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .background && isRunning {
+                isRunning = false
+            }
+        }
     }
     
     private var durationSelectorView: some View {
@@ -163,6 +173,7 @@ public struct MindfulnessMeditationView: View {
     }
     
     private func startSession() {
+        stopTimer()
         isRunning = true
         elapsedSeconds = 0.0
         startAuraPulse()
@@ -195,9 +206,19 @@ public struct MindfulnessMeditationView: View {
         isRunning.toggle()
     }
     
-    private func finishSession() {
+    private func stopTimer() {
         timer?.invalidate()
         timer = nil
+        isRunning = false
+    }
+    
+    private func finishSession() {
+        stopTimer()
+        guard !hasSaved else {
+            dismiss()
+            return
+        }
+        hasSaved = true
         let record = WellnessSessionRecord(
             activityType: .meditation,
             durationSeconds: elapsedSeconds,

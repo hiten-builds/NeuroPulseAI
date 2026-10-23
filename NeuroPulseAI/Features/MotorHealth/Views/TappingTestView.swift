@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Darwin
 
 public struct TappingTestView: View {
     @Environment(\.dismiss) private var dismiss
@@ -23,18 +22,16 @@ public struct TappingTestView: View {
     @State private var plannedDuration: TimeInterval = 15.0
     
     // Test recording state
-    @State private var startTicks: UInt64 = 0
-    @State private var timebaseInfo = mach_timebase_info()
+    @State private var startNanos: UInt64 = 0
     @State private var events: [TapEvent] = []
     @State private var currentElapsed: TimeInterval = 0.0
-    @State private var timer: Timer? = nil
+    @State private var recordingTimer: Timer? = nil
+    @State private var countdownTimer: Timer? = nil
     
     // Animation states
     @State private var tapScale: CGFloat = 1.0
     
-    public init() {
-        mach_timebase_info(&timebaseInfo)
-    }
+    public init() {}
     
     public var body: some View {
         ZStack {
@@ -63,6 +60,9 @@ public struct TappingTestView: View {
                     }
                 }
             }
+        }
+        .onDisappear {
+            cleanupTimers()
         }
     }
     
@@ -258,38 +258,42 @@ public struct TappingTestView: View {
     // MARK: - Logic & Monotonic Timing
     
     private func startCountdown() {
+        cleanupTimers()
         state = .countdown(3)
         var count = 3
-        Timer.scheduledTimer(withTimeInterval: 0.9, repeats: true) { cTimer in
+        countdownTimer = Timer.scheduledTimer(withTimeInterval: 0.9, repeats: true) { cTimer in
             count -= 1
             if count > 0 {
                 state = .countdown(count)
             } else {
                 cTimer.invalidate()
+                countdownTimer = nil
                 beginRecording()
             }
         }
     }
     
     private func beginRecording() {
+        cleanupTimers()
         events = []
         currentElapsed = 0.0
-        startTicks = mach_absolute_time()
+        startNanos = MonotonicClock.nowNanoseconds()
         state = .active
         
-        timer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { t in
+        recordingTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { t in
             let elapsed = getMonotonicElapsedSeconds()
             currentElapsed = elapsed
             
             if elapsed >= plannedDuration {
                 t.invalidate()
-                timer = nil
+                recordingTimer = nil
                 finishTest()
             }
         }
     }
     
     private func recordTap() {
+        guard case .active = state else { return }
         let elapsed = getMonotonicElapsedSeconds()
         let event = TapEvent(elapsedSeconds: elapsed, target: .primary)
         events.append(event)
@@ -306,13 +310,12 @@ public struct TappingTestView: View {
     }
     
     private func getMonotonicElapsedSeconds() -> TimeInterval {
-        let nowTicks = mach_absolute_time()
-        let elapsedTicks = nowTicks >= startTicks ? nowTicks - startTicks : 0
-        let elapsedNanos = elapsedTicks * UInt64(timebaseInfo.numer) / UInt64(timebaseInfo.denom)
-        return Double(elapsedNanos) / 1_000_000_000.0
+        guard startNanos > 0 else { return 0.0 }
+        return MonotonicClock.elapsedSeconds(since: startNanos)
     }
     
     private func finishTest() {
+        cleanupTimers()
         let finalElapsed = getMonotonicElapsedSeconds()
         let metrics = MotorFeatureCalculator.calculateMetrics(
             events: events,
@@ -337,9 +340,15 @@ public struct TappingTestView: View {
     }
     
     private func cancelTest() {
-        timer?.invalidate()
-        timer = nil
+        cleanupTimers()
         dismiss()
+    }
+    
+    private func cleanupTimers() {
+        countdownTimer?.invalidate()
+        countdownTimer = nil
+        recordingTimer?.invalidate()
+        recordingTimer = nil
     }
 }
 

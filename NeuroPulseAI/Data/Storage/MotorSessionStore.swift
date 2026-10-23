@@ -2,7 +2,9 @@
 //  MotorSessionStore.swift
 //  NeuroPulseAI
 //
-//  Local file-based persistence for motor assessment sessions.
+//  Hardened local file-based persistence for motor assessment sessions.
+//  Uses atomic writes, isolated Application Support directory, and supports
+//  dependency-injected storage directories for isolated unit tests.
 //
 
 import Foundation
@@ -13,16 +15,24 @@ public final class MotorSessionStore: ObservableObject {
     public static let shared = MotorSessionStore()
     
     @Published public private(set) var records: [MotorSessionRecord] = []
+    @Published public var lastErrorMessage: String? = nil
     
     private let fileName = "motor_sessions.json"
+    private let customDirectory: URL?
     
-    public init() {
+    public init(customDirectory: URL? = nil) {
+        self.customDirectory = customDirectory
         load()
     }
     
-    private var fileURL: URL {
-        let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
-        let dir = paths[0].appendingPathComponent("NeuroPulseAI", isDirectory: true)
+    public var fileURL: URL {
+        let dir: URL
+        if let custom = customDirectory {
+            dir = custom
+        } else {
+            let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
+            dir = paths[0].appendingPathComponent("NeuroPulseAI", isDirectory: true)
+        }
         if !FileManager.default.fileExists(atPath: dir.path) {
             try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         }
@@ -127,16 +137,18 @@ public final class MotorSessionStore: ObservableObject {
         persist()
     }
     
-    private func persist() {
+    public func persist() {
         do {
             let data = try JSONEncoder().encode(records)
             try data.write(to: fileURL, options: [.atomic])
+            lastErrorMessage = nil
         } catch {
-            print("Failed to persist motor sessions: \(error)")
+            lastErrorMessage = "Failed to save sessions: \(error.localizedDescription)"
+            print("MotorSessionStore persist error: \(error)")
         }
     }
     
-    private func load() {
+    public func load() {
         guard FileManager.default.fileExists(atPath: fileURL.path) else {
             return
         }
@@ -144,8 +156,10 @@ public final class MotorSessionStore: ObservableObject {
             let data = try Data(contentsOf: fileURL)
             records = try JSONDecoder().decode([MotorSessionRecord].self, from: data)
             records.sort(by: { $0.date > $1.date })
+            lastErrorMessage = nil
         } catch {
-            print("Failed to load motor sessions: \(error)")
+            lastErrorMessage = "Failed to load saved sessions. Previous data preserved."
+            print("MotorSessionStore load error: \(error)")
         }
     }
 }
