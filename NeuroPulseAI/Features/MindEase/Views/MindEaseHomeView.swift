@@ -8,6 +8,8 @@
 import SwiftUI
 
 public struct MindEaseHomeView: View {
+    @ObservedObject private var store = WellnessSessionStore.shared
+    
     public init() {}
     
     public var body: some View {
@@ -46,31 +48,84 @@ public struct MindEaseHomeView: View {
                         .foregroundStyle(.primary)
                     
                     // Guided Breathing Card
-                    activityCard(
-                        title: "Guided Breathing",
-                        subtitle: "Animated visual pacing for calming, balanced breathwork. Fully interruptible.",
-                        icon: "circle.circle",
-                        badge: "Visual Pacer",
-                        badgeColor: Color.NeuroPulse.mindEasePrimary
-                    )
+                    NavigationLink {
+                        BreathingSessionView()
+                    } label: {
+                        activityCard(
+                            title: "Guided Breathing",
+                            subtitle: "Animated visual pacing for calming, balanced breathwork. Fully interruptible.",
+                            icon: "circle.circle",
+                            badge: "Visual Pacer",
+                            badgeColor: Color.NeuroPulse.mindEasePrimary
+                        )
+                    }
+                    .buttonStyle(PlainButtonStyle())
                     
                     // Mindful Meditation Card
-                    activityCard(
-                        title: "Mindfulness Pause",
-                        subtitle: "A short, self-directed stillness session to reduce stress and reset focus.",
-                        icon: "sparkles",
-                        badge: "Quiet Focus",
-                        badgeColor: Color.NeuroPulse.mindEaseSecondary
-                    )
+                    NavigationLink {
+                        MindfulnessMeditationView()
+                    } label: {
+                        activityCard(
+                            title: "Mindfulness Pause",
+                            subtitle: "A short, self-directed stillness session to reduce stress and reset focus.",
+                            icon: "sparkles",
+                            badge: "Quiet Focus",
+                            badgeColor: Color.NeuroPulse.mindEaseSecondary
+                        )
+                    }
+                    .buttonStyle(PlainButtonStyle())
                     
                     // Mindful Tracing Card
-                    activityCard(
-                        title: "Mindful Tracing",
-                        subtitle: "An unscored, therapeutic tactile exercise separate from motor evaluations.",
-                        icon: "leaf.fill",
-                        badge: "Unscored",
-                        badgeColor: Color.NeuroPulse.brandTeal
-                    )
+                    NavigationLink {
+                        MindfulTracingView()
+                    } label: {
+                        activityCard(
+                            title: "Mindful Tracing",
+                            subtitle: "An unscored, therapeutic tactile exercise separate from motor evaluations.",
+                            icon: "leaf.fill",
+                            badge: "Unscored",
+                            badgeColor: Color.NeuroPulse.brandTeal
+                        )
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+                
+                // Recent Wellness Sessions List
+                if !store.records.isEmpty {
+                    VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
+                        Text("Recent Peaceful Moments")
+                            .font(.headline)
+                            .foregroundStyle(.primary)
+                        
+                        VStack(spacing: DesignTokens.Spacing.small) {
+                            ForEach(store.records.prefix(4)) { record in
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(record.activityType.rawValue)
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                        Text(record.date.formatted(date: .abbreviated, time: .shortened))
+                                            .font(.caption2)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    Text("\(Int(record.durationSeconds))s")
+                                        .font(.caption)
+                                        .fontWeight(.semibold)
+                                        .foregroundStyle(Color.NeuroPulse.mindEasePrimary)
+                                }
+                                .padding(DesignTokens.Spacing.medium)
+                                .background(Color.NeuroPulse.cardBackground)
+                                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
+                                        .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                                )
+                            }
+                        }
+                    }
                 }
                 
                 // Separate Wellness Data Note
