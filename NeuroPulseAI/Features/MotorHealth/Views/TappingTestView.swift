@@ -320,6 +320,19 @@ public struct TappingTestView: View {
             actualDuration: finalElapsed,
             testedHand: selectedHand
         )
+        let session = MotorSessionRecord(
+            date: Date(),
+            testType: .tapping,
+            testedHand: selectedHand,
+            durationSeconds: finalElapsed,
+            primaryScoreLabel: String(format: "%.1f Hz", metrics.cadenceHz),
+            primaryScoreValue: metrics.cadenceHz,
+            secondaryScoreLabel: "\(metrics.tapCount) taps",
+            qualityStatus: metrics.qualityStatus,
+            protocolVersion: metrics.protocolVersion,
+            isSampleData: false
+        )
+        MotorSessionStore.shared.save(record: session)
         state = .finished(metrics)
     }
     

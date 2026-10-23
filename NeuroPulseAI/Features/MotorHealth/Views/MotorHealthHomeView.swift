@@ -80,30 +80,41 @@ public struct MotorHealthHomeView: View {
                         .font(.headline)
                         .foregroundStyle(.primary)
                     
-                    HStack(spacing: DesignTokens.Spacing.medium) {
-                        Image(systemName: "chart.xyaxis.line")
-                            .font(.system(size: 28))
-                            .foregroundStyle(Color.NeuroPulse.motorPrimary.opacity(0.8))
-                        
-                        VStack(alignment: .leading, spacing: DesignTokens.Spacing.xSmall) {
-                            Text("No Sessions Recorded Yet")
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(.primary)
+                    NavigationLink {
+                        ProgressDashboardView()
+                    } label: {
+                        HStack(spacing: DesignTokens.Spacing.medium) {
+                            Image(systemName: "chart.xyaxis.line")
+                                .font(.system(size: 28))
+                                .foregroundStyle(Color.NeuroPulse.motorPrimary)
                             
-                            Text("Complete a tapping or tracing assessment to establish your personal baseline.")
+                            VStack(alignment: .leading, spacing: DesignTokens.Spacing.xSmall) {
+                                Text("View Trends & Progress")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.primary)
+                                
+                                Text("Review cadence history, RMSE deviation curves, and past attempts.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
+                        .padding(DesignTokens.Spacing.medium)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color.NeuroPulse.cardBackground)
+                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
+                                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                        )
                     }
-                    .padding(DesignTokens.Spacing.medium)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.NeuroPulse.cardBackground)
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                            .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
-                    )
+                    .buttonStyle(PlainButtonStyle())
                 }
                 
                 // Disclaimer Banner

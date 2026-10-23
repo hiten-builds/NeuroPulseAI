@@ -281,6 +281,19 @@ public struct SpiralTracingView: View {
             testedHand: selectedHand,
             actualDuration: finalElapsed
         )
+        let session = MotorSessionRecord(
+            date: Date(),
+            testType: .spiral,
+            testedHand: selectedHand,
+            durationSeconds: finalElapsed,
+            primaryScoreLabel: String(format: "%.1f%% RMSE", metrics.rmsePercent),
+            primaryScoreValue: metrics.rmsePercent,
+            secondaryScoreLabel: String(format: "%.2fx length", metrics.pathLengthRatio),
+            qualityStatus: metrics.qualityStatus,
+            protocolVersion: metrics.protocolVersion,
+            isSampleData: false
+        )
+        MotorSessionStore.shared.save(record: session)
         state = .finished(metrics)
     }
 }
