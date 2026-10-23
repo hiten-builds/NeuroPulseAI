@@ -46,13 +46,18 @@ public struct MotorHealthHomeView: View {
                         .foregroundStyle(.primary)
                     
                     // Finger Tapping Card
-                    assessmentCard(
-                        title: "Finger-Tapping Test",
-                        subtitle: "Timed 15-second protocol measuring cadence, intervals, and rhythm consistency.",
-                        icon: "hand.point.up.left.fill",
-                        badge: "Protocol v1",
-                        badgeColor: Color.NeuroPulse.motorPrimary
-                    )
+                    NavigationLink {
+                        TappingTestView()
+                    } label: {
+                        assessmentCard(
+                            title: "Finger-Tapping Test",
+                            subtitle: "Timed 15-second protocol measuring cadence, intervals, and rhythm consistency.",
+                            icon: "hand.point.up.left.fill",
+                            badge: "Protocol v1",
+                            badgeColor: Color.NeuroPulse.motorPrimary
+                        )
+                    }
+                    .buttonStyle(PlainButtonStyle())
                     
                     // Spiral Tracing Card
                     assessmentCard(
