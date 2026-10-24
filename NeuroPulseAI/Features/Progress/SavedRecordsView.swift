@@ -12,7 +12,7 @@ public enum ActivityHistoryFilter: String, CaseIterable, Identifiable {
     case all = "All"
     case motor = "Motor Health"
     case wellness = "MindEase"
-    
+
     public var id: String { rawValue }
 }
 
@@ -30,7 +30,7 @@ public struct UnifiedActivityItem: Identifiable {
     public let statusLabel: String
     public let isSuccessStatus: Bool
     public let isSampleData: Bool
-    
+
     // Detailed metadata for inspection sheet
     public let testedHand: String?
     public let cadenceHz: Double?
@@ -46,21 +46,21 @@ public struct SavedRecordsView: View {
     @ObservedObject private var motorStore = MotorSessionStore.shared
     @ObservedObject private var wellnessStore = WellnessSessionStore.shared
     @ObservedObject private var authManager = AuthManager.shared
-    
+
     @State private var selectedFilter: ActivityHistoryFilter = .all
     @State private var selectedRecordForDetail: UnifiedActivityItem? = nil
     @State private var showClearConfirmation: Bool = false
-    
+
     public init() {}
-    
+
     private var unifiedItems: [UnifiedActivityItem] {
         var items: [UnifiedActivityItem] = []
-        
+
         // 1. Motor Records
         if selectedFilter == .all || selectedFilter == .motor {
             for m in motorStore.records {
                 let isSuccess = m.qualityStatus == .valid
-                
+
                 var subtitleParts: [String] = []
                 subtitleParts.append("\(m.testedHand) Hand")
                 if let dev = m.meanCenterDeviationPoints {
@@ -69,7 +69,7 @@ public struct SavedRecordsView: View {
                 if let acc = m.alternationAccuracyPercent {
                     subtitleParts.append(String(format: "%.0f%% acc", acc))
                 }
-                
+
                 let item = UnifiedActivityItem(
                     id: "motor_\(m.id.uuidString)",
                     date: m.date,
@@ -96,19 +96,19 @@ public struct SavedRecordsView: View {
                 items.append(item)
             }
         }
-        
+
         // 2. Wellness Records
         if selectedFilter == .all || selectedFilter == .wellness {
             for w in wellnessStore.records {
                 let isSuccess = w.completionStatus == "Completed"
-                
+
                 var subtitleParts: [String] = []
                 if let before = w.ratingBefore, let after = w.ratingAfter {
                     subtitleParts.append("Rating: \(before) → \(after)")
                 } else if let rating = w.ratingAfter ?? w.ratingBefore {
                     subtitleParts.append("Rating: \(rating)/5")
                 }
-                
+
                 let icon: String
                 let color: Color
                 switch w.activityType {
@@ -122,7 +122,7 @@ public struct SavedRecordsView: View {
                     icon = "leaf.fill"
                     color = Color.NeuroPulse.brandTeal
                 }
-                
+
                 let item = UnifiedActivityItem(
                     id: "wellness_\(w.id.uuidString)",
                     date: w.date,
@@ -149,7 +149,7 @@ public struct SavedRecordsView: View {
                 items.append(item)
             }
         }
-        
+
         // Sort reverse chronological deterministically (newest first, id tie-breaker)
         return items.sorted(by: {
             if $0.date != $1.date {
@@ -158,40 +158,62 @@ public struct SavedRecordsView: View {
             return $0.id > $1.id
         })
     }
-    
+
     public var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.large) {
                 // Header
                 headerSection
-                
+
                 // Storage / Error banner
                 if let err = motorStore.lastErrorMessage ?? wellnessStore.lastErrorMessage {
                     errorBanner(message: err)
                 }
-                
-                // Filter Picker
-                Picker("Activity Category", selection: $selectedFilter) {
+
+                // Filter Chips (Brutal style)
+                HStack(spacing: 10) {
                     ForEach(ActivityHistoryFilter.allCases) { filter in
-                        Text(filter.rawValue).tag(filter)
+                        let isActive = selectedFilter == filter
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                selectedFilter = filter
+                            }
+                        } label: {
+                            Text(filter.rawValue)
+                                .font(.system(size: 14, weight: .bold, design: .rounded))
+                                .foregroundStyle(Color.NeoBrutal.ink)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(
+                                    ZStack {
+                                        Capsule()
+                                            .fill(Color.NeoBrutal.ink)
+                                            .offset(x: 2, y: 2)
+                                        Capsule()
+                                            .fill(isActive ? Color.NeoBrutal.lavender : Color.white)
+                                        Capsule()
+                                            .stroke(Color.NeoBrutal.ink, lineWidth: 2)
+                                    }
+                                )
+                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
                 }
-                .pickerStyle(.segmented)
-                
+
                 // Records List or Empty State
                 if unifiedItems.isEmpty {
                     emptyStateSection
                 } else {
                     recordsListSection
                 }
-                
+
                 // Export & Management
                 exportAndManagementSection
             }
-            .padding(.horizontal, DesignTokens.Spacing.large)
-            .padding(.bottom, DesignTokens.Spacing.xxLarge)
+            .padding(.horizontal, 20)
+            .padding(.bottom, 36)
         }
-        .background(Color.NeuroPulse.surfaceBackground.ignoresSafeArea())
+        .background(Color.white.ignoresSafeArea())
         .navigationTitle("Saved Records")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(item: $selectedRecordForDetail) { record in
@@ -207,52 +229,49 @@ public struct SavedRecordsView: View {
             Text("This will permanently delete local sessions stored on this device.")
         }
     }
-    
+
     // MARK: - Subviews
-    
+
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("Activity History")
-                .font(.title)
-                .fontWeight(.bold)
-                .foregroundStyle(.primary)
+                .font(.system(size: 26, weight: .bold, design: .rounded))
+                .foregroundStyle(Color.NeoBrutal.ink)
+
+            Text("Chronological record of completed assessments and wellness sessions")
+                .font(.system(size: 14, weight: .regular, design: .rounded))
+                .foregroundStyle(Color.NeoBrutal.mutedText)
         }
-        .padding(.top, DesignTokens.Spacing.small)
+        .padding(.top, 8)
     }
-    
+
     private var emptyStateSection: some View {
-        VStack(spacing: DesignTokens.Spacing.medium) {
-            ZStack {
-                Circle()
-                    .fill(Color.NeuroPulse.brandTeal.opacity(0.12))
-                    .frame(width: 80, height: 80)
-                Image(systemName: "tray.fill")
-                    .font(.system(size: 36))
-                    .foregroundStyle(Color.NeuroPulse.brandTeal)
-            }
-            
+        VStack(spacing: 16) {
+            BrutalIconTile(
+                iconName: "tray.fill",
+                size: 64,
+                iconSize: 28,
+                cornerRadius: 18,
+                outlineWidth: 2,
+                bg: Color.NeoBrutal.lavender
+            )
+
             Text("No Saved Records Yet")
-                .font(.headline)
-                .foregroundStyle(.primary)
-            
-            Text("Complete a Finger-Tapping or Spiral-Tracing assessment, or take a peaceful breathing session. Completed sessions will automatically save and appear here.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .foregroundStyle(Color.NeoBrutal.ink)
+
+            Text("Completed assessments and wellness sessions will appear here.")
+                .font(.system(size: 14, weight: .regular, design: .rounded))
+                .foregroundStyle(Color.NeoBrutal.mutedText)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, DesignTokens.Spacing.medium)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, DesignTokens.Spacing.xxLarge)
-        .background(Color.NeuroPulse.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-        )
+        .padding(24)
+        .brutalCard(cornerRadius: 20, fill: .white, outlineWidth: 2, hasShadow: true, shadowOffset: 3)
     }
-    
+
     private var recordsListSection: some View {
-        VStack(spacing: DesignTokens.Spacing.small) {
+        VStack(spacing: 10) {
             ForEach(unifiedItems) { item in
                 Button {
                     selectedRecordForDetail = item
@@ -263,114 +282,101 @@ public struct SavedRecordsView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private func recordCard(_ item: UnifiedActivityItem) -> some View {
-        HStack(alignment: .top, spacing: DesignTokens.Spacing.medium) {
-            ZStack {
-                Circle()
-                    .fill(item.iconColor.opacity(0.12))
-                    .frame(width: 44, height: 44)
-                Image(systemName: item.iconName)
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(item.iconColor)
-            }
-            
-            VStack(alignment: .leading, spacing: 4) {
+        HStack(alignment: .center, spacing: 14) {
+            BrutalIconTile(
+                iconName: item.iconName,
+                size: 44,
+                iconSize: 20,
+                cornerRadius: 12,
+                outlineWidth: 1.5,
+                bg: item.category == "Motor Health" ? Color.NeoBrutal.lavender.opacity(0.4) : Color.NeoBrutal.mint.opacity(0.4)
+            )
+
+            VStack(alignment: .leading, spacing: 3) {
                 HStack {
                     Text(item.title)
-                        .font(.headline)
-                        .foregroundStyle(.primary)
-                    
-                    if item.isSampleData {
-                        Text("Demo")
-                            .font(.system(size: 10, weight: .bold))
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(Capsule().fill(Color.NeuroPulse.info))
-                    }
-                    
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.ink)
+
                     Spacer()
-                    
+
                     Text(item.primaryScore)
-                        .font(.headline)
-                        .fontWeight(.bold)
-                        .foregroundStyle(item.iconColor)
+                        .font(.system(size: 15, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.ink)
                 }
-                
+
                 HStack {
                     Text(item.subtitle)
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                    
+                        .font(.system(size: 13, weight: .regular, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.mutedText)
+
                     Spacer()
-                    
+
                     Text(item.date.formatted(date: .abbreviated, time: .shortened))
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.mutedText)
                 }
-                
-                HStack(spacing: 6) {
-                    Circle()
-                        .fill(item.isSuccessStatus ? Color.NeuroPulse.success : Color.NeuroPulse.warning)
-                        .frame(width: 6, height: 6)
-                    
-                    Text(item.statusLabel)
-                        .font(.footnote)
-                        .fontWeight(.medium)
-                        .foregroundStyle(item.isSuccessStatus ? Color.NeuroPulse.success : Color.NeuroPulse.warning)
-                    
+
+                HStack {
+                    BrutalBadge(
+                        item.statusLabel,
+                        style: item.isSuccessStatus ? .inProgress : .pending
+                    )
+
                     Spacer()
-                    
-                    Text("Details")
-                        .font(.footnote)
-                        .foregroundStyle(Color.NeuroPulse.brandTeal)
-                    Image(systemName: "chevron.right")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+
+                    HStack(spacing: 4) {
+                        Text("Details")
+                            .font(.system(size: 13, weight: .bold, design: .rounded))
+                            .foregroundStyle(Color.NeoBrutal.ink)
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(Color.NeoBrutal.ink)
+                    }
                 }
                 .padding(.top, 2)
             }
         }
-        .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.NeuroPulse.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-        )
+        .padding(14)
+        .brutalRow(cornerRadius: 16, fill: .white, outlineWidth: 1.5)
     }
-    
+
     // MARK: - Export and Management
-    
+
     private var exportAndManagementSection: some View {
-        VStack(spacing: DesignTokens.Spacing.medium) {
+        VStack(spacing: 14) {
             // User-initiated CSV Export
             if !motorStore.records.isEmpty, let exportURL = SessionExportService.exportTemporaryCSVFile(from: motorStore.records) {
                 ShareLink(
                     item: exportURL,
                     preview: SharePreview("NeuroPulse AI Sessions CSV", image: Image(systemName: "doc.text.fill"))
                 ) {
-                    HStack(spacing: DesignTokens.Spacing.small) {
+                    HStack(spacing: 8) {
                         Image(systemName: "square.and.arrow.up")
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.system(size: 16, weight: .bold))
                         Text("Export Motor Sessions (CSV)")
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(.system(size: 16, weight: .bold, design: .rounded))
                     }
-                    .foregroundStyle(Color.NeuroPulse.brandTeal)
+                    .foregroundStyle(Color.NeoBrutal.ink)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 50)
-                    .background(Color.NeuroPulse.cardBackground)
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                            .stroke(Color.NeuroPulse.brandTeal.opacity(0.4), lineWidth: 1)
+                    .frame(height: 52)
+                    .background(
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .fill(Color.NeoBrutal.ink)
+                                .offset(x: 3, y: 3)
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .fill(Color.NeoBrutal.lavender)
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .stroke(Color.NeoBrutal.ink, lineWidth: 2)
+                        }
                     )
                 }
             }
-            
+
             HStack(spacing: DesignTokens.Spacing.large) {
                 Button {
                     motorStore.load()
@@ -384,7 +390,7 @@ public struct SavedRecordsView: View {
                     .fontWeight(.medium)
                     .foregroundStyle(Color.NeuroPulse.brandTeal)
                 }
-                
+
                 if !unifiedItems.isEmpty {
                     Button(role: .destructive) {
                         showClearConfirmation = true
@@ -403,7 +409,7 @@ public struct SavedRecordsView: View {
         .frame(maxWidth: .infinity)
         .padding(.top, DesignTokens.Spacing.small)
     }
-    
+
     @ViewBuilder
     private func errorBanner(message: String) -> some View {
         HStack(spacing: DesignTokens.Spacing.small) {
@@ -425,9 +431,9 @@ public struct SavedRecordsView: View {
         .background(Color.NeuroPulse.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
     }
-    
+
     // MARK: - Detail Sheet
-    
+
     private func recordDetailSheet(_ record: UnifiedActivityItem) -> some View {
         NavigationStack {
             ScrollView {
@@ -442,7 +448,7 @@ public struct SavedRecordsView: View {
                                 .font(.system(size: 24, weight: .bold))
                                 .foregroundStyle(record.iconColor)
                         }
-                        
+
                         VStack(alignment: .leading, spacing: 2) {
                             Text(record.title)
                                 .font(.title3)
@@ -456,35 +462,35 @@ public struct SavedRecordsView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(Color.NeuroPulse.cardBackground)
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-                    
+
                     // Metrics Breakdown
                     VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
                         Text("Session Metrics")
                             .font(.headline)
-                        
+
                         detailRow(title: "Duration", value: String(format: "%.1fs", record.durationSeconds))
                         detailRow(title: "Status", value: record.statusLabel)
-                        
+
                         if let hand = record.testedHand {
                             detailRow(title: "Tested Hand", value: "\(hand) Hand")
                         }
-                        
+
                         if let cadence = record.cadenceHz {
                             detailRow(title: "Cadence", value: String(format: "%.2f Hz", cadence))
                         }
-                        
+
                         if let dev = record.meanDeviationPoints {
                             detailRow(title: "Mean Center Deviation", value: String(format: "%.1f pt", dev))
                         }
-                        
+
                         if let norm = record.normalizedDeviationPercent {
                             detailRow(title: "Normalized Deviation", value: String(format: "%.1f%% radius", norm))
                         }
-                        
+
                         if let acc = record.alternationAccuracy {
                             detailRow(title: "Alternation Accuracy", value: String(format: "%.1f%%", acc))
                         }
-                        
+
                         if let before = record.ratingBefore {
                             detailRow(title: "Check-in Before", value: "\(before) / 5")
                         }
@@ -495,7 +501,7 @@ public struct SavedRecordsView: View {
                     .padding(DesignTokens.Spacing.medium)
                     .background(Color.NeuroPulse.cardBackground)
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-                    
+
                     // Quality / Explanation
                     if let expl = record.qualityExplanation {
                         VStack(alignment: .leading, spacing: DesignTokens.Spacing.small) {
@@ -525,7 +531,7 @@ public struct SavedRecordsView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private func detailRow(title: String, value: String) -> some View {
         HStack {

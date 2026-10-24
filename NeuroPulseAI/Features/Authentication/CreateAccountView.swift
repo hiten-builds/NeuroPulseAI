@@ -29,24 +29,16 @@ public struct CreateAccountView: View {
                 VStack(spacing: DesignTokens.Spacing.large) {
                     // MARK: - Header Text
                     VStack(spacing: DesignTokens.Spacing.xSmall) {
-                        ZStack {
-                            Circle()
-                                .fill(Color.NeuroPulse.brandTeal.opacity(0.15))
-                                .frame(width: 56, height: 56)
-                            Image(systemName: "person.crop.circle.badge.plus")
-                                .font(.system(size: 26))
-                                .foregroundStyle(Color.NeuroPulse.brandTeal)
-                        }
-                        .padding(.top, DesignTokens.Spacing.small)
+                        BrutalIconTile(iconName: "person.crop.circle.badge.plus", size: 56, iconSize: 26, bg: Color.NeoBrutal.mint)
+                            .padding(.top, DesignTokens.Spacing.small)
 
                         Text("Create Your Account")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .foregroundStyle(.primary)
+                            .font(.system(size: 26, weight: .bold, design: .rounded))
+                            .foregroundStyle(Color.NeoBrutal.ink)
 
                         Text("Register with email to manage your account and optionally personalize recommendations.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
+                            .font(.system(size: 14, weight: .regular, design: .rounded))
+                            .foregroundStyle(Color.NeoBrutal.mutedText)
                             .multilineTextAlignment(.center)
                     }
 
@@ -54,65 +46,47 @@ public struct CreateAccountView: View {
                     VStack(spacing: DesignTokens.Spacing.medium) {
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Email Address")
-                                .font(.footnote)
-                                .fontWeight(.medium)
-                                .foregroundStyle(.secondary)
+                                .font(.system(size: 13, weight: .bold, design: .rounded))
+                                .foregroundStyle(Color.NeoBrutal.ink)
 
                             HStack {
                                 Image(systemName: "envelope.fill")
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Color.NeoBrutal.mutedText)
                                 TextField("name@example.com", text: $email)
+                                    .font(.system(size: 16, design: .rounded))
                                     .keyboardType(.emailAddress)
                                     .textInputAutocapitalization(.never)
                                     .autocorrectionDisabled()
                             }
-                            .padding(14)
-                            .background(Color.NeuroPulse.cardBackground)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-                            )
+                            .brutalInput(isFocused: !email.isEmpty)
                         }
 
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Password (Minimum 8 characters)")
-                                .font(.footnote)
-                                .fontWeight(.medium)
-                                .foregroundStyle(.secondary)
+                                .font(.system(size: 13, weight: .bold, design: .rounded))
+                                .foregroundStyle(Color.NeoBrutal.ink)
 
                             HStack {
                                 Image(systemName: "lock.fill")
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Color.NeoBrutal.mutedText)
                                 SecureField("Create password", text: $password)
+                                    .font(.system(size: 16, design: .rounded))
                             }
-                            .padding(14)
-                            .background(Color.NeuroPulse.cardBackground)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-                            )
+                            .brutalInput(isFocused: !password.isEmpty)
                         }
 
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Confirm Password")
-                                .font(.footnote)
-                                .fontWeight(.medium)
-                                .foregroundStyle(.secondary)
+                                .font(.system(size: 13, weight: .bold, design: .rounded))
+                                .foregroundStyle(Color.NeoBrutal.ink)
 
                             HStack {
                                 Image(systemName: "lock.rotation")
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Color.NeoBrutal.mutedText)
                                 SecureField("Re-enter password", text: $confirmPassword)
+                                    .font(.system(size: 16, design: .rounded))
                             }
-                            .padding(14)
-                            .background(Color.NeuroPulse.cardBackground)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-                            )
+                            .brutalInput(isFocused: !confirmPassword.isEmpty)
                         }
                     }
 
@@ -120,15 +94,19 @@ public struct CreateAccountView: View {
                     if let message = activeErrorMessage {
                         HStack(spacing: DesignTokens.Spacing.small) {
                             Image(systemName: "exclamationmark.triangle.fill")
-                                .foregroundStyle(Color.NeuroPulse.error)
+                                .foregroundStyle(Color.NeoBrutal.alertRed)
                             Text(message)
-                                .font(.footnote)
-                                .foregroundStyle(Color.NeuroPulse.error)
+                                .font(.system(size: 13, weight: .medium, design: .rounded))
+                                .foregroundStyle(Color.NeoBrutal.alertRed)
                             Spacer()
                         }
-                        .padding(DesignTokens.Spacing.medium)
-                        .background(Color.NeuroPulse.error.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.small))
+                        .padding(14)
+                        .background(Color.NeoBrutal.badgePendingBg)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.NeoBrutal.ink, lineWidth: 1.5)
+                        )
                     }
 
                     // MARK: - Submit Button
@@ -138,25 +116,13 @@ public struct CreateAccountView: View {
                         HStack {
                             if authManager.isAuthenticating {
                                 ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .progressViewStyle(CircularProgressViewStyle(tint: Color.NeoBrutal.ink))
                                     .padding(.trailing, 4)
                             }
                             Text("Create Account")
-                                .font(.system(size: 17, weight: .semibold))
                         }
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .background(
-                            LinearGradient(
-                                colors: [Color.NeuroPulse.brandTeal, Color.NeuroPulse.motorPrimary],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-                        .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.25), radius: 6, y: 3)
                     }
+                    .buttonStyle(BrutalButtonStyle(fill: Color.NeoBrutal.lavender))
                     .disabled(authManager.isAuthenticating || email.isEmpty || password.isEmpty || confirmPassword.isEmpty)
                     .opacity((email.isEmpty || password.isEmpty || confirmPassword.isEmpty) ? 0.6 : 1.0)
                     .accessibilityLabel("Create a new account")
@@ -168,12 +134,12 @@ public struct CreateAccountView: View {
                         } label: {
                             HStack(spacing: 4) {
                                 Text("Already have an account?")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
+                                    .font(.system(size: 14, weight: .regular, design: .rounded))
+                                    .foregroundStyle(Color.NeoBrutal.mutedText)
                                 Text("Sign In")
-                                    .font(.subheadline)
-                                    .fontWeight(.semibold)
-                                    .foregroundStyle(Color.NeuroPulse.brandTeal)
+                                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                                    .foregroundStyle(Color.NeoBrutal.ink)
+                                    .underline()
                             }
                         }
                         .padding(.top, DesignTokens.Spacing.xSmall)
@@ -182,7 +148,7 @@ public struct CreateAccountView: View {
                 .padding(.horizontal, DesignTokens.Spacing.large)
                 .padding(.vertical, DesignTokens.Spacing.large)
             }
-            .background(Color.NeuroPulse.surfaceBackground.ignoresSafeArea())
+            .background(Color.white.ignoresSafeArea())
             .navigationTitle("Create Account")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

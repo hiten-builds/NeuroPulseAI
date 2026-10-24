@@ -26,51 +26,34 @@ public struct PersonalizationConsentView: View {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.large) {
                 // MARK: - Header
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.small) {
-                    ZStack {
-                        Circle()
-                            .fill(Color.NeuroPulse.brandTeal.opacity(0.15))
-                            .frame(width: 54, height: 54)
-                        Image(systemName: "hand.raised.square.on.square.fill")
-                            .font(.system(size: 26))
-                            .foregroundStyle(Color.NeuroPulse.brandTeal)
-                    }
+                    BrutalIconTile(iconName: "hand.raised.square.on.square.fill", size: 54, iconSize: 26, bg: Color.NeoBrutal.lavender)
                     
                     Text("Personalization Consent")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.primary)
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.ink)
                     
-                    Text("Version 1.0 • Purpose-Specific Authorization")
-                        .font(.footnote)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(Color.NeuroPulse.brandTeal)
+                    BrutalBadge("Version 1.0 • Purpose-Specific Authorization", style: .complete)
                 }
                 
                 // MARK: - Required Privacy Decision Notice Banner
                 HStack(alignment: .top, spacing: DesignTokens.Spacing.small) {
                     Image(systemName: "hand.raised.fill")
                         .font(.system(size: 18))
-                        .foregroundStyle(Color.NeuroPulse.brandTeal)
+                        .foregroundStyle(Color.NeoBrutal.ink)
                         .padding(.top, 1)
                     
                     VStack(alignment: .leading, spacing: 3) {
                         Text("Required Privacy Decision")
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.primary)
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .foregroundStyle(Color.NeoBrutal.ink)
                         Text("Please choose whether you allow data sharing. Your decision will be saved for this account.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
+                            .font(.system(size: 13, weight: .regular, design: .rounded))
+                            .foregroundStyle(Color.NeoBrutal.ink)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                 }
                 .padding(14)
-                .background(Color.NeuroPulse.brandTeal.opacity(0.08))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.NeuroPulse.brandTeal.opacity(0.3), lineWidth: 0.75)
-                )
+                .brutalRow(cornerRadius: 14, fill: Color.NeoBrutal.peach, outlineWidth: 2)
                 
                 // MARK: - Purpose & Scope Disclosure
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
@@ -104,16 +87,11 @@ public struct PersonalizationConsentView: View {
                         description: "The entire app remains fully functional. Assessments, spiral tests, and MindEase activities continue to save locally on your device with zero cloud uploads."
                     )
                 }
-                .padding(16)
-                .background(Color.NeuroPulse.cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-                )
+                .padding(18)
+                .brutalCard(cornerRadius: 20, fill: .white)
                 
                 // MARK: - Explicit Decision Buttons
-                VStack(spacing: DesignTokens.Spacing.medium) {
+                VStack(spacing: 12) {
                     // Option 1: Grant Consent
                     Button {
                         handleDecision(granted: true)
@@ -121,28 +99,16 @@ public struct PersonalizationConsentView: View {
                         HStack(spacing: 8) {
                             if isProcessing {
                                 ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .progressViewStyle(CircularProgressViewStyle(tint: Color.NeoBrutal.ink))
                                     .padding(.trailing, 4)
                             } else {
                                 Image(systemName: "checkmark.circle.fill")
                                     .font(.system(size: 18, weight: .semibold))
                             }
                             Text(isProcessing ? "Saving..." : "Allow Data Sharing for Personalization")
-                                .font(.system(size: 16, weight: .semibold))
                         }
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .background(
-                            LinearGradient(
-                                colors: [Color.NeuroPulse.brandTeal, Color.NeuroPulse.motorPrimary],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-                        .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.25), radius: 6, y: 3)
                     }
+                    .buttonStyle(BrutalButtonStyle(fill: Color.NeoBrutal.lavender))
                     .disabled(isProcessing)
                     .accessibilityLabel("Allow data sharing for personalized recommendations")
                     
@@ -159,18 +125,9 @@ public struct PersonalizationConsentView: View {
                                     .font(.system(size: 18, weight: .medium))
                             }
                             Text(isProcessing ? "Saving..." : "Decline & Keep Data Local Only")
-                                .font(.system(size: 16, weight: .medium))
                         }
-                        .foregroundStyle(.primary)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                        .background(Color.NeuroPulse.cardBackground)
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-                        )
                     }
+                    .buttonStyle(BrutalSecondaryButtonStyle())
                     .disabled(isProcessing)
                     .accessibilityLabel("Decline data sharing and keep records on device only")
                     
@@ -180,8 +137,8 @@ public struct PersonalizationConsentView: View {
                         authManager.signOut()
                     } label: {
                         Text("Sign Out & Return Later")
-                            .font(.system(size: 15, weight: .regular))
-                            .foregroundStyle(.secondary)
+                            .font(.system(size: 14, weight: .regular, design: .rounded))
+                            .foregroundStyle(Color.NeoBrutal.mutedText)
                     }
                     .disabled(isProcessing)
                     .padding(.top, 4)
@@ -191,7 +148,7 @@ public struct PersonalizationConsentView: View {
             .padding(.horizontal, DesignTokens.Spacing.large)
             .padding(.vertical, DesignTokens.Spacing.large)
         }
-        .background(Color.NeuroPulse.surfaceBackground.ignoresSafeArea())
+        .background(Color.white.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .interactiveDismissDisabled(true)
     }
@@ -200,18 +157,17 @@ public struct PersonalizationConsentView: View {
         HStack(alignment: .top, spacing: DesignTokens.Spacing.small) {
             Image(systemName: icon)
                 .font(.system(size: 18))
-                .foregroundStyle(Color.NeuroPulse.brandTeal)
+                .foregroundStyle(Color.NeoBrutal.ink)
                 .frame(width: 24, alignment: .center)
                 .padding(.top, 2)
             
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.primary)
+                    .font(.system(size: 15, weight: .bold, design: .rounded))
+                    .foregroundStyle(Color.NeoBrutal.ink)
                 Text(description)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 13, weight: .regular, design: .rounded))
+                    .foregroundStyle(Color.NeoBrutal.mutedText)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }

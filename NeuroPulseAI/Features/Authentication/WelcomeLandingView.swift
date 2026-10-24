@@ -66,35 +66,33 @@ public struct WelcomeLandingView: View {
         VStack(spacing: DesignTokens.Spacing.small) {
             ZStack {
                 Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [Color.NeuroPulse.brandTeal, Color.NeuroPulse.motorPrimary],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: 80, height: 80)
-                    .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.3), radius: 12, y: 6)
+                    .fill(Color.NeoBrutal.ink)
+                    .frame(width: 72, height: 72)
+                    .offset(x: 3, y: 3)
+                Circle()
+                    .fill(Color.NeoBrutal.lavender)
+                    .frame(width: 72, height: 72)
+                Circle()
+                    .stroke(Color.NeoBrutal.ink, lineWidth: 2)
+                    .frame(width: 72, height: 72)
 
                 Image(systemName: "waveform.path.ecg")
-                    .font(.system(size: 38, weight: .bold))
-                    .foregroundStyle(.white)
+                    .font(.system(size: 32, weight: .bold))
+                    .foregroundStyle(Color.NeoBrutal.ink)
             }
             .padding(.bottom, DesignTokens.Spacing.xSmall)
 
+            Text("Welcome")
+                .font(.system(size: 38, weight: .bold, design: .rounded))
+                .foregroundStyle(Color.NeoBrutal.ink)
+
             Text("NeuroPulseAI")
-                .font(.system(size: 32, weight: .bold, design: .rounded))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [Color.NeuroPulse.brandTeal, Color.NeuroPulse.motorPrimary],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
+                .font(.system(size: 22, weight: .semibold, design: .rounded))
+                .foregroundStyle(Color.NeoBrutal.ink)
 
             Text("Unified Motor Health & Mindful Wellness")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(.system(size: 15, weight: .regular, design: .rounded))
+                .foregroundStyle(Color.NeoBrutal.mutedText)
                 .multilineTextAlignment(.center)
         }
         .padding(.top, DesignTokens.Spacing.medium)
@@ -103,65 +101,41 @@ public struct WelcomeLandingView: View {
     private var capabilitiesSection: some View {
         VStack(spacing: DesignTokens.Spacing.medium) {
             HStack(spacing: DesignTokens.Spacing.medium) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: DesignTokens.Radius.small)
-                        .fill(Color.NeuroPulse.motorPrimary.opacity(0.12))
-                        .frame(width: 44, height: 44)
-                    Image(systemName: "hand.tap.fill")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundStyle(Color.NeuroPulse.motorPrimary)
-                }
+                BrutalIconTile(iconName: "hand.tap.fill", size: 48, iconSize: 22, bg: Color.NeoBrutal.lavender)
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text("Motor Health Assessments")
-                        .font(.headline)
-                        .foregroundStyle(.primary)
-                    Text("Alternating finger tapping, center-deviation metrics, and spiral tracing.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.ink)
+                    Text("Alternating finger tapping, deviation metrics, and spiral tracing.")
+                        .font(.system(size: 13, weight: .regular, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.mutedText)
                 }
                 Spacer()
             }
             .padding(16)
-            .background(Color.NeuroPulse.cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-            )
+            .brutalRow(cornerRadius: 16)
 
             HStack(spacing: DesignTokens.Spacing.medium) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: DesignTokens.Radius.small)
-                        .fill(Color.NeuroPulse.mindEasePrimary.opacity(0.12))
-                        .frame(width: 44, height: 44)
-                    Image(systemName: "wind")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundStyle(Color.NeuroPulse.mindEasePrimary)
-                }
+                BrutalIconTile(iconName: "wind", size: 48, iconSize: 22, bg: Color.NeoBrutal.mint)
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text("MindEase Wellness Tools")
-                        .font(.headline)
-                        .foregroundStyle(.primary)
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.ink)
                     Text("Guided visual breathing, mindfulness pauses, and self-check-ins.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                        .font(.system(size: 13, weight: .regular, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.mutedText)
                 }
                 Spacer()
             }
             .padding(16)
-            .background(Color.NeuroPulse.cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-            )
+            .brutalRow(cornerRadius: 16)
         }
     }
 
     private var actionsSection: some View {
-        VStack(spacing: DesignTokens.Spacing.medium) {
+        VStack(spacing: 14) {
             // Mode A Action: Sign In
             Button {
                 activeAuthDestination = .signIn
@@ -170,21 +144,9 @@ public struct WelcomeLandingView: View {
                     Image(systemName: "person.badge.key.fill")
                         .font(.system(size: 18, weight: .semibold))
                     Text("Sign In")
-                        .font(.system(size: 17, weight: .semibold))
                 }
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .frame(height: 52)
-                .background(
-                    LinearGradient(
-                        colors: [Color.NeuroPulse.brandTeal, Color.NeuroPulse.motorPrimary],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-                .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.25), radius: 6, y: 3)
             }
+            .buttonStyle(BrutalButtonStyle(fill: Color.NeoBrutal.lavender))
             .accessibilityLabel("Sign in to your account")
 
             // Mode A Action: Create Account
@@ -195,29 +157,19 @@ public struct WelcomeLandingView: View {
                     Image(systemName: "person.crop.circle.badge.plus")
                         .font(.system(size: 18, weight: .semibold))
                     Text("Create An Account")
-                        .font(.system(size: 17, weight: .semibold))
                 }
-                .foregroundStyle(.primary)
-                .frame(maxWidth: .infinity)
-                .frame(height: 52)
-                .background(Color.NeuroPulse.cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-                .overlay(
-                    RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                        .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
-                )
             }
+            .buttonStyle(BrutalSecondaryButtonStyle())
             .accessibilityLabel("Create a new account")
 
             // Divider with OR
             HStack {
-                Rectangle().fill(Color.NeuroPulse.subtleBorder).frame(height: 1)
+                Rectangle().fill(Color.NeoBrutal.ink).frame(height: 1.5)
                 Text("OR")
-                    .font(.footnote)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(Color.NeoBrutal.mutedText)
                     .padding(.horizontal, DesignTokens.Spacing.small)
-                Rectangle().fill(Color.NeuroPulse.subtleBorder).frame(height: 1)
+                Rectangle().fill(Color.NeoBrutal.ink).frame(height: 1.5)
             }
             .padding(.vertical, DesignTokens.Spacing.xSmall)
 
@@ -225,27 +177,13 @@ public struct WelcomeLandingView: View {
             Button {
                 authManager.continueLocally()
             } label: {
-                VStack(spacing: 3) {
-                    HStack(spacing: DesignTokens.Spacing.small) {
-                        Image(systemName: "iphone.gen3")
-                            .font(.system(size: 18, weight: .semibold))
-                        Text("Continue Locally")
-                            .font(.system(size: 17, weight: .semibold))
-                    }
-                    Text("No account required • 100% on-device functionality")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                HStack(spacing: DesignTokens.Spacing.small) {
+                    Image(systemName: "iphone.gen3")
+                        .font(.system(size: 18, weight: .semibold))
+                    Text("Continue Locally")
                 }
-                .foregroundStyle(Color.NeuroPulse.brandTeal)
-                .frame(maxWidth: .infinity)
-                .frame(height: 56)
-                .background(Color.NeuroPulse.brandTeal.opacity(0.08))
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-                .overlay(
-                    RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                        .stroke(Color.NeuroPulse.brandTeal.opacity(0.35), lineWidth: 1.25)
-                )
             }
+            .buttonStyle(BrutalSecondaryButtonStyle())
             .accessibilityLabel("Continue using the app locally without an account")
         }
     }
@@ -253,27 +191,21 @@ public struct WelcomeLandingView: View {
     private var privacyDisclosure: some View {
         HStack(alignment: .top, spacing: DesignTokens.Spacing.small) {
             Image(systemName: "lock.shield.fill")
-                .font(.system(size: 18))
-                .foregroundStyle(Color.NeuroPulse.brandTeal)
-                .padding(.top, 1)
+                .font(.system(size: 20))
+                .foregroundStyle(Color.NeoBrutal.ink)
+                .padding(.top, 2)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text("Privacy Guarantee")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.primary)
-                Text("Account authentication and permission to share activity data are completely separate decisions. Choosing local-only operation preserves all motor assessments, spiral tests, and MindEase wellness tools without uploading records.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundStyle(Color.NeoBrutal.ink)
+                Text("Account authentication and permission to share activity data are separate decisions. Local operation preserves all motor assessments without uploading records.")
+                    .font(.system(size: 12, weight: .regular, design: .rounded))
+                    .foregroundStyle(Color.NeoBrutal.mutedText)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
         .padding(14)
-        .background(Color.NeuroPulse.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-        )
+        .brutalRow(cornerRadius: 16)
     }
 }

@@ -28,31 +28,18 @@ public struct TermsAndConditionsView: View {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.large) {
                 // MARK: - Header
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.small) {
-                    ZStack {
-                        Circle()
-                            .fill(Color.NeuroPulse.brandTeal.opacity(0.15))
-                            .frame(width: 54, height: 54)
-                        Image(systemName: "doc.text.magnifyingglass")
-                            .font(.system(size: 26))
-                            .foregroundStyle(Color.NeuroPulse.brandTeal)
-                    }
+                    BrutalIconTile(iconName: "doc.text.magnifyingglass", size: 54, iconSize: 26, bg: Color.NeoBrutal.lavender)
                     
                     Text("Terms & Conditions")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.primary)
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.ink)
                     
-                    HStack(spacing: 6) {
-                        Text("Version \(TermsManager.currentTermsVersion)")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(Color.NeuroPulse.brandTeal)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(Capsule().fill(Color.NeuroPulse.brandTeal.opacity(0.12)))
+                    HStack(spacing: 8) {
+                        BrutalBadge("Version \(TermsManager.currentTermsVersion)", style: .complete)
                         
                         Text("• Required for Account Access")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
+                            .font(.system(size: 13, weight: .medium, design: .rounded))
+                            .foregroundStyle(Color.NeoBrutal.mutedText)
                     }
                 }
                 
@@ -60,27 +47,21 @@ public struct TermsAndConditionsView: View {
                 HStack(alignment: .top, spacing: DesignTokens.Spacing.small) {
                     Image(systemName: "exclamationmark.shield.fill")
                         .font(.system(size: 18))
-                        .foregroundStyle(Color.NeuroPulse.brandTeal)
+                        .foregroundStyle(Color.NeoBrutal.ink)
                         .padding(.top, 1)
                     
                     VStack(alignment: .leading, spacing: 3) {
                         Text("Required Decision")
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.primary)
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .foregroundStyle(Color.NeoBrutal.ink)
                         Text("You must review and accept the Terms & Conditions to continue into the application.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
+                            .font(.system(size: 13, weight: .regular, design: .rounded))
+                            .foregroundStyle(Color.NeoBrutal.ink)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                 }
                 .padding(14)
-                .background(Color.NeuroPulse.brandTeal.opacity(0.08))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.NeuroPulse.brandTeal.opacity(0.3), lineWidth: 0.75)
-                )
+                .brutalRow(cornerRadius: 14, fill: Color.NeoBrutal.peach, outlineWidth: 2)
                 
                 // MARK: - Terms Content Sections
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
@@ -108,16 +89,11 @@ public struct TermsAndConditionsView: View {
                         body: "You agree to conduct motor assessments in a comfortable, well-lit environment on a stable surface. You may pause, cancel, or stop any assessment at any time without penalty."
                     )
                 }
-                .padding(16)
-                .background(Color.NeuroPulse.cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-                )
+                .padding(18)
+                .brutalCard(cornerRadius: 20, fill: .white)
                 
                 // MARK: - Acceptance Actions
-                VStack(spacing: DesignTokens.Spacing.medium) {
+                VStack(spacing: 12) {
                     Button {
                         guard !isProcessing else { return }
                         isProcessing = true
@@ -129,28 +105,16 @@ public struct TermsAndConditionsView: View {
                         HStack(spacing: 8) {
                             if isProcessing {
                                 ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .progressViewStyle(CircularProgressViewStyle(tint: Color.NeoBrutal.ink))
                                     .padding(.trailing, 4)
                             } else {
                                 Image(systemName: "checkmark.seal.fill")
                                     .font(.system(size: 18, weight: .semibold))
                             }
                             Text(isProcessing ? "Saving..." : "Agree & Continue")
-                                .font(.system(size: 17, weight: .semibold))
                         }
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .background(
-                            LinearGradient(
-                                colors: [Color.NeuroPulse.brandTeal, Color.NeuroPulse.motorPrimary],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-                        .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.25), radius: 6, y: 3)
                     }
+                    .buttonStyle(BrutalButtonStyle(fill: Color.NeoBrutal.lavender))
                     .disabled(isProcessing)
                     .accessibilityLabel("Agree to Terms & Conditions and continue")
                     
@@ -163,17 +127,8 @@ public struct TermsAndConditionsView: View {
                         }
                     } label: {
                         Text("Decline & Sign Out")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundStyle(.secondary)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 48)
-                            .background(Color.NeuroPulse.cardBackground)
-                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-                            )
                     }
+                    .buttonStyle(BrutalSecondaryButtonStyle())
                     .disabled(isProcessing)
                 }
                 .padding(.top, DesignTokens.Spacing.small)
@@ -181,7 +136,7 @@ public struct TermsAndConditionsView: View {
             .padding(.horizontal, DesignTokens.Spacing.large)
             .padding(.vertical, DesignTokens.Spacing.large)
         }
-        .background(Color.NeuroPulse.surfaceBackground.ignoresSafeArea())
+        .background(Color.white.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .interactiveDismissDisabled(true)
     }
@@ -190,22 +145,21 @@ public struct TermsAndConditionsView: View {
         VStack(alignment: .leading, spacing: 5) {
             HStack(spacing: 8) {
                 Text(number)
-                    .font(.system(size: 11, weight: .bold))
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
                     .foregroundStyle(.white)
-                    .frame(width: 20, height: 20)
-                    .background(Circle().fill(Color.NeuroPulse.brandTeal))
+                    .frame(width: 22, height: 22)
+                    .background(Circle().fill(Color.NeoBrutal.ink))
                 
                 Text(title)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.primary)
+                    .font(.system(size: 15, weight: .bold, design: .rounded))
+                    .foregroundStyle(Color.NeoBrutal.ink)
             }
             
             Text(body)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+                .font(.system(size: 13, weight: .regular, design: .rounded))
+                .foregroundStyle(Color.NeoBrutal.mutedText)
                 .fixedSize(horizontal: false, vertical: true)
-                .padding(.leading, 28)
+                .padding(.leading, 30)
         }
     }
 }

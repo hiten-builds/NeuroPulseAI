@@ -2,7 +2,9 @@
 //  MindEaseHomeView.swift
 //  NeuroPulseAI
 //
-//  MindEase feature landing screen presenting breathing exercises and mindfulness sessions.
+//  MindEase wellness landing screen in Soft Neo-Brutalist design language.
+//  Flat pastel fills (Mint #D3F7B4, Lavender #D4C6F7, Peach #F8D89A),
+//  2pt ink outlines, hard offset shadows (3, 3), and rounded geometric typography.
 //
 
 import SwiftUI
@@ -14,68 +16,74 @@ public struct MindEaseHomeView: View {
 
     public var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DesignTokens.Spacing.large) {
+            VStack(alignment: .leading, spacing: 22) {
                 // Header Intro
                 VStack(alignment: .leading, spacing: 4) {
                     Text("MindEase")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.primary)
+                        .font(.system(size: 26, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.ink)
+
+                    Text("Paced breathwork, quiet pause, and soothing mindful tactile tracing")
+                        .font(.system(size: 14, weight: .regular, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.mutedText)
                 }
-                .padding(.top, DesignTokens.Spacing.small)
+                .padding(.top, 8)
 
                 // Activities Section
-                VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
+                VStack(alignment: .leading, spacing: 14) {
                     Text("Wellness Activities")
-                        .font(.headline)
-                        .foregroundStyle(.primary)
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.ink)
 
-                    // Guided Breathing Card
+                    // Guided Breathing Card (Mint)
                     NavigationLink {
                         BreathingSessionView()
                     } label: {
                         activityCard(
                             title: "Guided Breathing",
+                            subtitle: "Animated visual pacing for balanced rhythm",
                             icon: "circle.circle",
                             badge: "Visual Pacer",
-                            badgeColor: Color.NeuroPulse.mindEasePrimary
+                            fill: Color.NeoBrutal.mint
                         )
                     }
                     .buttonStyle(PlainButtonStyle())
 
-                    // Mindful Meditation Card
+                    // Mindful Meditation Card (Lavender)
                     NavigationLink {
                         MindfulnessMeditationView()
                     } label: {
                         activityCard(
                             title: "Mindfulness Pause",
+                            subtitle: "Short self-directed stillness to reset focus",
                             icon: "sparkles",
                             badge: "Quiet Focus",
-                            badgeColor: Color.NeuroPulse.mindEaseSecondary
+                            fill: Color.NeoBrutal.lavender
                         )
                     }
                     .buttonStyle(PlainButtonStyle())
 
-                    // Mindful Tracing Card
+                    // Mindful Tracing Card (Peach)
                     NavigationLink {
                         MindfulTracingView()
                     } label: {
                         activityCard(
                             title: "Mindful Tracing",
+                            subtitle: "Tactile unscored flow for relaxation",
                             icon: "leaf.fill",
                             badge: "Unscored",
-                            badgeColor: Color.NeuroPulse.brandTeal
+                            fill: Color.NeoBrutal.peach
                         )
                     }
                     .buttonStyle(PlainButtonStyle())
                 }
 
                 // Recent Wellness Sessions List
-                VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
+                VStack(alignment: .leading, spacing: 14) {
                     HStack {
                         Text("Recent Peaceful Moments")
-                            .font(.headline)
-                            .foregroundStyle(.primary)
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
+                            .foregroundStyle(Color.NeoBrutal.ink)
                         Spacer()
                         NavigationLink {
                             SavedRecordsView()
@@ -84,60 +92,46 @@ public struct MindEaseHomeView: View {
                                 Text("All History")
                                 Image(systemName: "chevron.right")
                             }
-                            .font(.footnote)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(Color.NeuroPulse.mindEasePrimary)
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .foregroundStyle(Color.NeoBrutal.ink)
                         }
                     }
 
                     if store.records.isEmpty {
                         Text("No wellness sessions recorded yet.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
+                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .foregroundStyle(Color.NeoBrutal.mutedText)
                             .padding(16)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(Color.NeuroPulse.cardBackground)
-                            .clipShape(RoundedRectangle(cornerRadius: 16))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-                            )
+                            .brutalRow(cornerRadius: 16, fill: .white, outlineWidth: 1.5)
                     } else {
-                        VStack(spacing: DesignTokens.Spacing.small) {
+                        VStack(spacing: 10) {
                             ForEach(store.records.prefix(4)) { record in
                                 HStack {
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text(record.activityType.rawValue)
-                                            .font(.subheadline)
-                                            .fontWeight(.semibold)
+                                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                                            .foregroundStyle(Color.NeoBrutal.ink)
                                         Text(record.date.formatted(date: .abbreviated, time: .shortened))
-                                            .font(.footnote)
-                                            .foregroundStyle(.secondary)
+                                            .font(.system(size: 13, weight: .regular, design: .rounded))
+                                            .foregroundStyle(Color.NeoBrutal.mutedText)
                                     }
 
                                     Spacer()
 
-                                    Text("\(Int(record.durationSeconds))s")
-                                        .font(.subheadline)
-                                        .fontWeight(.semibold)
-                                        .foregroundStyle(Color.NeuroPulse.mindEasePrimary)
+                                    BrutalBadge("\(Int(record.durationSeconds))s", style: .inProgress)
                                 }
                                 .padding(16)
-                                .background(Color.NeuroPulse.cardBackground)
-                                .clipShape(RoundedRectangle(cornerRadius: 16))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 16)
-                                        .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-                                )
+                                .brutalRow(cornerRadius: 16, fill: .white, outlineWidth: 1.5)
                             }
                         }
                     }
                 }
             }
-            .padding(.horizontal, DesignTokens.Spacing.large)
-            .padding(.bottom, DesignTokens.Spacing.xxLarge)
+            .padding(.horizontal, 20)
+            .padding(.bottom, 36)
         }
-        .background(Color.NeuroPulse.surfaceBackground.ignoresSafeArea())
+        .background(Color.white.ignoresSafeArea())
         .navigationTitle("MindEase")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -145,46 +139,65 @@ public struct MindEaseHomeView: View {
     @ViewBuilder
     private func activityCard(
         title: String,
+        subtitle: String,
         icon: String,
         badge: String,
-        badgeColor: Color
+        fill: Color
     ) -> some View {
-        HStack(spacing: DesignTokens.Spacing.medium) {
-            ZStack {
-                Circle()
-                    .fill(badgeColor.opacity(0.12))
-                    .frame(width: 44, height: 44)
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 14) {
+                BrutalIconTile(
+                    iconName: icon,
+                    size: 48,
+                    iconSize: 22,
+                    cornerRadius: 14,
+                    outlineWidth: 2,
+                    bg: .white
+                )
 
-                Image(systemName: icon)
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(badgeColor)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title)
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.ink)
+
+                    Text(subtitle)
+                        .font(.system(size: 13, weight: .medium, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.ink.opacity(0.8))
+                        .lineLimit(1)
+                }
+
+                Spacer()
+
+                BrutalBadge(badge, style: .custom(bg: .white, fg: Color.NeoBrutal.ink))
             }
 
-            Text(title)
-                .font(.headline)
-                .foregroundStyle(.primary)
-
-            Spacer()
-
-            Text(badge)
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(badgeColor)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 3)
-                .background(Capsule().fill(badgeColor.opacity(0.12)))
-
-            Image(systemName: "chevron.right")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(.secondary)
+            // Bottom action row
+            HStack {
+                Spacer()
+                HStack(spacing: 6) {
+                    Image(systemName: "arrow.right")
+                        .font(.system(size: 13, weight: .bold))
+                    Text("Begin")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                }
+                .foregroundStyle(Color.NeoBrutal.ink)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(Color.NeoBrutal.ink)
+                            .offset(x: 2, y: 2)
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(Color.white)
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .stroke(Color.NeoBrutal.ink, lineWidth: 1.5)
+                    }
+                )
+            }
         }
-        .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.NeuroPulse.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-        )
+        .padding(18)
+        .brutalCard(cornerRadius: 22, fill: fill, outlineWidth: 2, hasShadow: true, shadowOffset: 3)
     }
 }
 

@@ -46,18 +46,17 @@ public struct AccountSettingsView: View {
                 // MARK: - Feedback Banner
                 if let message = actionFeedbackMessage {
                     Text(message)
-                        .font(.caption)
-                        .foregroundStyle(Color.NeuroPulse.brandTeal)
+                        .font(.system(size: 13, weight: .semibold, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.ink)
                         .padding(DesignTokens.Spacing.small)
                         .frame(maxWidth: .infinity)
-                        .background(Color.NeuroPulse.brandTeal.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.small))
+                        .brutalRow(cornerRadius: 12, fill: Color.NeoBrutal.mint)
                 }
             }
             .padding(.horizontal, DesignTokens.Spacing.large)
             .padding(.vertical, DesignTokens.Spacing.large)
         }
-        .background(Color.NeuroPulse.surfaceBackground.ignoresSafeArea())
+        .background(Color.white.ignoresSafeArea())
         .navigationTitle("Account & Privacy")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showingAuthSheet) {
@@ -111,11 +110,10 @@ public struct AccountSettingsView: View {
     private var accountStatusCard: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.small) {
             HStack {
-                Image(systemName: authManager.currentMode == .authenticated ? "person.fill.checkmark" : "iphone")
-                    .foregroundStyle(Color.NeuroPulse.brandTeal)
+                BrutalIconTile(iconName: authManager.currentMode == .authenticated ? "person.fill.checkmark" : "iphone", size: 40, iconSize: 18, bg: Color.NeoBrutal.lavender)
                 Text("Account Status")
-                    .font(.headline)
-                    .foregroundStyle(.primary)
+                    .font(.system(size: 17, weight: .bold, design: .rounded))
+                    .foregroundStyle(Color.NeoBrutal.ink)
                 Spacer()
                 statusPill
             }
@@ -125,50 +123,35 @@ public struct AccountSettingsView: View {
             if authManager.currentMode == .authenticated, let user = authManager.currentUser {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Email: \(user.email)")
-                        .font(.subheadline)
-                        .foregroundStyle(.primary)
+                        .font(.system(size: 15, weight: .medium, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.ink)
                     Text("Account ID: \(user.id.prefix(8))...")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
+                        .font(.system(size: 12, weight: .regular, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.mutedText)
                 }
             } else {
                 Text("Operating in Local-Only Mode. All activity records and metrics are retained strictly on this device.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 13, weight: .regular, design: .rounded))
+                    .foregroundStyle(Color.NeoBrutal.mutedText)
             }
         }
-        .padding(DesignTokens.Spacing.medium)
+        .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.NeuroPulse.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-        .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
-        )
+        .brutalCard(cornerRadius: 20)
     }
     
     private var statusPill: some View {
         let isAuth = authManager.currentMode == .authenticated
-        return Text(isAuth ? "Authenticated" : "Local Only")
-            .font(.caption2)
-            .fontWeight(.bold)
-            .foregroundStyle(isAuth ? Color.NeuroPulse.brandTeal : Color.NeuroPulse.motorPrimary)
-            .padding(.horizontal, DesignTokens.Spacing.small)
-            .padding(.vertical, 3)
-            .background(
-                Capsule()
-                    .fill((isAuth ? Color.NeuroPulse.brandTeal : Color.NeuroPulse.motorPrimary).opacity(0.12))
-            )
+        return BrutalBadge(isAuth ? "Authenticated" : "Local Only", style: isAuth ? .inProgress : .pending)
     }
     
     private var termsStatusCard: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.small) {
             HStack {
-                Image(systemName: "doc.text.magnifyingglass")
-                    .foregroundStyle(Color.NeuroPulse.brandTeal)
+                BrutalIconTile(iconName: "doc.text.magnifyingglass", size: 40, iconSize: 18, bg: Color.NeoBrutal.mint)
                 Text("Terms & Conditions")
-                    .font(.headline)
-                    .foregroundStyle(.primary)
+                    .font(.system(size: 17, weight: .bold, design: .rounded))
+                    .foregroundStyle(Color.NeoBrutal.ink)
                 Spacer()
                 termsStatusBadge
             }
@@ -177,65 +160,45 @@ public struct AccountSettingsView: View {
             
             if let version = termsManager.acceptedVersion {
                 Text("Accepted Version: \(version)")
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .foregroundStyle(.primary)
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundStyle(Color.NeoBrutal.ink)
                 if let date = termsManager.acceptedDate {
                     Text("Accepted on: \(date.formatted(date: .abbreviated, time: .shortened))")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
+                        .font(.system(size: 12, weight: .regular, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.mutedText)
                 }
             } else {
                 Text("Current Version: \(TermsManager.currentTermsVersion) (Explicit acceptance required)")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 13, weight: .regular, design: .rounded))
+                    .foregroundStyle(Color.NeoBrutal.mutedText)
             }
             
             Button {
                 showingTermsSheet = true
             } label: {
                 Text("Review Terms & Conditions")
-                    .font(.footnote)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(Color.NeuroPulse.brandTeal)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 8)
-                    .background(Color.NeuroPulse.brandTeal.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
             }
+            .buttonStyle(BrutalCompactButtonStyle(fill: Color.NeoBrutal.lavender))
             .padding(.top, 4)
         }
-        .padding(16)
+        .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.NeuroPulse.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-        )
+        .brutalCard(cornerRadius: 20)
     }
     
     private var termsStatusBadge: some View {
         let isAccepted = termsManager.isAccepted
         let label = isAccepted ? "Accepted" : "Pending"
-        let color = isAccepted ? Color.NeuroPulse.brandTeal : Color.secondary
-        
-        return Text(label)
-            .font(.system(size: 11, weight: .semibold))
-            .foregroundStyle(color)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 3)
-            .background(Capsule().fill(color.opacity(0.12)))
+        return BrutalBadge(label, style: isAccepted ? .inProgress : .pending)
     }
     
     private var consentStatusCard: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.small) {
             HStack {
-                Image(systemName: "hand.raised.square.on.square.fill")
-                    .foregroundStyle(Color.NeuroPulse.brandTeal)
+                BrutalIconTile(iconName: "hand.raised.square.on.square.fill", size: 40, iconSize: 18, bg: Color.NeoBrutal.peach)
                 Text("Data-Sharing Consent")
-                    .font(.headline)
-                    .foregroundStyle(.primary)
+                    .font(.system(size: 17, weight: .bold, design: .rounded))
+                    .foregroundStyle(Color.NeoBrutal.ink)
                 Spacer()
                 consentDecisionBadge
             }
@@ -243,8 +206,8 @@ public struct AccountSettingsView: View {
             Divider()
             
             Text("Purpose: Personalization of recommendations based on authorized motor and wellness trends (v\(consentManager.consentVersion)).")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+                .font(.system(size: 13, weight: .regular, design: .rounded))
+                .foregroundStyle(Color.NeoBrutal.mutedText)
             
             HStack(spacing: DesignTokens.Spacing.small) {
                 if consentManager.isPersonalizationConsented {
@@ -252,72 +215,49 @@ public struct AccountSettingsView: View {
                         withdrawConsent()
                     } label: {
                         Text("Withdraw Consent")
-                            .font(.footnote)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(Color.NeuroPulse.error)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 8)
-                            .background(Color.NeuroPulse.error.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
+                    .buttonStyle(BrutalCompactButtonStyle(fill: Color.NeoBrutal.badgePendingBg))
                 } else {
                     Button {
                         showingConsentSheet = true
                     } label: {
                         Text("Review Consent Options")
-                            .font(.footnote)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(Color.NeuroPulse.brandTeal)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 8)
-                            .background(Color.NeuroPulse.brandTeal.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
+                    .buttonStyle(BrutalCompactButtonStyle(fill: Color.NeoBrutal.lavender))
                 }
             }
             .padding(.top, 4)
         }
-        .padding(16)
+        .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.NeuroPulse.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-        )
+        .brutalCard(cornerRadius: 20)
     }
     
     private var consentDecisionBadge: some View {
-        let (label, color): (String, Color) = {
-            switch consentManager.decision {
-            case .granted: return ("Active", Color.NeuroPulse.brandTeal)
-            case .declined: return ("Declined", Color.secondary)
-            case .withdrawn: return ("Withdrawn", Color.NeuroPulse.error)
-            case .undecided: return ("Not Decided", Color.secondary)
-            }
-        }()
-        
-        return Text(label)
-            .font(.system(size: 11, weight: .semibold))
-            .foregroundStyle(color)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 3)
-            .background(Capsule().fill(color.opacity(0.12)))
+        switch consentManager.decision {
+        case .granted:
+            return BrutalBadge("Active", style: .inProgress)
+        case .declined:
+            return BrutalBadge("Declined", style: .pending)
+        case .withdrawn:
+            return BrutalBadge("Withdrawn", style: .pending)
+        case .undecided:
+            return BrutalBadge("Not Decided", style: .pending)
+        }
     }
     
     private var remoteDataCard: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.small) {
             HStack {
-                Image(systemName: "trash.circle")
-                    .foregroundStyle(Color.NeuroPulse.error)
+                BrutalIconTile(iconName: "trash.circle", size: 40, iconSize: 18, bg: Color.NeoBrutal.badgePendingBg, iconColor: Color.NeoBrutal.alertRed)
                 Text("Cloud Data Management")
-                    .font(.headline)
-                    .foregroundStyle(.primary)
+                    .font(.system(size: 17, weight: .bold, design: .rounded))
+                    .foregroundStyle(Color.NeoBrutal.ink)
             }
             
             Text("Request permanent deletion of all assessment and wellness records synchronized to the backend. Local records on this device will NOT be deleted.")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+                .font(.system(size: 13, weight: .regular, design: .rounded))
+                .foregroundStyle(Color.NeoBrutal.mutedText)
             
             Button(role: .destructive) {
                 showingDeleteDataAlert = true
@@ -326,24 +266,13 @@ public struct AccountSettingsView: View {
                     Image(systemName: "trash.fill")
                     Text("Delete Remote Data")
                 }
-                .font(.footnote)
-                .fontWeight(.semibold)
-                .foregroundStyle(.white)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 8)
-                .background(Color.NeuroPulse.error)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
             }
+            .buttonStyle(BrutalCompactButtonStyle(fill: Color.NeoBrutal.badgePendingBg))
             .padding(.top, 4)
         }
-        .padding(16)
+        .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.NeuroPulse.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-        )
+        .brutalCard(cornerRadius: 20)
     }
     
     private var actionsSection: some View {
@@ -357,18 +286,9 @@ public struct AccountSettingsView: View {
                         Image(systemName: "rectangle.portrait.and.arrow.right")
                             .font(.system(size: 18, weight: .semibold))
                         Text("Sign Out")
-                            .font(.system(size: 17, weight: .semibold))
                     }
-                    .foregroundStyle(Color.NeuroPulse.error)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 52)
-                    .background(Color.NeuroPulse.cardBackground)
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                            .stroke(Color.NeuroPulse.error.opacity(0.3), lineWidth: 1)
-                    )
                 }
+                .buttonStyle(BrutalDestructiveButtonStyle())
             } else {
                 Button {
                     showingAuthSheet = true
@@ -377,21 +297,9 @@ public struct AccountSettingsView: View {
                         Image(systemName: "person.badge.key.fill")
                             .font(.system(size: 18, weight: .semibold))
                         Text("Sign In or Register")
-                            .font(.system(size: 17, weight: .semibold))
                     }
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 52)
-                    .background(
-                        LinearGradient(
-                            colors: [Color.NeuroPulse.brandTeal, Color.NeuroPulse.motorPrimary],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-                    .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.25), radius: 6, y: 3)
                 }
+                .buttonStyle(BrutalButtonStyle(fill: Color.NeoBrutal.lavender))
             }
             
             Button {
@@ -399,8 +307,8 @@ public struct AccountSettingsView: View {
                 dismiss()
             } label: {
                 Text("Return to Welcome Screen")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                    .foregroundStyle(Color.NeoBrutal.mutedText)
             }
             .padding(.top, 4)
         }

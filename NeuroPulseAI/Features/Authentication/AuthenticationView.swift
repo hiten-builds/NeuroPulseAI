@@ -51,47 +51,33 @@ public struct AuthenticationView: View {
                     VStack(spacing: DesignTokens.Spacing.medium) {
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Email Address")
-                                .font(.footnote)
-                                .fontWeight(.medium)
-                                .foregroundStyle(.secondary)
+                                .font(.system(size: 13, weight: .bold, design: .rounded))
+                                .foregroundStyle(Color.NeoBrutal.ink)
                             
                             HStack {
                                 Image(systemName: "envelope.fill")
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Color.NeoBrutal.mutedText)
                                 TextField("name@example.com", text: $email)
+                                    .font(.system(size: 16, design: .rounded))
                                     .keyboardType(.emailAddress)
                                     .textInputAutocapitalization(.never)
                                     .autocorrectionDisabled()
                             }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 14)
-                            .background(Color.NeuroPulse.cardBackground)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-                            )
+                            .brutalInput(isFocused: !email.isEmpty)
                         }
                         
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Password")
-                                .font(.footnote)
-                                .fontWeight(.medium)
-                                .foregroundStyle(.secondary)
+                                .font(.system(size: 13, weight: .bold, design: .rounded))
+                                .foregroundStyle(Color.NeoBrutal.ink)
                             
                             HStack {
                                 Image(systemName: "lock.fill")
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Color.NeoBrutal.mutedText)
                                 SecureField(isRegisterMode ? "Minimum 8 characters" : "Enter your password", text: $password)
+                                    .font(.system(size: 16, design: .rounded))
                             }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 14)
-                            .background(Color.NeuroPulse.cardBackground)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-                            )
+                            .brutalInput(isFocused: !password.isEmpty)
                         }
                     }
                     
@@ -99,15 +85,19 @@ public struct AuthenticationView: View {
                     if let error = authManager.authError {
                         HStack(spacing: DesignTokens.Spacing.small) {
                             Image(systemName: "exclamationmark.triangle.fill")
-                                .foregroundStyle(Color.NeuroPulse.error)
+                                .foregroundStyle(Color.NeoBrutal.alertRed)
                             Text(error)
-                                .font(.footnote)
-                                .foregroundStyle(Color.NeuroPulse.error)
+                                .font(.system(size: 13, weight: .medium, design: .rounded))
+                                .foregroundStyle(Color.NeoBrutal.alertRed)
                             Spacer()
                         }
-                        .padding(DesignTokens.Spacing.medium)
-                        .background(Color.NeuroPulse.error.opacity(0.1))
+                        .padding(14)
+                        .background(Color.NeoBrutal.badgePendingBg)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.NeoBrutal.ink, lineWidth: 1.5)
+                        )
                     }
                     
                     // MARK: - Submit Button
@@ -117,32 +107,20 @@ public struct AuthenticationView: View {
                         HStack {
                             if authManager.isAuthenticating {
                                 ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .progressViewStyle(CircularProgressViewStyle(tint: Color.NeoBrutal.ink))
                                     .padding(.trailing, 4)
                             }
                             Text(isRegisterMode ? "Create Account" : "Sign In")
-                                .font(.system(size: 17, weight: .semibold))
                         }
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .background(
-                            LinearGradient(
-                                colors: [Color.NeuroPulse.brandTeal, Color.NeuroPulse.motorPrimary],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
-                        .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.25), radius: 8, y: 3)
                     }
+                    .buttonStyle(BrutalButtonStyle(fill: Color.NeoBrutal.lavender))
                     .disabled(authManager.isAuthenticating || email.isEmpty || password.isEmpty)
                     .opacity((email.isEmpty || password.isEmpty) ? 0.6 : 1.0)
                 }
                 .padding(.horizontal, DesignTokens.Spacing.large)
                 .padding(.vertical, DesignTokens.Spacing.large)
             }
-            .background(Color.NeuroPulse.surfaceBackground.ignoresSafeArea())
+            .background(Color.white.ignoresSafeArea())
             .navigationTitle(isRegisterMode ? "Register" : "Sign In")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

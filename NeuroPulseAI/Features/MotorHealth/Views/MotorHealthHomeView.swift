@@ -2,7 +2,9 @@
 //  MotorHealthHomeView.swift
 //  NeuroPulseAI
 //
-//  Motor Health feature landing screen presenting assessment modules and trend history.
+//  Motor Health landing screen in Soft Neo-Brutalist design language.
+//  Flat pastel fills, 2pt ink outlines, hard offset shadows (3, 3),
+//  white outlined icon tiles, and rounded geometric typography.
 //
 
 import SwiftUI
@@ -12,128 +14,133 @@ public struct MotorHealthHomeView: View {
 
     public var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DesignTokens.Spacing.large) {
+            VStack(alignment: .leading, spacing: 22) {
                 // Header Intro
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Motor Health")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.primary)
+                        .font(.system(size: 26, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.ink)
+
+                    Text("Fine-motor dexterity, cadence timing, and movement accuracy")
+                        .font(.system(size: 14, weight: .regular, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.mutedText)
                 }
-                .padding(.top, DesignTokens.Spacing.small)
+                .padding(.top, 8)
 
                 // Active Test Modules Section
-                VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
+                VStack(alignment: .leading, spacing: 14) {
                     Text("Available Assessments")
-                        .font(.headline)
-                        .foregroundStyle(.primary)
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.ink)
 
-                    // Finger Tapping Card
+                    // Finger Tapping Card (Lavender fill)
                     NavigationLink {
                         TappingTestView()
                     } label: {
                         assessmentCard(
                             title: "Finger-Tapping Test",
+                            subtitle: "15-second alternating target protocol",
                             icon: "hand.point.up.left.fill",
                             badge: "Protocol v1",
-                            badgeColor: Color.NeuroPulse.motorPrimary
+                            fill: Color.NeoBrutal.lavender
                         )
                     }
                     .buttonStyle(PlainButtonStyle())
 
-                    // Spiral Tracing Card
+                    // Spiral Tracing Card (Mint fill)
                     NavigationLink {
                         SpiralTracingView()
                     } label: {
                         assessmentCard(
                             title: "Spiral-Tracing Test",
+                            subtitle: "Continuous path tremor & trajectory curve",
                             icon: "scribble.variable",
                             badge: "Geometry v1",
-                            badgeColor: Color.NeuroPulse.motorSecondary
+                            fill: Color.NeoBrutal.mint
                         )
                     }
                     .buttonStyle(PlainButtonStyle())
                 }
 
-                // Baseline & History Preview Card
-                VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
+                // Baseline & History Preview Section
+                VStack(alignment: .leading, spacing: 14) {
                     Text("Session History & Trends")
-                        .font(.headline)
-                        .foregroundStyle(.primary)
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.ink)
 
                     NavigationLink {
                         SavedRecordsView()
                     } label: {
-                        HStack(spacing: DesignTokens.Spacing.medium) {
-                            ZStack {
-                                Circle()
-                                    .fill(Color.NeuroPulse.motorPrimary.opacity(0.12))
-                                    .frame(width: 44, height: 44)
-                                Image(systemName: "clock.arrow.circlepath")
-                                    .font(.system(size: 20, weight: .semibold))
-                                    .foregroundStyle(Color.NeuroPulse.motorPrimary)
-                            }
+                        HStack(spacing: 14) {
+                            BrutalIconTile(
+                                iconName: "clock.arrow.circlepath",
+                                size: 44,
+                                iconSize: 20,
+                                cornerRadius: 12,
+                                outlineWidth: 1.5,
+                                bg: Color.NeoBrutal.lavender.opacity(0.35)
+                            )
 
-                            Text("Saved Assessment Records")
-                                .font(.headline)
-                                .foregroundStyle(.primary)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Saved Assessment Records")
+                                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                                    .foregroundStyle(Color.NeoBrutal.ink)
+
+                                Text("Inspect previous alternating tapping deviations")
+                                    .font(.system(size: 13, weight: .regular, design: .rounded))
+                                    .foregroundStyle(Color.NeoBrutal.mutedText)
+                            }
 
                             Spacer()
 
                             Image(systemName: "chevron.right")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundStyle(.secondary)
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundStyle(Color.NeoBrutal.ink)
                         }
                         .padding(16)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.NeuroPulse.cardBackground)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-                        )
+                        .brutalCard(cornerRadius: 18, fill: .white, outlineWidth: 2, hasShadow: true, shadowOffset: 3)
                     }
                     .buttonStyle(PlainButtonStyle())
 
                     NavigationLink {
                         ProgressDashboardView()
                     } label: {
-                        HStack(spacing: DesignTokens.Spacing.medium) {
-                            ZStack {
-                                Circle()
-                                    .fill(Color.NeuroPulse.brandTeal.opacity(0.12))
-                                    .frame(width: 44, height: 44)
-                                Image(systemName: "chart.xyaxis.line")
-                                    .font(.system(size: 20, weight: .semibold))
-                                    .foregroundStyle(Color.NeuroPulse.brandTeal)
-                            }
+                        HStack(spacing: 14) {
+                            BrutalIconTile(
+                                iconName: "chart.xyaxis.line",
+                                size: 44,
+                                iconSize: 20,
+                                cornerRadius: 12,
+                                outlineWidth: 1.5,
+                                bg: Color.NeoBrutal.mint.opacity(0.35)
+                            )
 
-                            Text("Measurement Trends & Progress")
-                                .font(.headline)
-                                .foregroundStyle(.primary)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Measurement Trends & Progress")
+                                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                                    .foregroundStyle(Color.NeoBrutal.ink)
+
+                                Text("Review cadence trends and RMSE stability curves")
+                                    .font(.system(size: 13, weight: .regular, design: .rounded))
+                                    .foregroundStyle(Color.NeoBrutal.mutedText)
+                            }
 
                             Spacer()
 
                             Image(systemName: "chevron.right")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundStyle(.secondary)
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundStyle(Color.NeoBrutal.ink)
                         }
                         .padding(16)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.NeuroPulse.cardBackground)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-                        )
+                        .brutalCard(cornerRadius: 18, fill: .white, outlineWidth: 2, hasShadow: true, shadowOffset: 3)
                     }
                     .buttonStyle(PlainButtonStyle())
                 }
             }
-            .padding(.horizontal, DesignTokens.Spacing.large)
-            .padding(.bottom, DesignTokens.Spacing.xxLarge)
+            .padding(.horizontal, 20)
+            .padding(.bottom, 36)
         }
-        .background(Color.NeuroPulse.surfaceBackground.ignoresSafeArea())
+        .background(Color.white.ignoresSafeArea())
         .navigationTitle("Motor Health")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -141,46 +148,65 @@ public struct MotorHealthHomeView: View {
     @ViewBuilder
     private func assessmentCard(
         title: String,
+        subtitle: String,
         icon: String,
         badge: String,
-        badgeColor: Color
+        fill: Color
     ) -> some View {
-        HStack(spacing: DesignTokens.Spacing.medium) {
-            ZStack {
-                Circle()
-                    .fill(badgeColor.opacity(0.12))
-                    .frame(width: 44, height: 44)
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 14) {
+                BrutalIconTile(
+                    iconName: icon,
+                    size: 48,
+                    iconSize: 22,
+                    cornerRadius: 14,
+                    outlineWidth: 2,
+                    bg: .white
+                )
 
-                Image(systemName: icon)
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(badgeColor)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title)
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.ink)
+
+                    Text(subtitle)
+                        .font(.system(size: 13, weight: .medium, design: .rounded))
+                        .foregroundStyle(Color.NeoBrutal.ink.opacity(0.8))
+                        .lineLimit(1)
+                }
+
+                Spacer()
+
+                BrutalBadge(badge, style: .custom(bg: .white, fg: Color.NeoBrutal.ink))
             }
 
-            Text(title)
-                .font(.headline)
-                .foregroundStyle(.primary)
-
-            Spacer()
-
-            Text(badge)
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(badgeColor)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 3)
-                .background(Capsule().fill(badgeColor.opacity(0.12)))
-
-            Image(systemName: "chevron.right")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(.secondary)
+            // Bottom action row
+            HStack {
+                Spacer()
+                HStack(spacing: 6) {
+                    Image(systemName: "arrow.right")
+                        .font(.system(size: 13, weight: .bold))
+                    Text("Start Test")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                }
+                .foregroundStyle(Color.NeoBrutal.ink)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(Color.NeoBrutal.ink)
+                            .offset(x: 2, y: 2)
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(Color.white)
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .stroke(Color.NeoBrutal.ink, lineWidth: 1.5)
+                    }
+                )
+            }
         }
-        .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.NeuroPulse.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
-        )
+        .padding(18)
+        .brutalCard(cornerRadius: 22, fill: fill, outlineWidth: 2, hasShadow: true, shadowOffset: 3)
     }
 }
 
