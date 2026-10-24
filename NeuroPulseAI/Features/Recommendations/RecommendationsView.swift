@@ -39,9 +39,6 @@ public struct RecommendationsView: View {
                         }
                     }
                 }
-                
-                // MARK: - Non-Diagnostic Safety Disclosure
-                DisclaimerBanner()
             }
             .padding(.horizontal, DesignTokens.Spacing.large)
             .padding(.vertical, DesignTokens.Spacing.large)
@@ -85,7 +82,7 @@ public struct RecommendationsView: View {
             Text(recommendationService.statusMessage.isEmpty
                  ? "Explainable suggestions based on your activity patterns."
                  : recommendationService.statusMessage)
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(.secondary)
         }
     }
@@ -96,11 +93,10 @@ public struct RecommendationsView: View {
             Image(systemName: isCloud ? "cloud.fill" : "iphone")
                 .font(.system(size: 11))
             Text(isCloud ? "Cloud Personalized" : "Local Guidance")
-                .font(.caption2)
-                .fontWeight(.bold)
+                .font(.system(size: 11, weight: .semibold))
         }
         .foregroundStyle(isCloud ? Color.NeuroPulse.brandTeal : Color.NeuroPulse.motorPrimary)
-        .padding(.horizontal, DesignTokens.Spacing.small)
+        .padding(.horizontal, 8)
         .padding(.vertical, 4)
         .background(
             Capsule()
@@ -112,7 +108,7 @@ public struct RecommendationsView: View {
         HStack {
             Spacer()
             ProgressView("Analyzing authorized activity trends...")
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(.secondary)
             Spacer()
         }
@@ -130,16 +126,16 @@ public struct RecommendationsView: View {
             }
             
             Text("Trend analysis requires repeat sessions to observe natural motor pacing and relaxation recovery. Complete at least 2 motor assessments or wellness sessions to receive data-driven insights.")
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(.secondary)
         }
-        .padding(DesignTokens.Spacing.medium)
+        .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.NeuroPulse.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                .stroke(Color.NeuroPulse.brandTeal.opacity(0.3), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.NeuroPulse.brandTeal.opacity(0.35), lineWidth: 0.75)
         )
     }
     
@@ -148,8 +144,8 @@ public struct RecommendationsView: View {
             HStack(alignment: .top) {
                 ZStack {
                     Circle()
-                        .fill(categoryColor(item.category).opacity(0.15))
-                        .frame(width: 36, height: 36)
+                        .fill(categoryColor(item.category).opacity(0.12))
+                        .frame(width: 38, height: 38)
                     Image(systemName: categoryIcon(item.category))
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundStyle(categoryColor(item.category))
@@ -160,8 +156,7 @@ public struct RecommendationsView: View {
                         .font(.headline)
                         .foregroundStyle(.primary)
                     Text(item.category.capitalized)
-                        .font(.caption2)
-                        .fontWeight(.semibold)
+                        .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(categoryColor(item.category))
                 }
                 
@@ -176,30 +171,30 @@ public struct RecommendationsView: View {
             Divider()
                 .padding(.vertical, 2)
             
-            VStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 4) {
                     Image(systemName: "info.circle")
-                        .font(.system(size: 11))
+                        .font(.system(size: 12))
                         .foregroundStyle(Color.NeuroPulse.brandTeal)
                     Text("Why you're seeing this")
-                        .font(.caption2)
+                        .font(.footnote)
                         .fontWeight(.semibold)
                         .foregroundStyle(.secondary)
                 }
                 
                 Text(item.explanation)
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
-        .padding(DesignTokens.Spacing.medium)
+        .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.NeuroPulse.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
         )
     }
     

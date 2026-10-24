@@ -9,79 +9,59 @@ import SwiftUI
 
 public struct MindEaseHomeView: View {
     @ObservedObject private var store = WellnessSessionStore.shared
-    
+
     public init() {}
-    
+
     public var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.large) {
                 // Header Intro
-                VStack(alignment: .leading, spacing: DesignTokens.Spacing.small) {
-                    HStack(spacing: DesignTokens.Spacing.small) {
-                        Image(systemName: "wind")
-                            .font(.headline)
-                            .foregroundStyle(Color.NeuroPulse.mindEasePrimary)
-                        
-                        Text("MINDFUL WELLNESS")
-                            .font(.caption)
-                            .fontWeight(.bold)
-                            .tracking(1.2)
-                            .foregroundStyle(Color.NeuroPulse.mindEasePrimary)
-                    }
-                    
+                VStack(alignment: .leading, spacing: 4) {
                     Text("MindEase")
-                        .font(.largeTitle)
+                        .font(.title)
                         .fontWeight(.bold)
                         .foregroundStyle(.primary)
-                    
-                    Text("Paced breathing, meditation, and unscored mindful interaction for personal relaxation.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(.top, DesignTokens.Spacing.small)
-                
+
                 // Activities Section
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
                     Text("Wellness Activities")
                         .font(.headline)
                         .foregroundStyle(.primary)
-                    
+
                     // Guided Breathing Card
                     NavigationLink {
                         BreathingSessionView()
                     } label: {
                         activityCard(
                             title: "Guided Breathing",
-                            subtitle: "Animated visual pacing for calming, balanced breathwork. Fully interruptible.",
                             icon: "circle.circle",
                             badge: "Visual Pacer",
                             badgeColor: Color.NeuroPulse.mindEasePrimary
                         )
                     }
                     .buttonStyle(PlainButtonStyle())
-                    
+
                     // Mindful Meditation Card
                     NavigationLink {
                         MindfulnessMeditationView()
                     } label: {
                         activityCard(
                             title: "Mindfulness Pause",
-                            subtitle: "A short, self-directed stillness session to reduce stress and reset focus.",
                             icon: "sparkles",
                             badge: "Quiet Focus",
                             badgeColor: Color.NeuroPulse.mindEaseSecondary
                         )
                     }
                     .buttonStyle(PlainButtonStyle())
-                    
+
                     // Mindful Tracing Card
                     NavigationLink {
                         MindfulTracingView()
                     } label: {
                         activityCard(
                             title: "Mindful Tracing",
-                            subtitle: "An unscored, therapeutic tactile exercise separate from motor evaluations.",
                             icon: "leaf.fill",
                             badge: "Unscored",
                             badgeColor: Color.NeuroPulse.brandTeal
@@ -89,7 +69,7 @@ public struct MindEaseHomeView: View {
                     }
                     .buttonStyle(PlainButtonStyle())
                 }
-                
+
                 // Recent Wellness Sessions List
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
                     HStack {
@@ -104,23 +84,23 @@ public struct MindEaseHomeView: View {
                                 Text("All History")
                                 Image(systemName: "chevron.right")
                             }
-                            .font(.caption)
+                            .font(.footnote)
                             .fontWeight(.semibold)
                             .foregroundStyle(Color.NeuroPulse.mindEasePrimary)
                         }
                     }
-                    
+
                     if store.records.isEmpty {
-                        Text("No wellness sessions recorded yet. Completed breathing or stillness sessions will appear here.")
-                            .font(.caption)
+                        Text("No wellness sessions recorded yet.")
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
-                            .padding(DesignTokens.Spacing.medium)
+                            .padding(16)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .background(Color.NeuroPulse.cardBackground)
-                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
                             .overlay(
-                                RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                                RoundedRectangle(cornerRadius: 16)
+                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
                             )
                     } else {
                         VStack(spacing: DesignTokens.Spacing.small) {
@@ -131,57 +111,28 @@ public struct MindEaseHomeView: View {
                                             .font(.subheadline)
                                             .fontWeight(.semibold)
                                         Text(record.date.formatted(date: .abbreviated, time: .shortened))
-                                            .font(.caption2)
+                                            .font(.footnote)
                                             .foregroundStyle(.secondary)
                                     }
-                                    
+
                                     Spacer()
-                                    
+
                                     Text("\(Int(record.durationSeconds))s")
-                                        .font(.caption)
+                                        .font(.subheadline)
                                         .fontWeight(.semibold)
                                         .foregroundStyle(Color.NeuroPulse.mindEasePrimary)
                                 }
-                                .padding(DesignTokens.Spacing.medium)
+                                .padding(16)
                                 .background(Color.NeuroPulse.cardBackground)
-                                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+                                .clipShape(RoundedRectangle(cornerRadius: 16))
                                 .overlay(
-                                    RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                                        .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
                                 )
                             }
                         }
                     }
                 }
-                
-                // Separate Wellness Data Note
-                HStack(spacing: DesignTokens.Spacing.medium) {
-                    Image(systemName: "shield.lefthalf.filled")
-                        .font(.system(size: 24))
-                        .foregroundStyle(Color.NeuroPulse.mindEasePrimary)
-                    
-                    VStack(alignment: .leading, spacing: DesignTokens.Spacing.xSmall) {
-                        Text("Separate Wellness Records")
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.primary)
-                        
-                        Text("MindEase check-ins and session times are kept strictly separate from motor-health assessment data.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .padding(DesignTokens.Spacing.medium)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.NeuroPulse.cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-                .overlay(
-                    RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                        .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
-                )
-                
-                // Disclaimer Banner
-                DisclaimerBanner()
             }
             .padding(.horizontal, DesignTokens.Spacing.large)
             .padding(.bottom, DesignTokens.Spacing.xxLarge)
@@ -190,56 +141,49 @@ public struct MindEaseHomeView: View {
         .navigationTitle("MindEase")
         .navigationBarTitleDisplayMode(.inline)
     }
-    
+
     @ViewBuilder
     private func activityCard(
         title: String,
-        subtitle: String,
         icon: String,
         badge: String,
         badgeColor: Color
     ) -> some View {
-        HStack(alignment: .top, spacing: DesignTokens.Spacing.medium) {
+        HStack(spacing: DesignTokens.Spacing.medium) {
             ZStack {
                 Circle()
-                    .fill(badgeColor.opacity(0.15))
+                    .fill(badgeColor.opacity(0.12))
                     .frame(width: 44, height: 44)
-                
+
                 Image(systemName: icon)
                     .font(.system(size: 20, weight: .semibold))
                     .foregroundStyle(badgeColor)
             }
-            
-            VStack(alignment: .leading, spacing: DesignTokens.Spacing.xSmall) {
-                HStack {
-                    Text(title)
-                        .font(.headline)
-                        .foregroundStyle(.primary)
-                    
-                    Spacer()
-                    
-                    Text(badge)
-                        .font(.caption2)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(badgeColor)
-                        .padding(.horizontal, DesignTokens.Spacing.small)
-                        .padding(.vertical, 2)
-                        .background(Capsule().fill(badgeColor.opacity(0.12)))
-                }
-                
-                Text(subtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
+
+            Text(title)
+                .font(.headline)
+                .foregroundStyle(.primary)
+
+            Spacer()
+
+            Text(badge)
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(badgeColor)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 3)
+                .background(Capsule().fill(badgeColor.opacity(0.12)))
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(.secondary)
         }
-        .padding(DesignTokens.Spacing.medium)
+        .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.NeuroPulse.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
         )
     }
 }

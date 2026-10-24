@@ -187,9 +187,6 @@ public struct SavedRecordsView: View {
                 
                 // Export & Management
                 exportAndManagementSection
-                
-                // Disclaimer Banner
-                DisclaimerBanner()
             }
             .padding(.horizontal, DesignTokens.Spacing.large)
             .padding(.bottom, DesignTokens.Spacing.xxLarge)
@@ -214,30 +211,11 @@ public struct SavedRecordsView: View {
     // MARK: - Subviews
     
     private var headerSection: some View {
-        VStack(alignment: .leading, spacing: DesignTokens.Spacing.small) {
-            HStack(spacing: DesignTokens.Spacing.small) {
-                Image(systemName: "clock.arrow.circlepath")
-                    .font(.caption)
-                    .foregroundStyle(Color.NeuroPulse.brandTeal)
-                Text(authManager.currentMode == .authenticated
-                     ? "ACCOUNT HISTORY • \(authManager.currentUser?.email ?? "USER")"
-                     : "LOCAL ON-DEVICE HISTORY")
-                    .font(.caption)
-                    .fontWeight(.bold)
-                    .tracking(1.2)
-                    .foregroundStyle(Color.NeuroPulse.brandTeal)
-            }
-            
+        VStack(alignment: .leading, spacing: 4) {
             Text("Activity History")
-                .font(.largeTitle)
+                .font(.title)
                 .fontWeight(.bold)
                 .foregroundStyle(.primary)
-            
-            Text(authManager.currentMode == .authenticated
-                 ? "Review your account's completed fine-motor assessments and MindEase sessions."
-                 : "Review completed Motor Health assessments and MindEase wellness moments stored locally on this device.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
         }
         .padding(.top, DesignTokens.Spacing.small)
     }
@@ -266,10 +244,10 @@ public struct SavedRecordsView: View {
         .frame(maxWidth: .infinity)
         .padding(.vertical, DesignTokens.Spacing.xxLarge)
         .background(Color.NeuroPulse.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.card))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.card)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
         )
     }
     
@@ -291,7 +269,7 @@ public struct SavedRecordsView: View {
         HStack(alignment: .top, spacing: DesignTokens.Spacing.medium) {
             ZStack {
                 Circle()
-                    .fill(item.iconColor.opacity(0.15))
+                    .fill(item.iconColor.opacity(0.12))
                     .frame(width: 44, height: 44)
                 Image(systemName: item.iconName)
                     .font(.system(size: 20, weight: .semibold))
@@ -306,7 +284,7 @@ public struct SavedRecordsView: View {
                     
                     if item.isSampleData {
                         Text("Demo")
-                            .font(.system(size: 9, weight: .bold))
+                            .font(.system(size: 10, weight: .bold))
                             .foregroundStyle(.white)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
@@ -323,13 +301,13 @@ public struct SavedRecordsView: View {
                 
                 HStack {
                     Text(item.subtitle)
-                        .font(.caption)
+                        .font(.footnote)
                         .foregroundStyle(.secondary)
                     
                     Spacer()
                     
                     Text(item.date.formatted(date: .abbreviated, time: .shortened))
-                        .font(.caption2)
+                        .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
                 
@@ -339,29 +317,29 @@ public struct SavedRecordsView: View {
                         .frame(width: 6, height: 6)
                     
                     Text(item.statusLabel)
-                        .font(.caption2)
-                        .fontWeight(.semibold)
+                        .font(.footnote)
+                        .fontWeight(.medium)
                         .foregroundStyle(item.isSuccessStatus ? Color.NeuroPulse.success : Color.NeuroPulse.warning)
                     
                     Spacer()
                     
                     Text("Details")
-                        .font(.caption2)
+                        .font(.footnote)
                         .foregroundStyle(Color.NeuroPulse.brandTeal)
                     Image(systemName: "chevron.right")
-                        .font(.caption2)
+                        .font(.caption)
                         .foregroundStyle(.secondary)
                 }
                 .padding(.top, 2)
             }
         }
-        .padding(DesignTokens.Spacing.medium)
+        .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.NeuroPulse.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
         )
     }
     
@@ -377,13 +355,13 @@ public struct SavedRecordsView: View {
                 ) {
                     HStack(spacing: DesignTokens.Spacing.small) {
                         Image(systemName: "square.and.arrow.up")
+                            .font(.system(size: 17, weight: .semibold))
                         Text("Export Motor Sessions (CSV)")
+                            .font(.system(size: 16, weight: .semibold))
                     }
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
                     .foregroundStyle(Color.NeuroPulse.brandTeal)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, DesignTokens.Spacing.medium)
+                    .frame(height: 50)
                     .background(Color.NeuroPulse.cardBackground)
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
                     .overlay(
@@ -402,7 +380,8 @@ public struct SavedRecordsView: View {
                         Image(systemName: "arrow.clockwise")
                         Text("Refresh")
                     }
-                    .font(.footnote)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
                     .foregroundStyle(Color.NeuroPulse.brandTeal)
                 }
                 
@@ -414,7 +393,8 @@ public struct SavedRecordsView: View {
                             Image(systemName: "trash")
                             Text("Clear All")
                         }
-                        .font(.footnote)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
                         .foregroundStyle(.secondary)
                     }
                 }
@@ -530,8 +510,6 @@ public struct SavedRecordsView: View {
                         .background(Color.NeuroPulse.cardBackground)
                         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
                     }
-                    
-                    DisclaimerBanner()
                 }
                 .padding(DesignTokens.Spacing.large)
             }

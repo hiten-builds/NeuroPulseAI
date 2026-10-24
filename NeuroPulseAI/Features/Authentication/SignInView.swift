@@ -43,16 +43,16 @@ public struct SignInView: View {
                             .foregroundStyle(.primary)
 
                         Text("Sign in with your email to access your authenticated session.")
-                            .font(.caption)
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                     }
 
                     // MARK: - Input Fields
                     VStack(spacing: DesignTokens.Spacing.medium) {
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: 6) {
                             Text("Email Address")
-                                .font(.caption)
+                                .font(.footnote)
                                 .fontWeight(.medium)
                                 .foregroundStyle(.secondary)
 
@@ -64,18 +64,18 @@ public struct SignInView: View {
                                     .textInputAutocapitalization(.never)
                                     .autocorrectionDisabled()
                             }
-                            .padding(DesignTokens.Spacing.medium)
+                            .padding(14)
                             .background(Color.NeuroPulse.cardBackground)
-                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.small))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                             .overlay(
-                                RoundedRectangle(cornerRadius: DesignTokens.Radius.small)
-                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
                             )
                         }
 
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: 6) {
                             Text("Password")
-                                .font(.caption)
+                                .font(.footnote)
                                 .fontWeight(.medium)
                                 .foregroundStyle(.secondary)
 
@@ -84,12 +84,12 @@ public struct SignInView: View {
                                     .foregroundStyle(.secondary)
                                 SecureField("Enter your password", text: $password)
                             }
-                            .padding(DesignTokens.Spacing.medium)
+                            .padding(14)
                             .background(Color.NeuroPulse.cardBackground)
-                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.small))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                             .overlay(
-                                RoundedRectangle(cornerRadius: DesignTokens.Radius.small)
-                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
                             )
                         }
                     }
@@ -100,7 +100,7 @@ public struct SignInView: View {
                             Image(systemName: "exclamationmark.triangle.fill")
                                 .foregroundStyle(Color.NeuroPulse.error)
                             Text(error)
-                                .font(.caption)
+                                .font(.footnote)
                                 .foregroundStyle(Color.NeuroPulse.error)
                             Spacer()
                         }
@@ -120,12 +120,11 @@ public struct SignInView: View {
                                     .padding(.trailing, 4)
                             }
                             Text("Sign In")
-                                .fontWeight(.semibold)
+                                .font(.system(size: 17, weight: .semibold))
                         }
-                        .font(.body)
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 50)
+                        .frame(height: 52)
                         .background(
                             LinearGradient(
                                 colors: [Color.NeuroPulse.brandTeal, Color.NeuroPulse.motorPrimary],
@@ -134,7 +133,7 @@ public struct SignInView: View {
                             )
                         )
                         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-                        .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.3), radius: 6, y: 3)
+                        .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.25), radius: 6, y: 3)
                     }
                     .disabled(authManager.isAuthenticating || email.isEmpty || password.isEmpty)
                     .opacity((email.isEmpty || password.isEmpty) ? 0.6 : 1.0)
@@ -147,26 +146,16 @@ public struct SignInView: View {
                         } label: {
                             HStack(spacing: 4) {
                                 Text("Don't have an account?")
-                                    .font(.callout)
+                                    .font(.subheadline)
                                     .foregroundStyle(.secondary)
                                 Text("Create Account")
-                                    .font(.callout)
+                                    .font(.subheadline)
                                     .fontWeight(.semibold)
                                     .foregroundStyle(Color.NeuroPulse.brandTeal)
                             }
                         }
                         .padding(.top, DesignTokens.Spacing.xSmall)
                     }
-
-                    // MARK: - Cancel
-                    Button {
-                        dismiss()
-                    } label: {
-                        Text("Cancel")
-                            .font(.callout)
-                            .foregroundStyle(.secondary)
-                    }
-                    .padding(.top, DesignTokens.Spacing.xSmall)
                 }
                 .padding(.horizontal, DesignTokens.Spacing.large)
                 .padding(.vertical, DesignTokens.Spacing.large)

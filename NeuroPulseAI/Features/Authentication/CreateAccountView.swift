@@ -45,16 +45,16 @@ public struct CreateAccountView: View {
                             .foregroundStyle(.primary)
 
                         Text("Register with email to manage your account and optionally personalize recommendations.")
-                            .font(.caption)
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                     }
 
                     // MARK: - Input Fields
                     VStack(spacing: DesignTokens.Spacing.medium) {
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: 6) {
                             Text("Email Address")
-                                .font(.caption)
+                                .font(.footnote)
                                 .fontWeight(.medium)
                                 .foregroundStyle(.secondary)
 
@@ -66,18 +66,18 @@ public struct CreateAccountView: View {
                                     .textInputAutocapitalization(.never)
                                     .autocorrectionDisabled()
                             }
-                            .padding(DesignTokens.Spacing.medium)
+                            .padding(14)
                             .background(Color.NeuroPulse.cardBackground)
-                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.small))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                             .overlay(
-                                RoundedRectangle(cornerRadius: DesignTokens.Radius.small)
-                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
                             )
                         }
 
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: 6) {
                             Text("Password (Minimum 8 characters)")
-                                .font(.caption)
+                                .font(.footnote)
                                 .fontWeight(.medium)
                                 .foregroundStyle(.secondary)
 
@@ -86,18 +86,18 @@ public struct CreateAccountView: View {
                                     .foregroundStyle(.secondary)
                                 SecureField("Create password", text: $password)
                             }
-                            .padding(DesignTokens.Spacing.medium)
+                            .padding(14)
                             .background(Color.NeuroPulse.cardBackground)
-                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.small))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                             .overlay(
-                                RoundedRectangle(cornerRadius: DesignTokens.Radius.small)
-                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
                             )
                         }
 
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: 6) {
                             Text("Confirm Password")
-                                .font(.caption)
+                                .font(.footnote)
                                 .fontWeight(.medium)
                                 .foregroundStyle(.secondary)
 
@@ -106,12 +106,12 @@ public struct CreateAccountView: View {
                                     .foregroundStyle(.secondary)
                                 SecureField("Re-enter password", text: $confirmPassword)
                             }
-                            .padding(DesignTokens.Spacing.medium)
+                            .padding(14)
                             .background(Color.NeuroPulse.cardBackground)
-                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.small))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                             .overlay(
-                                RoundedRectangle(cornerRadius: DesignTokens.Radius.small)
-                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
                             )
                         }
                     }
@@ -122,7 +122,7 @@ public struct CreateAccountView: View {
                             Image(systemName: "exclamationmark.triangle.fill")
                                 .foregroundStyle(Color.NeuroPulse.error)
                             Text(message)
-                                .font(.caption)
+                                .font(.footnote)
                                 .foregroundStyle(Color.NeuroPulse.error)
                             Spacer()
                         }
@@ -142,12 +142,11 @@ public struct CreateAccountView: View {
                                     .padding(.trailing, 4)
                             }
                             Text("Create Account")
-                                .fontWeight(.semibold)
+                                .font(.system(size: 17, weight: .semibold))
                         }
-                        .font(.body)
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 50)
+                        .frame(height: 52)
                         .background(
                             LinearGradient(
                                 colors: [Color.NeuroPulse.brandTeal, Color.NeuroPulse.motorPrimary],
@@ -156,7 +155,7 @@ public struct CreateAccountView: View {
                             )
                         )
                         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-                        .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.3), radius: 6, y: 3)
+                        .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.25), radius: 6, y: 3)
                     }
                     .disabled(authManager.isAuthenticating || email.isEmpty || password.isEmpty || confirmPassword.isEmpty)
                     .opacity((email.isEmpty || password.isEmpty || confirmPassword.isEmpty) ? 0.6 : 1.0)
@@ -169,26 +168,16 @@ public struct CreateAccountView: View {
                         } label: {
                             HStack(spacing: 4) {
                                 Text("Already have an account?")
-                                    .font(.callout)
+                                    .font(.subheadline)
                                     .foregroundStyle(.secondary)
                                 Text("Sign In")
-                                    .font(.callout)
+                                    .font(.subheadline)
                                     .fontWeight(.semibold)
                                     .foregroundStyle(Color.NeuroPulse.brandTeal)
                             }
                         }
                         .padding(.top, DesignTokens.Spacing.xSmall)
                     }
-
-                    // MARK: - Cancel
-                    Button {
-                        dismiss()
-                    } label: {
-                        Text("Cancel")
-                            .font(.callout)
-                            .foregroundStyle(.secondary)
-                    }
-                    .padding(.top, DesignTokens.Spacing.xSmall)
                 }
                 .padding(.horizontal, DesignTokens.Spacing.large)
                 .padding(.vertical, DesignTokens.Spacing.large)

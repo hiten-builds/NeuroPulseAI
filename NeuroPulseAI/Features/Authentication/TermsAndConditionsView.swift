@@ -44,15 +44,14 @@ public struct TermsAndConditionsView: View {
                     
                     HStack(spacing: 6) {
                         Text("Version \(TermsManager.currentTermsVersion)")
-                            .font(.caption2)
-                            .fontWeight(.bold)
+                            .font(.system(size: 11, weight: .semibold))
                             .foregroundStyle(Color.NeuroPulse.brandTeal)
-                            .padding(.horizontal, DesignTokens.Spacing.small)
+                            .padding(.horizontal, 8)
                             .padding(.vertical, 3)
                             .background(Capsule().fill(Color.NeuroPulse.brandTeal.opacity(0.12)))
                         
                         Text("• Required for Account Access")
-                            .font(.caption)
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -62,24 +61,25 @@ public struct TermsAndConditionsView: View {
                     Image(systemName: "exclamationmark.shield.fill")
                         .font(.system(size: 18))
                         .foregroundStyle(Color.NeuroPulse.brandTeal)
+                        .padding(.top, 1)
                     
-                    VStack(alignment: .leading, spacing: 2) {
+                    VStack(alignment: .leading, spacing: 3) {
                         Text("Required Decision")
-                            .font(.caption)
-                            .fontWeight(.bold)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
                             .foregroundStyle(.primary)
                         Text("You must review and accept the Terms & Conditions to continue into the application.")
-                            .font(.caption2)
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                 }
-                .padding(DesignTokens.Spacing.medium)
+                .padding(14)
                 .background(Color.NeuroPulse.brandTeal.opacity(0.08))
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.small))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
                 .overlay(
-                    RoundedRectangle(cornerRadius: DesignTokens.Radius.small)
-                        .stroke(Color.NeuroPulse.brandTeal.opacity(0.3), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.NeuroPulse.brandTeal.opacity(0.3), lineWidth: 0.75)
                 )
                 
                 // MARK: - Terms Content Sections
@@ -108,12 +108,12 @@ public struct TermsAndConditionsView: View {
                         body: "You agree to conduct motor assessments in a comfortable, well-lit environment on a stable surface. You may pause, cancel, or stop any assessment at any time without penalty."
                     )
                 }
-                .padding(DesignTokens.Spacing.medium)
+                .padding(16)
                 .background(Color.NeuroPulse.cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+                .clipShape(RoundedRectangle(cornerRadius: 16))
                 .overlay(
-                    RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                        .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
                 )
                 
                 // MARK: - Acceptance Actions
@@ -126,21 +126,21 @@ public struct TermsAndConditionsView: View {
                             customAccept()
                         }
                     } label: {
-                        HStack {
+                        HStack(spacing: 8) {
                             if isProcessing {
                                 ProgressView()
                                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                     .padding(.trailing, 4)
                             } else {
                                 Image(systemName: "checkmark.seal.fill")
+                                    .font(.system(size: 18, weight: .semibold))
                             }
                             Text(isProcessing ? "Saving..." : "Agree & Continue")
-                                .fontWeight(.semibold)
+                                .font(.system(size: 17, weight: .semibold))
                         }
-                        .font(.body)
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 50)
+                        .frame(height: 52)
                         .background(
                             LinearGradient(
                                 colors: [Color.NeuroPulse.brandTeal, Color.NeuroPulse.motorPrimary],
@@ -149,7 +149,7 @@ public struct TermsAndConditionsView: View {
                             )
                         )
                         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-                        .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.3), radius: 6, y: 3)
+                        .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.25), radius: 6, y: 3)
                     }
                     .disabled(isProcessing)
                     .accessibilityLabel("Agree to Terms & Conditions and continue")
@@ -162,9 +162,17 @@ public struct TermsAndConditionsView: View {
                             authManager.signOut()
                         }
                     } label: {
-                        Text("Decline")
-                            .font(.callout)
+                        Text("Decline & Sign Out")
+                            .font(.system(size: 16, weight: .medium))
                             .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 48)
+                            .background(Color.NeuroPulse.cardBackground)
+                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
+                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
+                            )
                     }
                     .disabled(isProcessing)
                 }
@@ -179,13 +187,12 @@ public struct TermsAndConditionsView: View {
     }
     
     private func termsSection(number: String, title: String, body: String) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack(spacing: 6) {
+        VStack(alignment: .leading, spacing: 5) {
+            HStack(spacing: 8) {
                 Text(number)
-                    .font(.caption2)
-                    .fontWeight(.bold)
+                    .font(.system(size: 11, weight: .bold))
                     .foregroundStyle(.white)
-                    .frame(width: 18, height: 18)
+                    .frame(width: 20, height: 20)
                     .background(Circle().fill(Color.NeuroPulse.brandTeal))
                 
                 Text(title)
@@ -195,10 +202,10 @@ public struct TermsAndConditionsView: View {
             }
             
             Text(body)
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
-                .padding(.leading, 24)
+                .padding(.leading, 28)
         }
     }
 }

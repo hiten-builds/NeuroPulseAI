@@ -50,12 +50,6 @@ public struct ReadMindWavesLandingView: View {
 
                 // MARK: - Brain Wave Bands Overview
                 brainWaveBandsSection
-
-                // MARK: - How It Works Informational Card
-                howItWorksSection
-
-                // MARK: - Non-Diagnostic Disclaimer
-                disclaimerNotice
             }
             .padding(.horizontal, DesignTokens.Spacing.large)
             .padding(.top, DesignTokens.Spacing.medium)
@@ -97,14 +91,14 @@ public struct ReadMindWavesLandingView: View {
             ZStack {
                 Circle()
                     .fill(
-                        LinearGradient(
-                            colors: [Color.NeuroPulse.brandTeal, Color.NeuroPulse.mindEaseSecondary],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
+                    LinearGradient(
+                        colors: [Color.NeuroPulse.brandTeal, Color.NeuroPulse.mindEaseSecondary],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
                     )
-                    .frame(width: 80, height: 80)
-                    .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.35), radius: 10, y: 5)
+                )
+                .frame(width: 80, height: 80)
+                .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.35), radius: 10, y: 5)
 
                 Image(systemName: "brain.head.profile")
                     .font(.system(size: 38, weight: .semibold))
@@ -130,12 +124,11 @@ public struct ReadMindWavesLandingView: View {
                 }
 
                 Text("Connect EEG Headset")
-                    .fontWeight(.semibold)
+                    .font(.system(size: 17, weight: .semibold))
             }
-            .font(.body)
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
-            .frame(height: 52)
+            .frame(height: 54)
             .background(
                 LinearGradient(
                     colors: [Color.NeuroPulse.brandTeal, Color.NeuroPulse.mindEaseSecondary],
@@ -144,7 +137,7 @@ public struct ReadMindWavesLandingView: View {
                 )
             )
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-            .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.3), radius: 8, y: 4)
+            .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.25), radius: 6, y: 3)
         }
         .disabled(isConnectingAttempt)
         .accessibilityLabel("Connect EEG Headset")
@@ -159,10 +152,7 @@ public struct ReadMindWavesLandingView: View {
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Connection Status")
-                        .font(.caption2)
-                        .fontWeight(.bold)
-                        .textCase(.uppercase)
-                        .tracking(1.0)
+                        .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(.secondary)
 
                     Text(connectionState.statusBadgeText)
@@ -179,33 +169,33 @@ public struct ReadMindWavesLandingView: View {
                         .fill(connectionState == .headsetNotConnected ? Color.NeuroPulse.warning : Color.NeuroPulse.error)
                         .frame(width: 8, height: 8)
                     Text(connectionState == .headsetNotConnected ? "Scanned" : "Standby")
-                        .font(.caption2)
-                        .fontWeight(.semibold)
+                        .font(.footnote)
+                        .fontWeight(.medium)
                         .foregroundStyle(.secondary)
                 }
-                .padding(.horizontal, DesignTokens.Spacing.small)
+                .padding(.horizontal, 10)
                 .padding(.vertical, 4)
                 .background(Color.NeuroPulse.surfaceBackground)
                 .clipShape(Capsule())
             }
 
             Text(connectionState.statusMessage)
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 2)
         }
-        .padding(DesignTokens.Spacing.medium)
+        .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.NeuroPulse.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
+            RoundedRectangle(cornerRadius: 16)
                 .stroke(
                     connectionState == .headsetNotConnected
-                        ? Color.NeuroPulse.warning.opacity(0.3)
+                        ? Color.NeuroPulse.warning.opacity(0.35)
                         : Color.NeuroPulse.subtleBorder,
-                    lineWidth: 1
+                    lineWidth: 0.75
                 )
         )
     }
@@ -213,14 +203,13 @@ public struct ReadMindWavesLandingView: View {
     private var brainWaveBandsSection: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
             HStack {
-                Text("BRAIN WAVE FREQUENCIES")
-                    .font(.caption2)
-                    .fontWeight(.bold)
-                    .tracking(1.2)
-                    .foregroundStyle(Color.NeuroPulse.brandTeal)
+                Text("Brain Wave Frequencies")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.primary)
                 Spacer()
-                Text("EEG Overview")
-                    .font(.caption2)
+                Text("EEG Bands")
+                    .font(.footnote)
                     .foregroundStyle(.secondary)
             }
 
@@ -228,16 +217,14 @@ public struct ReadMindWavesLandingView: View {
                 frequencyRow(
                     name: "Alpha",
                     range: "8 – 12 Hz",
-                    state: "Calm Focus & Alertness",
-                    description: "Predominates during relaxed wakefulness, meditation, and mindful pausing.",
+                    state: "Calm Focus",
                     color: Color.NeuroPulse.brandTeal
                 )
 
                 frequencyRow(
                     name: "Beta",
                     range: "13 – 30 Hz",
-                    state: "Active Concentration",
-                    description: "Associated with active problem solving, motor coordination, and alertness.",
+                    state: "Concentration",
                     color: Color.NeuroPulse.motorPrimary
                 )
 
@@ -245,119 +232,49 @@ public struct ReadMindWavesLandingView: View {
                     name: "Theta",
                     range: "4 – 8 Hz",
                     state: "Deep Relaxation",
-                    description: "Observed in twilight states, daydreaming, and deep mindful breathing.",
                     color: Color.NeuroPulse.mindEaseSecondary
                 )
 
                 frequencyRow(
                     name: "Delta",
                     range: "0.5 – 4 Hz",
-                    state: "Restorative Rest",
-                    description: "Slow-wave rhythmic activity during deep sleep and physical regeneration.",
+                    state: "Restorative",
                     color: Color.NeuroPulse.mindEasePrimary
                 )
             }
         }
-        .padding(DesignTokens.Spacing.medium)
+        .padding(16)
         .background(Color.NeuroPulse.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
         )
     }
 
-    private func frequencyRow(name: String, range: String, state: String, description: String, color: Color) -> some View {
-        HStack(alignment: .top, spacing: DesignTokens.Spacing.small) {
+    private func frequencyRow(name: String, range: String, state: String, color: Color) -> some View {
+        HStack(spacing: DesignTokens.Spacing.small) {
             Circle()
                 .fill(color)
-                .frame(width: 10, height: 10)
-                .padding(.top, 4)
+                .frame(width: 8, height: 8)
 
-            VStack(alignment: .leading, spacing: 2) {
-                HStack {
-                    Text(name)
-                        .font(.subheadline)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.primary)
+            Text(name)
+                .font(.subheadline)
+                .fontWeight(.bold)
+                .foregroundStyle(.primary)
 
-                    Text("(\(range))")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
+            Text("(\(range))")
+                .font(.caption)
+                .foregroundStyle(.secondary)
 
-                    Spacer()
+            Spacer()
 
-                    Text(state)
-                        .font(.caption2)
-                        .fontWeight(.medium)
-                        .foregroundStyle(color)
-                }
-
-                Text(description)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
+            Text(state)
+                .font(.footnote)
+                .fontWeight(.medium)
+                .foregroundStyle(color)
         }
         .padding(.vertical, 4)
-    }
-
-    private var howItWorksSection: some View {
-        VStack(alignment: .leading, spacing: DesignTokens.Spacing.small) {
-            Text("ABOUT THE EEG EXPERIENCE")
-                .font(.caption2)
-                .fontWeight(.bold)
-                .tracking(1.2)
-                .foregroundStyle(.secondary)
-
-            HStack(alignment: .top, spacing: DesignTokens.Spacing.medium) {
-                Image(systemName: "waveform.path.ecg")
-                    .font(.system(size: 22))
-                    .foregroundStyle(Color.NeuroPulse.brandTeal)
-                    .frame(width: 32)
-                    .padding(.top, 2)
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Non-Invasive Brain Wave Sensing")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.primary)
-
-                    Text("Future phases will pair with lightweight consumer EEG headsets via low-energy Bluetooth to translate microvolt oscillatory rhythms into personal focus and calm indicators alongside your motor and wellness trends.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-            }
-        }
-        .padding(DesignTokens.Spacing.medium)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.NeuroPulse.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-        .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
-        )
-    }
-
-    private var disclaimerNotice: some View {
-        HStack(alignment: .top, spacing: DesignTokens.Spacing.small) {
-            Image(systemName: "info.circle.fill")
-                .font(.system(size: 16))
-                .foregroundStyle(.secondary)
-
-            Text("Non-Diagnostic Informational Scope: NeuroPulseAI brain wave metrics and mind state tracking are designed solely for self-reflection and personal wellness. They do not constitute neurological diagnoses or clinical evaluations.")
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(DesignTokens.Spacing.medium)
-        .background(Color.NeuroPulse.cardBackground.opacity(0.6))
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.small))
-        .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.small)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
-        )
     }
 
     private func triggerConnectionCheck() {

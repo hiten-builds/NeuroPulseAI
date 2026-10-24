@@ -41,18 +41,15 @@ public struct SpiralResultView: View {
                 // Quality Explanation
                 qualitySection
                 
-                // Safety Disclaimer
-                DisclaimerBanner()
-                
                 // Action Done Button
                 Button {
                     onDismiss?()
                 } label: {
                     Text("Done")
-                        .font(.headline)
+                        .font(.system(size: 17, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, DesignTokens.Spacing.medium)
+                        .frame(height: 52)
                         .background(Color.NeuroPulse.motorSecondary)
                         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
                 }
@@ -71,10 +68,9 @@ public struct SpiralResultView: View {
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.small) {
             HStack {
-                Text("SPIRAL TRACING")
-                    .font(.caption)
-                    .fontWeight(.bold)
-                    .tracking(1.2)
+                Text("Spiral Tracing")
+                    .font(.footnote)
+                    .fontWeight(.semibold)
                     .foregroundStyle(Color.NeuroPulse.motorSecondary)
                 
                 Spacer()
@@ -110,7 +106,7 @@ public struct SpiralResultView: View {
                     .fontWeight(.semibold)
                     .foregroundStyle(.primary)
                 Text("Record is securely stored on this device and available in Activity History.")
-                    .font(.caption2)
+                    .font(.footnote)
                     .foregroundStyle(.secondary)
             }
             
@@ -121,7 +117,7 @@ public struct SpiralResultView: View {
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
         .overlay(
             RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                .stroke(Color.NeuroPulse.success.opacity(0.35), lineWidth: 1)
+                .stroke(Color.NeuroPulse.success.opacity(0.35), lineWidth: 0.75)
         )
     }
     
@@ -172,7 +168,7 @@ public struct SpiralResultView: View {
             .frame(height: 200)
             .overlay(
                 RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
             )
         }
     }
@@ -222,7 +218,7 @@ public struct SpiralResultView: View {
                             .font(.subheadline)
                             .fontWeight(.semibold)
                         Text("Continuous coordinate positions")
-                            .font(.caption2)
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
                     Spacer()
@@ -240,7 +236,7 @@ public struct SpiralResultView: View {
                             .font(.subheadline)
                             .fontWeight(.semibold)
                         Text("Total active tracing duration")
-                            .font(.caption2)
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
                     Spacer()
@@ -255,7 +251,7 @@ public struct SpiralResultView: View {
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
             .overlay(
                 RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
             )
         }
     }
@@ -273,7 +269,7 @@ public struct SpiralResultView: View {
                     .foregroundStyle(.primary)
                 
                 Text(metrics.qualityExplanation)
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -284,7 +280,7 @@ public struct SpiralResultView: View {
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
         .overlay(
             RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
         )
     }
     
@@ -308,7 +304,7 @@ public struct SpiralResultView: View {
                 .foregroundStyle(.primary)
             
             Text(unit)
-                .font(.caption2)
+                .font(.footnote)
                 .foregroundStyle(.secondary)
         }
         .padding(DesignTokens.Spacing.medium)
@@ -317,7 +313,7 @@ public struct SpiralResultView: View {
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
         .overlay(
             RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
         )
     }
     
@@ -329,7 +325,7 @@ public struct SpiralResultView: View {
                 .frame(width: 8, height: 8)
             
             Text(status.rawValue)
-                .font(.caption2)
+                .font(.footnote)
                 .fontWeight(.semibold)
                 .foregroundStyle(.primary)
         }

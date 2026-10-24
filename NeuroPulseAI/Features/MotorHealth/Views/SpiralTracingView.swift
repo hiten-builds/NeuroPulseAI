@@ -90,7 +90,7 @@ public struct SpiralTracingView: View {
             // Hand Selection Picker
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.small) {
                 Text("Select Hand")
-                    .font(.caption)
+                    .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(.secondary)
                 
@@ -108,10 +108,10 @@ public struct SpiralTracingView: View {
                 startDrawing()
             } label: {
                 Text("Begin Tracing")
-                    .font(.headline)
+                    .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, DesignTokens.Spacing.medium)
+                    .frame(height: 52)
                     .background(Color.NeuroPulse.motorSecondary)
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
             }
@@ -127,19 +127,19 @@ public struct SpiralTracingView: View {
             // Header instruction
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("TRACE FROM CENTER OUTWARD")
-                        .font(.caption2)
-                        .fontWeight(.bold)
+                    Text("Trace from Center Outward")
+                        .font(.footnote)
+                        .fontWeight(.semibold)
                         .foregroundStyle(Color.NeuroPulse.motorSecondary)
                     Text("\(capturedPoints.count) points recorded")
-                        .font(.caption)
+                        .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
                 Button("Reset") {
                     resetDrawing()
                 }
-                .font(.footnote)
+                .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(Color.NeuroPulse.warning)
                 .disabled(isCalculating)
             }
@@ -155,12 +155,11 @@ public struct SpiralTracingView: View {
                     // Canvas Card Background
                     RoundedRectangle(cornerRadius: DesignTokens.Radius.card)
                         .fill(Color.NeuroPulse.cardBackground)
-                        .shadow(
-                            color: DesignTokens.Shadow.cardElevation.color,
-                            radius: DesignTokens.Shadow.cardElevation.radius,
-                            x: 0,
-                            y: 4
+                        .overlay(
+                            RoundedRectangle(cornerRadius: DesignTokens.Radius.card)
+                                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
                         )
+                        .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 3)
                     
                     // Hardware-accelerated Canvas for smooth 60fps rendering
                     Canvas { context, size in
@@ -240,10 +239,10 @@ public struct SpiralTracingView: View {
                         Image(systemName: "checkmark.circle.fill")
                     }
                 }
-                .font(.headline)
+                .font(.system(size: 17, weight: .semibold))
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, DesignTokens.Spacing.medium)
+                .frame(height: 52)
                 .background(capturedPoints.count >= 20 && !isCalculating ? Color.NeuroPulse.motorSecondary : Color.secondary.opacity(0.4))
                 .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
             }

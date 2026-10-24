@@ -41,7 +41,7 @@ public struct PersonalizationConsentView: View {
                         .foregroundStyle(.primary)
                     
                     Text("Version 1.0 • Purpose-Specific Authorization")
-                        .font(.caption)
+                        .font(.footnote)
                         .fontWeight(.semibold)
                         .foregroundStyle(Color.NeuroPulse.brandTeal)
                 }
@@ -51,24 +51,25 @@ public struct PersonalizationConsentView: View {
                     Image(systemName: "hand.raised.fill")
                         .font(.system(size: 18))
                         .foregroundStyle(Color.NeuroPulse.brandTeal)
+                        .padding(.top, 1)
                     
-                    VStack(alignment: .leading, spacing: 2) {
+                    VStack(alignment: .leading, spacing: 3) {
                         Text("Required Privacy Decision")
-                            .font(.caption)
-                            .fontWeight(.bold)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
                             .foregroundStyle(.primary)
                         Text("Please choose whether you allow data sharing. Your decision will be saved for this account.")
-                            .font(.caption2)
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                 }
-                .padding(DesignTokens.Spacing.medium)
+                .padding(14)
                 .background(Color.NeuroPulse.brandTeal.opacity(0.08))
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.small))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
                 .overlay(
-                    RoundedRectangle(cornerRadius: DesignTokens.Radius.small)
-                        .stroke(Color.NeuroPulse.brandTeal.opacity(0.3), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.NeuroPulse.brandTeal.opacity(0.3), lineWidth: 0.75)
                 )
                 
                 // MARK: - Purpose & Scope Disclosure
@@ -103,12 +104,12 @@ public struct PersonalizationConsentView: View {
                         description: "The entire app remains fully functional. Assessments, spiral tests, and MindEase activities continue to save locally on your device with zero cloud uploads."
                     )
                 }
-                .padding(DesignTokens.Spacing.medium)
+                .padding(16)
                 .background(Color.NeuroPulse.cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+                .clipShape(RoundedRectangle(cornerRadius: 16))
                 .overlay(
-                    RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                        .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
                 )
                 
                 // MARK: - Explicit Decision Buttons
@@ -117,21 +118,21 @@ public struct PersonalizationConsentView: View {
                     Button {
                         handleDecision(granted: true)
                     } label: {
-                        HStack {
+                        HStack(spacing: 8) {
                             if isProcessing {
                                 ProgressView()
                                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                     .padding(.trailing, 4)
                             } else {
                                 Image(systemName: "checkmark.circle.fill")
+                                    .font(.system(size: 18, weight: .semibold))
                             }
                             Text(isProcessing ? "Saving..." : "Allow Data Sharing for Personalization")
-                                .fontWeight(.semibold)
+                                .font(.system(size: 16, weight: .semibold))
                         }
-                        .font(.subheadline)
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 50)
+                        .frame(height: 52)
                         .background(
                             LinearGradient(
                                 colors: [Color.NeuroPulse.brandTeal, Color.NeuroPulse.motorPrimary],
@@ -140,7 +141,7 @@ public struct PersonalizationConsentView: View {
                             )
                         )
                         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-                        .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.3), radius: 6, y: 3)
+                        .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.25), radius: 6, y: 3)
                     }
                     .disabled(isProcessing)
                     .accessibilityLabel("Allow data sharing for personalized recommendations")
@@ -149,25 +150,25 @@ public struct PersonalizationConsentView: View {
                     Button {
                         handleDecision(granted: false)
                     } label: {
-                        HStack {
+                        HStack(spacing: 8) {
                             if isProcessing {
                                 ProgressView()
                                     .padding(.trailing, 4)
                             } else {
                                 Image(systemName: "xmark.circle")
+                                    .font(.system(size: 18, weight: .medium))
                             }
                             Text(isProcessing ? "Saving..." : "Decline & Keep Data Local Only")
-                                .fontWeight(.medium)
+                                .font(.system(size: 16, weight: .medium))
                         }
-                        .font(.subheadline)
                         .foregroundStyle(.primary)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 48)
+                        .frame(height: 50)
                         .background(Color.NeuroPulse.cardBackground)
                         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
                         .overlay(
                             RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
                         )
                     }
                     .disabled(isProcessing)
@@ -179,10 +180,11 @@ public struct PersonalizationConsentView: View {
                         authManager.signOut()
                     } label: {
                         Text("Sign Out & Return Later")
-                            .font(.callout)
+                            .font(.system(size: 15, weight: .regular))
                             .foregroundStyle(.secondary)
                     }
                     .disabled(isProcessing)
+                    .padding(.top, 4)
                 }
                 .padding(.top, DesignTokens.Spacing.small)
             }
@@ -202,13 +204,13 @@ public struct PersonalizationConsentView: View {
                 .frame(width: 24, alignment: .center)
                 .padding(.top, 2)
             
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 3) {
                 Text(title)
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(.primary)
                 Text(description)
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }

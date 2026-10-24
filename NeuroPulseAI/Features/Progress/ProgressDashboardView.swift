@@ -31,25 +31,11 @@ public struct ProgressDashboardView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.large) {
                 // Header
-                VStack(alignment: .leading, spacing: DesignTokens.Spacing.small) {
-                    HStack {
-                        Image(systemName: "chart.xyaxis.line")
-                            .foregroundStyle(Color.NeuroPulse.brandTeal)
-                        Text("HISTORICAL TRENDS")
-                            .font(.caption)
-                            .fontWeight(.bold)
-                            .tracking(1.2)
-                            .foregroundStyle(Color.NeuroPulse.brandTeal)
-                    }
-                    
+                VStack(alignment: .leading, spacing: 4) {
                     Text("Measurement Progress")
-                        .font(.largeTitle)
+                        .font(.title)
                         .fontWeight(.bold)
                         .foregroundStyle(.primary)
-                    
-                    Text("Compare like-for-like sessions across time. Trends indicate measured consistency, not medical diagnosis.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
                 }
                 .padding(.top, DesignTokens.Spacing.small)
                 
@@ -77,9 +63,6 @@ public struct ProgressDashboardView: View {
                 
                 // Demo Data Helper
                 demoDataHelperSection
-                
-                // Safety Disclaimer
-                DisclaimerBanner()
             }
             .padding(.horizontal, DesignTokens.Spacing.large)
             .padding(.bottom, DesignTokens.Spacing.xxLarge)
@@ -99,7 +82,7 @@ public struct ProgressDashboardView: View {
                         .font(.subheadline)
                         .fontWeight(.bold)
                     Text(selectedTest == .tapping ? "Higher reflects faster tapping" : "Lower reflects closer path tracing")
-                        .font(.caption2)
+                        .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
@@ -167,7 +150,7 @@ public struct ProgressDashboardView: View {
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.card))
         .overlay(
             RoundedRectangle(cornerRadius: DesignTokens.Radius.card)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
         )
     }
     
@@ -198,17 +181,17 @@ public struct ProgressDashboardView: View {
                                         .fontWeight(.semibold)
                                     
                                     if record.isSampleData {
-                                        Text("DEMO SAMPLE")
-                                            .font(.system(size: 9, weight: .bold))
+                                        Text("Sample Demo")
+                                            .font(.system(size: 11, weight: .semibold))
                                             .foregroundStyle(Color.NeuroPulse.info)
-                                            .padding(.horizontal, 6)
-                                            .padding(.vertical, 2)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 3)
                                             .background(Capsule().fill(Color.NeuroPulse.info.opacity(0.12)))
                                     }
                                 }
                                 
                                 Text(recordSubtitle(for: record))
-                                    .font(.caption)
+                                    .font(.footnote)
                                     .foregroundStyle(.secondary)
                             }
                             
@@ -224,7 +207,7 @@ public struct ProgressDashboardView: View {
                         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
                         .overlay(
                             RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
                         )
                     }
                 }
@@ -254,16 +237,15 @@ public struct ProgressDashboardView: View {
                         Image(systemName: "square.and.arrow.up")
                         Text("Export Session History (CSV)")
                     }
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(Color.NeuroPulse.brandTeal)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, DesignTokens.Spacing.medium)
+                    .frame(height: 50)
                     .background(Color.NeuroPulse.cardBackground)
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
                     .overlay(
                         RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                            .stroke(Color.NeuroPulse.brandTeal.opacity(0.4), lineWidth: 1)
+                            .stroke(Color.NeuroPulse.brandTeal.opacity(0.4), lineWidth: 0.75)
                     )
                 }
             }
@@ -274,9 +256,10 @@ public struct ProgressDashboardView: View {
                 } label: {
                     HStack(spacing: DesignTokens.Spacing.small) {
                         Image(systemName: "plus.circle")
-                        Text("Load Sample Trend Data (Clearly Labelled)")
+                        Text("Load Sample Trend Data")
                     }
-                    .font(.footnote)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
                     .foregroundStyle(Color.NeuroPulse.brandTeal)
                 }
                 
@@ -285,7 +268,7 @@ public struct ProgressDashboardView: View {
                         store.clearAll()
                     } label: {
                         Text("Clear All Sessions")
-                            .font(.caption)
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
                 }

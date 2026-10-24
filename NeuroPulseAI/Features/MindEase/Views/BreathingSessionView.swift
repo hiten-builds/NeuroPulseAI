@@ -168,10 +168,10 @@ public struct BreathingSessionView: View {
                         Image(systemName: isRunning ? "pause.fill" : "play.fill")
                         Text(isRunning ? "Pause" : "Resume")
                     }
-                    .font(.headline)
+                    .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, DesignTokens.Spacing.medium)
+                    .frame(height: 52)
                     .background(Color.NeuroPulse.mindEasePrimary)
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
                 }
@@ -179,7 +179,7 @@ public struct BreathingSessionView: View {
                 Button("End Session Early", role: .cancel) {
                     endSessionEarly()
                 }
-                .font(.footnote)
+                .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(.secondary)
             }
             .padding(.horizontal, DesignTokens.Spacing.large)
@@ -220,7 +220,7 @@ public struct BreathingSessionView: View {
                 HStack(spacing: DesignTokens.Spacing.large) {
                     VStack {
                         Text("Before")
-                            .font(.caption)
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
                         Text("\(before) / 5")
                             .font(.title3)
@@ -232,7 +232,7 @@ public struct BreathingSessionView: View {
                     
                     VStack {
                         Text("After")
-                            .font(.caption)
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
                         Text("\(after) / 5")
                             .font(.title3)
@@ -245,7 +245,7 @@ public struct BreathingSessionView: View {
                 .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
                 .overlay(
                     RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                        .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                        .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
                 )
             }
             
@@ -254,10 +254,10 @@ public struct BreathingSessionView: View {
             Button("Done") {
                 dismiss()
             }
-            .font(.headline)
+            .font(.system(size: 17, weight: .semibold))
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, DesignTokens.Spacing.medium)
+            .frame(height: 52)
             .background(Color.NeuroPulse.mindEasePrimary)
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
             .padding(.horizontal, DesignTokens.Spacing.large)

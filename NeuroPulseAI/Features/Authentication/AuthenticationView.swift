@@ -42,16 +42,16 @@ public struct AuthenticationView: View {
                         Text(isRegisterMode
                              ? "Register with email to manage your account and optionally personalize recommendations."
                              : "Sign in with your email to access your authenticated session.")
-                            .font(.caption)
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                     }
                     
                     // MARK: - Input Fields
                     VStack(spacing: DesignTokens.Spacing.medium) {
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: 6) {
                             Text("Email Address")
-                                .font(.caption)
+                                .font(.footnote)
                                 .fontWeight(.medium)
                                 .foregroundStyle(.secondary)
                             
@@ -63,18 +63,19 @@ public struct AuthenticationView: View {
                                     .textInputAutocapitalization(.never)
                                     .autocorrectionDisabled()
                             }
-                            .padding(DesignTokens.Spacing.medium)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 14)
                             .background(Color.NeuroPulse.cardBackground)
-                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.small))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                             .overlay(
-                                RoundedRectangle(cornerRadius: DesignTokens.Radius.small)
-                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
                             )
                         }
                         
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: 6) {
                             Text("Password")
-                                .font(.caption)
+                                .font(.footnote)
                                 .fontWeight(.medium)
                                 .foregroundStyle(.secondary)
                             
@@ -83,12 +84,13 @@ public struct AuthenticationView: View {
                                     .foregroundStyle(.secondary)
                                 SecureField(isRegisterMode ? "Minimum 8 characters" : "Enter your password", text: $password)
                             }
-                            .padding(DesignTokens.Spacing.medium)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 14)
                             .background(Color.NeuroPulse.cardBackground)
-                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.small))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                             .overlay(
-                                RoundedRectangle(cornerRadius: DesignTokens.Radius.small)
-                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
                             )
                         }
                     }
@@ -99,13 +101,13 @@ public struct AuthenticationView: View {
                             Image(systemName: "exclamationmark.triangle.fill")
                                 .foregroundStyle(Color.NeuroPulse.error)
                             Text(error)
-                                .font(.caption)
+                                .font(.footnote)
                                 .foregroundStyle(Color.NeuroPulse.error)
                             Spacer()
                         }
                         .padding(DesignTokens.Spacing.medium)
                         .background(Color.NeuroPulse.error.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.small))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
                     
                     // MARK: - Submit Button
@@ -119,12 +121,11 @@ public struct AuthenticationView: View {
                                     .padding(.trailing, 4)
                             }
                             Text(isRegisterMode ? "Create Account" : "Sign In")
-                                .fontWeight(.semibold)
+                                .font(.system(size: 17, weight: .semibold))
                         }
-                        .font(.body)
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 50)
+                        .frame(height: 52)
                         .background(
                             LinearGradient(
                                 colors: [Color.NeuroPulse.brandTeal, Color.NeuroPulse.motorPrimary],
@@ -132,21 +133,11 @@ public struct AuthenticationView: View {
                                 endPoint: .trailing
                             )
                         )
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-                        .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.3), radius: 6, y: 3)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                        .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.25), radius: 8, y: 3)
                     }
                     .disabled(authManager.isAuthenticating || email.isEmpty || password.isEmpty)
                     .opacity((email.isEmpty || password.isEmpty) ? 0.6 : 1.0)
-                    
-                    // MARK: - Cancel / Continue Locally
-                    Button {
-                        dismiss()
-                    } label: {
-                        Text("Cancel")
-                            .font(.callout)
-                            .foregroundStyle(.secondary)
-                    }
-                    .padding(.top, DesignTokens.Spacing.small)
                 }
                 .padding(.horizontal, DesignTokens.Spacing.large)
                 .padding(.vertical, DesignTokens.Spacing.large)
@@ -154,6 +145,13 @@ public struct AuthenticationView: View {
             .background(Color.NeuroPulse.surfaceBackground.ignoresSafeArea())
             .navigationTitle(isRegisterMode ? "Register" : "Sign In")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+            }
         }
     }
     

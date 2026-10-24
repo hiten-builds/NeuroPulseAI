@@ -195,23 +195,23 @@ public struct AccountSettingsView: View {
                 showingTermsSheet = true
             } label: {
                 Text("Review Terms & Conditions")
-                    .font(.caption)
-                    .fontWeight(.medium)
+                    .font(.footnote)
+                    .fontWeight(.semibold)
                     .foregroundStyle(Color.NeuroPulse.brandTeal)
-                    .padding(.horizontal, DesignTokens.Spacing.medium)
+                    .padding(.horizontal, 14)
                     .padding(.vertical, 8)
                     .background(Color.NeuroPulse.brandTeal.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.small))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
             }
             .padding(.top, 4)
         }
-        .padding(DesignTokens.Spacing.medium)
+        .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.NeuroPulse.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
         )
     }
     
@@ -221,10 +221,9 @@ public struct AccountSettingsView: View {
         let color = isAccepted ? Color.NeuroPulse.brandTeal : Color.secondary
         
         return Text(label)
-            .font(.caption2)
-            .fontWeight(.bold)
+            .font(.system(size: 11, weight: .semibold))
             .foregroundStyle(color)
-            .padding(.horizontal, DesignTokens.Spacing.small)
+            .padding(.horizontal, 8)
             .padding(.vertical, 3)
             .background(Capsule().fill(color.opacity(0.12)))
     }
@@ -244,7 +243,7 @@ public struct AccountSettingsView: View {
             Divider()
             
             Text("Purpose: Personalization of recommendations based on authorized motor and wellness trends (v\(consentManager.consentVersion)).")
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(.secondary)
             
             HStack(spacing: DesignTokens.Spacing.small) {
@@ -253,38 +252,38 @@ public struct AccountSettingsView: View {
                         withdrawConsent()
                     } label: {
                         Text("Withdraw Consent")
-                            .font(.caption)
-                            .fontWeight(.medium)
+                            .font(.footnote)
+                            .fontWeight(.semibold)
                             .foregroundStyle(Color.NeuroPulse.error)
-                            .padding(.horizontal, DesignTokens.Spacing.medium)
+                            .padding(.horizontal, 14)
                             .padding(.vertical, 8)
                             .background(Color.NeuroPulse.error.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.small))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
                 } else {
                     Button {
                         showingConsentSheet = true
                     } label: {
                         Text("Review Consent Options")
-                            .font(.caption)
-                            .fontWeight(.medium)
+                            .font(.footnote)
+                            .fontWeight(.semibold)
                             .foregroundStyle(Color.NeuroPulse.brandTeal)
-                            .padding(.horizontal, DesignTokens.Spacing.medium)
+                            .padding(.horizontal, 14)
                             .padding(.vertical, 8)
                             .background(Color.NeuroPulse.brandTeal.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.small))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
                 }
             }
             .padding(.top, 4)
         }
-        .padding(DesignTokens.Spacing.medium)
+        .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.NeuroPulse.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
         )
     }
     
@@ -299,10 +298,9 @@ public struct AccountSettingsView: View {
         }()
         
         return Text(label)
-            .font(.caption2)
-            .fontWeight(.bold)
+            .font(.system(size: 11, weight: .semibold))
             .foregroundStyle(color)
-            .padding(.horizontal, DesignTokens.Spacing.small)
+            .padding(.horizontal, 8)
             .padding(.vertical, 3)
             .background(Capsule().fill(color.opacity(0.12)))
     }
@@ -318,33 +316,33 @@ public struct AccountSettingsView: View {
             }
             
             Text("Request permanent deletion of all assessment and wellness records synchronized to the backend. Local records on this device will NOT be deleted.")
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(.secondary)
             
             Button(role: .destructive) {
                 showingDeleteDataAlert = true
             } label: {
-                HStack {
+                HStack(spacing: 6) {
                     Image(systemName: "trash.fill")
                     Text("Delete Remote Data")
                 }
-                .font(.caption)
+                .font(.footnote)
                 .fontWeight(.semibold)
                 .foregroundStyle(.white)
-                .padding(.horizontal, DesignTokens.Spacing.medium)
+                .padding(.horizontal, 14)
                 .padding(.vertical, 8)
                 .background(Color.NeuroPulse.error)
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.small))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
             }
             .padding(.top, 4)
         }
-        .padding(DesignTokens.Spacing.medium)
+        .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.NeuroPulse.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
         )
     }
     
@@ -355,34 +353,35 @@ public struct AccountSettingsView: View {
                     authManager.signOut()
                     dismiss()
                 } label: {
-                    HStack {
+                    HStack(spacing: 8) {
                         Image(systemName: "rectangle.portrait.and.arrow.right")
+                            .font(.system(size: 18, weight: .semibold))
                         Text("Sign Out")
+                            .font(.system(size: 17, weight: .semibold))
                     }
-                    .font(.body)
-                    .fontWeight(.semibold)
+                    .foregroundStyle(Color.NeuroPulse.error)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 48)
+                    .frame(height: 52)
                     .background(Color.NeuroPulse.cardBackground)
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
                     .overlay(
                         RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                            .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                            .stroke(Color.NeuroPulse.error.opacity(0.3), lineWidth: 1)
                     )
                 }
             } else {
                 Button {
                     showingAuthSheet = true
                 } label: {
-                    HStack {
+                    HStack(spacing: 8) {
                         Image(systemName: "person.badge.key.fill")
+                            .font(.system(size: 18, weight: .semibold))
                         Text("Sign In or Register")
+                            .font(.system(size: 17, weight: .semibold))
                     }
-                    .font(.body)
-                    .fontWeight(.semibold)
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 48)
+                    .frame(height: 52)
                     .background(
                         LinearGradient(
                             colors: [Color.NeuroPulse.brandTeal, Color.NeuroPulse.motorPrimary],
@@ -391,6 +390,7 @@ public struct AccountSettingsView: View {
                         )
                     )
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+                    .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.25), radius: 6, y: 3)
                 }
             }
             
@@ -399,9 +399,10 @@ public struct AccountSettingsView: View {
                 dismiss()
             } label: {
                 Text("Return to Welcome Screen")
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
+            .padding(.top, 4)
         }
     }
     

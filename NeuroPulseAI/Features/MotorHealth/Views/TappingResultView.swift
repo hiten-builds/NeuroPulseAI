@@ -38,18 +38,15 @@ public struct TappingResultView: View {
                 // Quality Indicator Card
                 qualitySection
                 
-                // Safety Disclaimer
-                DisclaimerBanner()
-                
                 // Action Buttons
                 Button {
                     onDismiss?()
                 } label: {
                     Text("Done")
-                        .font(.headline)
+                        .font(.system(size: 17, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, DesignTokens.Spacing.medium)
+                        .frame(height: 52)
                         .background(Color.NeuroPulse.brandTeal)
                         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
                 }
@@ -68,10 +65,9 @@ public struct TappingResultView: View {
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.small) {
             HStack {
-                Text("TWO-ZONE FINGER TAPPING")
-                    .font(.caption)
-                    .fontWeight(.bold)
-                    .tracking(1.2)
+                Text("Two-Zone Finger Tapping")
+                    .font(.footnote)
+                    .fontWeight(.semibold)
                     .foregroundStyle(Color.NeuroPulse.motorPrimary)
                 
                 Spacer()
@@ -107,7 +103,7 @@ public struct TappingResultView: View {
                     .fontWeight(.semibold)
                     .foregroundStyle(.primary)
                 Text("Record is securely stored on this device and available in Activity History.")
-                    .font(.caption2)
+                    .font(.footnote)
                     .foregroundStyle(.secondary)
             }
             
@@ -118,7 +114,7 @@ public struct TappingResultView: View {
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
         .overlay(
             RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                .stroke(Color.NeuroPulse.success.opacity(0.35), lineWidth: 1)
+                .stroke(Color.NeuroPulse.success.opacity(0.35), lineWidth: 0.75)
         )
     }
     
@@ -142,7 +138,7 @@ public struct TappingResultView: View {
                             .font(.subheadline)
                             .fontWeight(.semibold)
                         Text("Average Euclidean offset from expected target center")
-                            .font(.caption2)
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
                     Spacer()
@@ -155,7 +151,7 @@ public struct TappingResultView: View {
                             
                             if let norm = metrics.meanNormalizedCenterDeviationPercent {
                                 Text(String(format: "%.1f%% radius", norm))
-                                    .font(.caption2)
+                                    .font(.footnote)
                                     .foregroundStyle(.secondary)
                             }
                         }
@@ -175,7 +171,7 @@ public struct TappingResultView: View {
                             .font(.subheadline)
                             .fontWeight(.semibold)
                         Text("Correct alternating taps / total attempts")
-                            .font(.caption2)
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
                     Spacer()
@@ -209,10 +205,10 @@ public struct TappingResultView: View {
                 // Informational note
                 HStack(alignment: .top, spacing: 6) {
                     Image(systemName: "info.circle")
-                        .font(.caption2)
+                        .font(.footnote)
                         .foregroundStyle(.secondary)
                     Text("Target accuracy is an exploratory geometric measurement in SwiftUI points. A lower deviation indicates touches landing closer to target centers.")
-                        .font(.caption2)
+                        .font(.footnote)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -223,7 +219,7 @@ public struct TappingResultView: View {
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
             .overlay(
                 RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
             )
         }
     }
@@ -273,7 +269,7 @@ public struct TappingResultView: View {
                             .font(.subheadline)
                             .fontWeight(.semibold)
                         Text("Lower variability reflects higher rhythmic regularity")
-                            .font(.caption2)
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
                     Spacer()
@@ -291,7 +287,7 @@ public struct TappingResultView: View {
                             .font(.subheadline)
                             .fontWeight(.semibold)
                         Text("Values close to 1.0 indicate sustained cadence")
-                            .font(.caption2)
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
                     Spacer()
@@ -306,7 +302,7 @@ public struct TappingResultView: View {
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
             .overlay(
                 RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
             )
         }
     }
@@ -324,7 +320,7 @@ public struct TappingResultView: View {
                     .foregroundStyle(.primary)
                 
                 Text(metrics.qualityExplanation)
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -335,7 +331,7 @@ public struct TappingResultView: View {
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
         .overlay(
             RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
         )
     }
     
@@ -359,7 +355,7 @@ public struct TappingResultView: View {
                 .foregroundStyle(.primary)
             
             Text(unit)
-                .font(.caption2)
+                .font(.footnote)
                 .foregroundStyle(.secondary)
         }
         .padding(DesignTokens.Spacing.medium)
@@ -368,7 +364,7 @@ public struct TappingResultView: View {
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
         .overlay(
             RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
         )
     }
     
@@ -380,7 +376,7 @@ public struct TappingResultView: View {
                 .frame(width: 8, height: 8)
             
             Text(status.rawValue)
-                .font(.caption2)
+                .font(.footnote)
                 .fontWeight(.semibold)
                 .foregroundStyle(.primary)
         }

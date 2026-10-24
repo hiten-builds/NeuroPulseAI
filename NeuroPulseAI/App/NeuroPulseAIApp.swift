@@ -36,6 +36,28 @@ struct NeuroPulseAIApp: App {
                         NavigationStack {
                             ReadMindWavesLandingView(initialState: .headsetNotConnected)
                         }
+                    case "home":
+                        HomeView()
+                    case "motor_health":
+                        NavigationStack {
+                            MotorHealthHomeView()
+                        }
+                    case "mindease":
+                        NavigationStack {
+                            MindEaseHomeView()
+                        }
+                    case "saved_records":
+                        NavigationStack {
+                            SavedRecordsView()
+                        }
+                    case "terms":
+                        NavigationStack {
+                            TermsAndConditionsView()
+                        }
+                    case "consent":
+                        NavigationStack {
+                            PersonalizationConsentView()
+                        }
                     default:
                         rootFlowView
                     }

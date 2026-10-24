@@ -87,7 +87,7 @@ public struct WellnessCheckInView: View {
                                     )
                                 
                                 Text(level.1)
-                                    .font(.system(size: 10, weight: .medium))
+                                    .font(.system(size: 11, weight: .medium))
                                     .foregroundStyle(.secondary)
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.7)
@@ -102,7 +102,7 @@ public struct WellnessCheckInView: View {
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.card))
             .overlay(
                 RoundedRectangle(cornerRadius: DesignTokens.Radius.card)
-                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
             )
             .padding(.horizontal, DesignTokens.Spacing.large)
             
@@ -114,10 +114,10 @@ public struct WellnessCheckInView: View {
                     onRatingSelected(selectedRating)
                 } label: {
                     Text(selectedRating != nil ? "Continue" : "Select a Rating")
-                        .font(.headline)
+                        .font(.system(size: 17, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, DesignTokens.Spacing.medium)
+                        .frame(height: 52)
                         .background(
                             selectedRating != nil ? Color.NeuroPulse.mindEasePrimary : Color.secondary.opacity(0.3)
                         )
@@ -128,7 +128,7 @@ public struct WellnessCheckInView: View {
                 Button("Skip for Now") {
                     onRatingSelected(nil)
                 }
-                .font(.footnote)
+                .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(.secondary)
                 .padding(.top, DesignTokens.Spacing.xSmall)
             }

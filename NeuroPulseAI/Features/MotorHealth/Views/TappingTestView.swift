@@ -88,10 +88,9 @@ public struct TappingTestView: View {
                             Circle()
                                 .fill(Color.NeuroPulse.motorPrimary)
                                 .frame(width: 8, height: 8)
-                            Text("TWO-ZONE ALTERNATING PROTOCOL")
-                                .font(.caption2)
-                                .fontWeight(.bold)
-                                .tracking(1.0)
+                            Text("Two-Zone Alternating Protocol")
+                                .font(.footnote)
+                                .fontWeight(.semibold)
                                 .foregroundStyle(Color.NeuroPulse.motorPrimary)
                         }
                         
@@ -109,7 +108,7 @@ public struct TappingTestView: View {
                     // Visual Preview of Two Targets
                     VStack(spacing: DesignTokens.Spacing.medium) {
                         Text("Target Layout Preview")
-                            .font(.caption)
+                            .font(.subheadline)
                             .fontWeight(.semibold)
                             .foregroundStyle(.secondary)
                         
@@ -129,7 +128,7 @@ public struct TappingTestView: View {
                                         .foregroundStyle(Color.NeuroPulse.motorPrimary)
                                 }
                                 Text("Left (Start)")
-                                    .font(.caption2)
+                                    .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
                             
@@ -152,7 +151,7 @@ public struct TappingTestView: View {
                                         .foregroundStyle(.secondary)
                                 }
                                 Text("Right")
-                                    .font(.caption2)
+                                    .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
                         }
@@ -162,7 +161,7 @@ public struct TappingTestView: View {
                         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
                         .overlay(
                             RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
                         )
                     }
                     
@@ -188,7 +187,7 @@ public struct TappingTestView: View {
                     // Hand Selection
                     VStack(alignment: .leading, spacing: DesignTokens.Spacing.small) {
                         Text("Select Tested Hand")
-                            .font(.caption)
+                            .font(.subheadline)
                             .fontWeight(.semibold)
                             .foregroundStyle(.secondary)
                         
@@ -217,10 +216,10 @@ public struct TappingTestView: View {
                 startCountdown()
             } label: {
                 Text("Start Assessment")
-                    .font(.headline)
+                    .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, DesignTokens.Spacing.medium)
+                    .frame(height: 52)
                     .background(Color.NeuroPulse.motorPrimary)
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
             }
@@ -256,9 +255,9 @@ public struct TappingTestView: View {
             // Header: Time & Alternating Counter
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("TIME REMAINING")
-                        .font(.caption2)
-                        .fontWeight(.bold)
+                    Text("Time Remaining")
+                        .font(.footnote)
+                        .fontWeight(.semibold)
                         .foregroundStyle(.secondary)
                     
                     let remaining = max(0.0, plannedDuration - currentElapsed)
@@ -271,9 +270,9 @@ public struct TappingTestView: View {
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text("VALID TAPS")
-                        .font(.caption2)
-                        .fontWeight(.bold)
+                    Text("Valid Taps")
+                        .font(.footnote)
+                        .fontWeight(.semibold)
                         .foregroundStyle(.secondary)
                     
                     let validCount = events.filter { $0.hitCategory == .correctTarget }.count
@@ -287,21 +286,21 @@ public struct TappingTestView: View {
             .padding(.top, DesignTokens.Spacing.small)
             
             // Expected target instruction banner
-            HStack(spacing: 6) {
+            HStack(spacing: 8) {
                 Image(systemName: expectedTarget == .left ? "arrow.left.circle.fill" : "arrow.right.circle.fill")
                     .foregroundStyle(Color.NeuroPulse.motorPrimary)
-                Text("Tap the highlighted \(expectedTarget == .left ? "LEFT" : "RIGHT") target")
+                Text("Tap the highlighted \(expectedTarget == .left ? "Left" : "Right") target")
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(.primary)
             }
-            .padding(.vertical, DesignTokens.Spacing.small)
+            .padding(.vertical, 10)
             .padding(.horizontal, DesignTokens.Spacing.medium)
             .background(Color.NeuroPulse.cardBackground)
             .clipShape(Capsule())
             .overlay(
                 Capsule()
-                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
             )
             
             Spacer()
@@ -320,7 +319,7 @@ public struct TappingTestView: View {
                         .fill(Color.NeuroPulse.cardBackground)
                         .overlay(
                             RoundedRectangle(cornerRadius: DesignTokens.Radius.card)
-                                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
                         )
                     
                     // Left Target View
@@ -368,7 +367,7 @@ public struct TappingTestView: View {
             Button("Cancel Assessment", role: .cancel) {
                 cancelTest()
             }
-            .font(.footnote)
+            .font(.system(size: 16, weight: .medium))
             .foregroundStyle(.secondary)
             .padding(.bottom, DesignTokens.Spacing.large)
         }
@@ -628,7 +627,7 @@ public struct TappingTestView: View {
                     .fontWeight(.semibold)
                     .foregroundStyle(.primary)
                 Text(subtitle)
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }

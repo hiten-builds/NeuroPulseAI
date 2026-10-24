@@ -26,21 +26,18 @@ public struct HomeView: View {
                     // MARK: - Privacy & Architecture Status Pill
                     privacyStatusPill
 
-                    // MARK: - Mode Selection Cards
-                    VStack(spacing: DesignTokens.Spacing.medium) {
+                    // MARK: - Primary Mode Selection Cards
+                    VStack(spacing: 12) {
                         NavigationLink {
                             MotorHealthHomeView()
                         } label: {
                             ModeCardView(
                                 title: "Motor Health",
-                                category: "Assessment",
-                                subtitle: "Record fine-motor dexterity, tapping rhythm consistency, and spiral trajectory stability.",
                                 iconName: "hand.tap.fill",
                                 gradientColors: [
                                     Color.NeuroPulse.motorPrimary,
                                     Color.NeuroPulse.motorSecondary
-                                ],
-                                features: ["Finger Tapping", "Spiral Tracing", "Cadence Metrics"]
+                                ]
                             )
                         }
                         .buttonStyle(PlainButtonStyle())
@@ -50,14 +47,11 @@ public struct HomeView: View {
                         } label: {
                             ModeCardView(
                                 title: "MindEase",
-                                category: "Wellness",
-                                subtitle: "Find calm and reset with guided visual breathing, mindfulness, and relaxation check-ins.",
                                 iconName: "wind",
                                 gradientColors: [
                                     Color.NeuroPulse.mindEasePrimary,
                                     Color.NeuroPulse.mindEaseSecondary
-                                ],
-                                features: ["Guided Breathing", "Mindfulness", "Check-ins"]
+                                ]
                             )
                         }
                         .buttonStyle(PlainButtonStyle())
@@ -68,17 +62,18 @@ public struct HomeView: View {
                         } label: {
                             ModeCardView(
                                 title: "Read Mind Waves",
-                                category: "Brain Waves",
-                                subtitle: "Connect an EEG headset to explore your brain wave activity.",
                                 iconName: "waveform.path.ecg",
                                 gradientColors: [
                                     Color.NeuroPulse.brandTeal,
                                     Color.NeuroPulse.mindEaseSecondary
-                                ],
-                                features: ["Brain Waves", "Headset Pairing", "EEG Activity"]
+                                ]
                             )
                         }
                         .buttonStyle(PlainButtonStyle())
+                    }
+
+                    // MARK: - Secondary Experiences (Insights & Activity)
+                    VStack(spacing: 12) {
 
                         // Recommendations Card
                         NavigationLink {
@@ -96,45 +91,40 @@ public struct HomeView: View {
                                         )
                                         .frame(width: 44, height: 44)
                                     Image(systemName: "sparkles")
-                                        .font(.system(size: 20, weight: .semibold))
+                                        .font(.system(size: 18, weight: .semibold))
                                         .foregroundStyle(.white)
                                 }
 
-                                VStack(alignment: .leading, spacing: DesignTokens.Spacing.xSmall) {
-                                    HStack {
-                                        Text("Recommendations")
-                                            .font(.headline)
-                                            .foregroundStyle(.primary)
-                                        Spacer()
-                                        Text(isCloudPersonalized ? "Cloud Personalized" : "Local Guidance")
-                                            .font(.caption2)
-                                            .fontWeight(.semibold)
-                                            .foregroundStyle(isCloudPersonalized ? Color.NeuroPulse.brandTeal : Color.NeuroPulse.motorPrimary)
-                                            .padding(.horizontal, DesignTokens.Spacing.small)
-                                            .padding(.vertical, 2)
-                                            .background(
-                                                Capsule()
-                                                    .fill((isCloudPersonalized ? Color.NeuroPulse.brandTeal : Color.NeuroPulse.motorPrimary).opacity(0.12))
-                                            )
-                                    }
-                                    Text("Explainable pacing suggestions and recovery insights based on your activities.")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                }
+                                Text("Recommendations")
+                                    .font(.headline)
+                                    .foregroundStyle(.primary)
+
+                                Spacer()
+
+                                Text(isCloudPersonalized ? "Personalized" : "Local")
+                                    .font(.system(size: 11, weight: .semibold))
+                                    .foregroundStyle(isCloudPersonalized ? Color.NeuroPulse.brandTeal : Color.NeuroPulse.motorPrimary)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 2)
+                                    .background(
+                                        Capsule()
+                                            .fill((isCloudPersonalized ? Color.NeuroPulse.brandTeal : Color.NeuroPulse.motorPrimary).opacity(0.12))
+                                    )
 
                                 Image(systemName: "chevron.right")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundStyle(.tertiary)
                             }
-                            .padding(DesignTokens.Spacing.medium)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 14)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .background(Color.NeuroPulse.cardBackground)
-                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
                             .overlay(
-                                RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                                RoundedRectangle(cornerRadius: 16)
+                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
                             )
+                            .shadow(color: Color.black.opacity(0.03), radius: 6, x: 0, y: 2)
                         }
                         .buttonStyle(PlainButtonStyle())
 
@@ -145,51 +135,36 @@ public struct HomeView: View {
                             HStack(spacing: DesignTokens.Spacing.medium) {
                                 ZStack {
                                     Circle()
-                                        .fill(Color.NeuroPulse.brandTeal.opacity(0.15))
+                                        .fill(Color.NeuroPulse.brandTeal.opacity(0.12))
                                         .frame(width: 44, height: 44)
                                     Image(systemName: "clock.arrow.circlepath")
-                                        .font(.system(size: 20, weight: .semibold))
+                                        .font(.system(size: 18, weight: .semibold))
                                         .foregroundStyle(Color.NeuroPulse.brandTeal)
                                 }
 
-                                VStack(alignment: .leading, spacing: DesignTokens.Spacing.xSmall) {
-                                    HStack {
-                                        Text("Activity History")
-                                            .font(.headline)
-                                            .foregroundStyle(.primary)
-                                        Spacer()
-                                        Text("Saved Records")
-                                            .font(.caption2)
-                                            .fontWeight(.semibold)
-                                            .foregroundStyle(Color.NeuroPulse.brandTeal)
-                                            .padding(.horizontal, DesignTokens.Spacing.small)
-                                            .padding(.vertical, 2)
-                                            .background(Capsule().fill(Color.NeuroPulse.brandTeal.opacity(0.12)))
-                                    }
-                                    Text("Inspect on-device history, alternating tapping metrics, and MindEase records.")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                }
+                                Text("Activity History")
+                                    .font(.headline)
+                                    .foregroundStyle(.primary)
+
+                                Spacer()
 
                                 Image(systemName: "chevron.right")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundStyle(.tertiary)
                             }
-                            .padding(DesignTokens.Spacing.medium)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 14)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .background(Color.NeuroPulse.cardBackground)
-                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
                             .overlay(
-                                RoundedRectangle(cornerRadius: DesignTokens.Radius.medium)
-                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                                RoundedRectangle(cornerRadius: 16)
+                                    .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
                             )
+                            .shadow(color: Color.black.opacity(0.03), radius: 6, x: 0, y: 2)
                         }
                         .buttonStyle(PlainButtonStyle())
                     }
-
-                    // MARK: - Non-Diagnostic Safety Disclosure
-                    DisclaimerBanner()
                 }
                 .padding(.horizontal, DesignTokens.Spacing.large)
                 .padding(.top, DesignTokens.Spacing.medium)
@@ -232,7 +207,7 @@ public struct HomeView: View {
                         )
                     )
                     .frame(width: 48, height: 48)
-                    .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.35), radius: 8, x: 0, y: 4)
+                    .shadow(color: Color.NeuroPulse.brandTeal.opacity(0.25), radius: 6, x: 0, y: 3)
 
                 Image(systemName: "waveform.path.ecg")
                     .font(.system(size: 22, weight: .bold))
@@ -240,14 +215,14 @@ public struct HomeView: View {
             }
             .accessibilityHidden(true)
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 3) {
                 Text("NeuroPulse AI")
-                    .font(.title)
+                    .font(.title2)
                     .fontWeight(.bold)
                     .foregroundStyle(.primary)
 
                 Text("Neurological Health & Mindful Wellness")
-                    .font(.caption)
+                    .font(.footnote)
                     .fontWeight(.medium)
                     .foregroundStyle(.secondary)
             }
@@ -261,14 +236,14 @@ public struct HomeView: View {
                 ZStack {
                     Circle()
                         .fill(Color.NeuroPulse.cardBackground)
-                        .frame(width: 40, height: 40)
+                        .frame(width: 42, height: 42)
                     Image(systemName: authManager.currentMode == .authenticated ? "person.crop.circle.fill" : "person.crop.circle")
                         .font(.system(size: 22))
                         .foregroundStyle(Color.NeuroPulse.brandTeal)
                 }
                 .overlay(
                     Circle()
-                        .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                        .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
                 )
             }
             .accessibilityLabel("Account and Privacy Settings")
@@ -278,28 +253,28 @@ public struct HomeView: View {
     private var privacyStatusPill: some View {
         HStack(spacing: DesignTokens.Spacing.small) {
             Image(systemName: isCloudPersonalized ? "cloud.shield.fill" : "lock.shield.fill")
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(Color.NeuroPulse.success)
 
             Text(statusTitle)
-                .font(.caption2)
-                .fontWeight(.semibold)
+                .font(.footnote)
+                .fontWeight(.medium)
                 .foregroundStyle(.secondary)
 
             Spacer()
 
             Text(statusSubtitle)
-                .font(.caption2)
+                .font(.footnote)
                 .fontWeight(.medium)
                 .foregroundStyle(Color.NeuroPulse.success)
         }
-        .padding(.horizontal, DesignTokens.Spacing.medium)
-        .padding(.vertical, DesignTokens.Spacing.small)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
         .background(Color.NeuroPulse.cardBackground)
         .clipShape(Capsule())
         .overlay(
             Capsule()
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
         )
     }
 

@@ -105,10 +105,10 @@ public struct MindfulnessMeditationView: View {
                         startSession()
                     } label: {
                         Text("Begin Meditation")
-                            .font(.headline)
+                            .font(.system(size: 17, weight: .semibold))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, DesignTokens.Spacing.medium)
+                            .frame(height: 52)
                             .background(Color.NeuroPulse.mindEaseSecondary)
                             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
                     }
@@ -120,10 +120,10 @@ public struct MindfulnessMeditationView: View {
                             Image(systemName: isRunning ? "pause.fill" : "play.fill")
                             Text(isRunning ? "Pause" : "Resume")
                         }
-                        .font(.headline)
+                        .font(.system(size: 17, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, DesignTokens.Spacing.medium)
+                        .frame(height: 52)
                         .background(Color.NeuroPulse.mindEaseSecondary)
                         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
                     }
@@ -131,7 +131,7 @@ public struct MindfulnessMeditationView: View {
                     Button("End Session", role: .cancel) {
                         finishSession()
                     }
-                    .font(.footnote)
+                    .font(.system(size: 15, weight: .medium))
                     .foregroundStyle(.secondary)
                 }
             }

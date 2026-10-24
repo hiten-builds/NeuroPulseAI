@@ -17,11 +17,11 @@ public struct ModeCardView: View {
     
     public init(
         title: String,
-        category: String,
-        subtitle: String,
+        category: String = "",
+        subtitle: String = "",
         iconName: String,
         gradientColors: [Color],
-        features: [String]
+        features: [String] = []
     ) {
         self.title = title
         self.category = category
@@ -32,106 +32,59 @@ public struct ModeCardView: View {
     }
     
     public var body: some View {
-        VStack(alignment: .leading, spacing: DesignTokens.Spacing.medium) {
-            // Header Row: Category Badge & Icon
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: DesignTokens.Spacing.xSmall) {
-                    Text(category.uppercased())
-                        .font(.caption2)
-                        .fontWeight(.bold)
-                        .tracking(1.2)
-                        .foregroundStyle(gradientColors.first ?? Color.NeuroPulse.brandTeal)
-                        .padding(.horizontal, DesignTokens.Spacing.small)
-                        .padding(.vertical, DesignTokens.Spacing.xSmall)
-                        .background(
-                            Capsule()
-                                .fill((gradientColors.first ?? Color.NeuroPulse.brandTeal).opacity(0.15))
+        HStack(spacing: 16) {
+            // Icon Emblem with Soft Ambient Glow
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: gradientColors,
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
                         )
-                    
-                    Text(title)
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.primary)
-                }
+                    )
+                    .frame(width: 48, height: 48)
+                    .shadow(
+                        color: (gradientColors.first ?? .clear).opacity(0.20),
+                        radius: 6,
+                        x: 0,
+                        y: 3
+                    )
                 
-                Spacer()
-                
-                // Icon Emblem with Soft Ambient Glow
-                ZStack {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: gradientColors,
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 48, height: 48)
-                        .shadow(
-                            color: (gradientColors.first ?? .clear).opacity(0.35),
-                            radius: 8,
-                            x: 0,
-                            y: 4
-                        )
-                    
-                    Image(systemName: iconName)
-                        .font(.system(size: 22, weight: .semibold))
-                        .foregroundStyle(.white)
-                }
+                Image(systemName: iconName)
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(.white)
             }
             
-            // Subtitle Description
-            Text(subtitle)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+            Text(title)
+                .font(.title3)
+                .fontWeight(.bold)
+                .foregroundStyle(.primary)
             
-            // Feature Tags
-            HStack(spacing: DesignTokens.Spacing.small) {
-                ForEach(features, id: \.self) { feature in
-                    Text(feature)
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, DesignTokens.Spacing.small)
-                        .padding(.vertical, DesignTokens.Spacing.xSmall)
-                        .background(
-                            Capsule()
-                                .fill(Color.primary.opacity(0.05))
-                        )
-                }
-            }
+            Spacer()
             
-            // Action prompt row
-            HStack {
-                Text("Open Experience")
-                    .font(.footnote)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(gradientColors.first ?? Color.NeuroPulse.brandTeal)
-                
-                Image(systemName: "arrow.right.circle.fill")
-                    .font(.footnote)
-                    .foregroundStyle(gradientColors.first ?? Color.NeuroPulse.brandTeal)
-            }
-            .padding(.top, DesignTokens.Spacing.xSmall)
+            Image(systemName: "chevron.right")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(.tertiary)
         }
-        .padding(DesignTokens.Spacing.large)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 18)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.NeuroPulse.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.card))
+        .clipShape(RoundedRectangle(cornerRadius: 18))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.card)
-                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 18)
+                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
         )
         .shadow(
-            color: DesignTokens.Shadow.cardElevation.color,
-            radius: DesignTokens.Shadow.cardElevation.radius,
-            x: DesignTokens.Shadow.cardElevation.x,
-            y: DesignTokens.Shadow.cardElevation.y
+            color: Color.black.opacity(0.03),
+            radius: 8,
+            x: 0,
+            y: 2
         )
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(category): \(title). \(subtitle). Features include \(features.joined(separator: ", ")).")
-        .accessibilityHint("Double tap to enter \(title)")
+        .accessibilityLabel(title)
+        .accessibilityHint("Double tap to open \(title)")
     }
 }
 

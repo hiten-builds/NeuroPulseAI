@@ -25,14 +25,14 @@ public struct MindfulTracingView: View {
                         Circle()
                             .fill(Color.NeuroPulse.brandTeal)
                             .frame(width: 8, height: 8)
-                        Text("UNSCORED WELLNESS")
-                            .font(.caption2)
-                            .fontWeight(.bold)
+                        Text("Unscored Wellness")
+                            .font(.footnote)
+                            .fontWeight(.semibold)
                             .foregroundStyle(Color.NeuroPulse.brandTeal)
                     }
                     
                     Text("Flow with your finger freely")
-                        .font(.caption)
+                        .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
                 
@@ -42,7 +42,7 @@ public struct MindfulTracingView: View {
                     completedPaths.removeAll()
                     currentPath.removeAll()
                 }
-                .font(.footnote)
+                .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(.secondary)
             }
             .padding(.horizontal, DesignTokens.Spacing.large)
@@ -53,12 +53,11 @@ public struct MindfulTracingView: View {
                 ZStack {
                     RoundedRectangle(cornerRadius: DesignTokens.Radius.card)
                         .fill(Color.NeuroPulse.cardBackground)
-                        .shadow(
-                            color: DesignTokens.Shadow.cardElevation.color,
-                            radius: DesignTokens.Shadow.cardElevation.radius,
-                            x: 0,
-                            y: 4
+                        .overlay(
+                            RoundedRectangle(cornerRadius: DesignTokens.Radius.card)
+                                .stroke(Color.NeuroPulse.subtleBorder, lineWidth: 0.75)
                         )
+                        .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 3)
                     
                     // Calming Ambient Prompt in background
                     if completedPaths.isEmpty && currentPath.isEmpty {
@@ -136,7 +135,7 @@ public struct MindfulTracingView: View {
                 Image(systemName: "info.circle")
                     .foregroundStyle(Color.NeuroPulse.brandTeal)
                 Text("This activity is purely for tactile relaxation and is not evaluated for motor performance.")
-                    .font(.caption2)
+                    .font(.footnote)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -149,10 +148,10 @@ public struct MindfulTracingView: View {
                 finishSession()
             } label: {
                 Text("Finish Session")
-                    .font(.headline)
+                    .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, DesignTokens.Spacing.medium)
+                    .frame(height: 52)
                     .background(Color.NeuroPulse.brandTeal)
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
             }
